@@ -96,7 +96,7 @@ class MomentListTab extends ConsumerWidget {
                       Space.phoneMargin,
                       0,
                       Space.phoneMargin,
-                      index == visible.length - 1 ? Space.huge : 0,
+                      index == visible.length - 1 ? 110.0 : 0,
                     ),
                     child: MomentCard(
                       moment: visible[index],
@@ -277,7 +277,7 @@ class _EmptyState extends StatelessWidget {
             if (upcoming) ...[
               const SizedBox(height: Space.sm),
               TextButton(
-                onPressed: () {},
+                onPressed: () => _showHowMomentsWorkSheet(context),
                 child: Text(
                   'See how moments work',
                   style: kairos.typeScale.caption.copyWith(
@@ -291,6 +291,119 @@ class _EmptyState extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showHowMomentsWorkSheet(BuildContext context) {
+    final kairos = KairosTheme.of(context);
+    final colours = kairos.colours;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: colours.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colours.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'How Moments Work',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: colours.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _MomentExplainerRow(
+              icon: Icons.arrow_outward_rounded,
+              title: 'Next: Count Down',
+              description: 'Track upcoming exams, trips, anniversaries and milestones as they draw closer.',
+            ),
+            const SizedBox(height: 14),
+            _MomentExplainerRow(
+              icon: Icons.radio_button_checked_rounded,
+              title: 'Now: Live Clock & Instruments',
+              description: 'Focus on today with active ongoing moments, alarms, world clock and timers.',
+            ),
+            const SizedBox(height: 14),
+            _MomentExplainerRow(
+              icon: Icons.history_rounded,
+              title: 'Then: Count Up',
+              description: 'Celebrate past milestones, memories and elapsed days that stay with you forever.',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MomentExplainerRow extends StatelessWidget {
+  const _MomentExplainerRow({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
+
+  final IconData icon;
+  final String title;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = KairosTheme.of(context).colours;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: colours.surfaceElevated,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 20, color: colours.accent),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: colours.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                description,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.4,
+                  color: colours.textTertiary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

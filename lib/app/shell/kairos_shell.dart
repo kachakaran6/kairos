@@ -78,9 +78,11 @@ class _NowPage extends ConsumerWidget {
       backgroundColor: colours.background,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Space.phoneMargin,
-            vertical: Space.lg,
+          padding: const EdgeInsets.fromLTRB(
+            Space.phoneMargin,
+            Space.lg,
+            Space.phoneMargin,
+            110, // Ensure content scrolls clear of floating pill nav
           ),
           children: <Widget>[
             Row(
