@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/shell/kairos_shell.dart';
 import 'app/theme/kairos_theme_data.dart';
+import 'features/alarm/presentation/alarm_watcher.dart';
 
 void main() {
   runApp(const KairosApp());
@@ -20,7 +21,7 @@ class KairosApp extends StatelessWidget {
         theme: KairosThemeData.light(),
         darkTheme: KairosThemeData.dark(),
         themeMode: ThemeMode.system,
-        home: const KairosShell(),
+        home: const AlarmWatcher(child: KairosShell()),
       ),
     );
   }
