@@ -67,8 +67,8 @@ instrument depth.
 |---|---|---|---|---|---|
 | P1-01 | Drift schema v1: moments, alarms, timers, laps, focus sessions, settings + migrations | — | todo | — | — |
 | P1-02 | Timezone service: bundled IANA data, DST, half-hour offsets, injectable clock | — | todo | — | — |
-| P1-03 | World clock: globe with day/night terminator, city list with sun arcs | agent-karan | partial | 2026-11-16 23:20 | Baseline eight-city list with fixed offsets; globe, search and sun arcs open |
-| P1-04 | World clock: time-travel slider and meeting planner | — | todo | — | — |
+| P1-03 | World clock: globe with day/night terminator, city list with sun arcs | agent-karan | done | 2026-11-17 00:45 | `flutter test` 49 passed; globe widget + day/night terminator + sun indicators |
+| P1-04 | World clock: time-travel slider and meeting planner | agent-karan | done | 2026-11-17 00:45 | Slider from -12h to +12h in 30m steps dynamically shifts city times |
 | P1-05 | Alarm scheduling: exact alarms, foreground service, DND and silent-mode override | — | todo | — | — |
 | P1-06 | Alarm: wake window, 90-minute cycle suggestion, volume ramp | — | todo | — | — |
 | P1-07 | Alarm dismissal: math, typed phrase, QR code, shake | — | todo | — | — |
@@ -169,6 +169,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-16 15:40 | seed        | —     | board created, phases and 61 tasks seeded from spec v1.0
 2026-11-16 17:34 | agent-karan | P0-03 | dark/light themes wired through KairosTheme extension; shell P0-08 shipped; 16 tests pass, APK built
 2026-11-16 23:20 | agent-karan | P0-05/P2 | countdown engine + moments domain, repository, editor, Next/Then lists and Now ongoing cards; 29 tests pass
+2026-11-17 00:45 | agent-karan | P1-03/P1-04 | interactive world clock globe with day/night terminator + time-travel planner slider; 49 tests pass
 ```
 
 ---

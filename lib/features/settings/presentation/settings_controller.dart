@@ -55,7 +55,9 @@ class SettingsController extends Notifier<UserSettings> {
   Future<void> setThemeMode(ThemeMode mode) async {
     state = state.copyWith(themeMode: mode);
     final prefs = await SharedPreferences.getInstance();
-    final modeStr = mode == ThemeMode.dark ? 'dark' : (mode == ThemeMode.light ? 'light' : 'system');
+    final modeStr = mode == ThemeMode.dark
+        ? 'dark'
+        : (mode == ThemeMode.light ? 'light' : 'system');
     await prefs.setString(_themeModeKey, modeStr);
   }
 

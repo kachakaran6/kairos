@@ -40,6 +40,8 @@ void main() {
     stderr.writeln('Found $violations token rule violations.');
     exit(1);
   } else {
-    stdout.writeln('check_tokens: clean. No raw hex in feature/presentation code.');
+    stdout.writeln(
+      'check_tokens: clean. No raw hex in feature/presentation code.',
+    );
   }
 }

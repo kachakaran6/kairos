@@ -221,7 +221,10 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                     hintStyle: TextStyle(color: colours.textTertiary),
                     border: InputBorder.none,
                     counterText: '',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                   ),
                 ),
                 Divider(height: 1, color: colours.border),
@@ -235,7 +238,10 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                     hintStyle: TextStyle(color: colours.textTertiary),
                     border: InputBorder.none,
                     counterText: '',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                   ),
                 ),
               ],
@@ -256,13 +262,19 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                     backgroundColor: colours.surface,
                     labelStyle: TextStyle(
                       fontSize: 13,
-                      fontWeight: _category == category ? FontWeight.w600 : FontWeight.normal,
-                      color: _category == category ? colours.accent : colours.textSecondary,
+                      fontWeight: _category == category
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                      color: _category == category
+                          ? colours.accent
+                          : colours.textSecondary,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(RadiusTokens.pill),
                       side: BorderSide(
-                        color: _category == category ? colours.accent : colours.border,
+                        color: _category == category
+                            ? colours.accent
+                            : colours.border,
                       ),
                     ),
                     onSelected: (_) {
@@ -282,7 +294,11 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   title: Text(
                     'All-day moment',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: colours.textPrimary),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: colours.textPrimary,
+                    ),
                   ),
                   subtitle: Text(
                     'Counts calendar days rather than hours',
@@ -309,7 +325,9 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                 Divider(height: 1, color: colours.border),
                 _GroupedActionRow(
                   label: 'Ends (optional)',
-                  value: _endDate == null ? 'No end date' : _formatDate(_endDate!),
+                  value: _endDate == null
+                      ? 'No end date'
+                      : _formatDate(_endDate!),
                   onTap: () => _pickDate(end: true),
                 ),
               ],
@@ -324,7 +342,10 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                       HapticFeedback.selectionClick();
                       setState(() => _endDate = null);
                     },
-                    child: Text('Clear end date', style: TextStyle(color: colours.danger, fontSize: 13)),
+                    child: Text(
+                      'Clear end date',
+                      style: TextStyle(color: colours.danger, fontSize: 13),
+                    ),
                   ),
                 ),
               ),
@@ -344,8 +365,14 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                 ),
               ),
               segments: const <ButtonSegment<MomentDirection>>[
-                ButtonSegment(value: MomentDirection.down, label: Text('Count down')),
-                ButtonSegment(value: MomentDirection.up, label: Text('Count up')),
+                ButtonSegment(
+                  value: MomentDirection.down,
+                  label: Text('Count down'),
+                ),
+                ButtonSegment(
+                  value: MomentDirection.up,
+                  label: Text('Count up'),
+                ),
                 ButtonSegment(value: MomentDirection.both, label: Text('Both')),
               ],
               selected: <MomentDirection>{_direction},
@@ -380,7 +407,11 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
               Center(
                 child: Text(
                   _error!,
-                  style: TextStyle(color: colours.danger, fontSize: 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    color: colours.danger,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -504,7 +535,11 @@ class _GroupedActionRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                Icon(Icons.chevron_right_rounded, size: 18, color: colours.textTertiary),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: colours.textTertiary,
+                ),
               ],
             ),
           ],

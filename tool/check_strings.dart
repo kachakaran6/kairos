@@ -20,7 +20,9 @@ void main() {
         if (line.trim().startsWith('//')) continue;
 
         if (printRegex.hasMatch(line)) {
-          stdout.writeln('$path:${i + 1}: Found forbidden print() statement: $line');
+          stdout.writeln(
+            '$path:${i + 1}: Found forbidden print() statement: $line',
+          );
           violations++;
         }
       }

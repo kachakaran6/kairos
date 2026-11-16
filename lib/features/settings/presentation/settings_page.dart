@@ -50,9 +50,18 @@ class SettingsPage extends ConsumerWidget {
                     if (mode != null) controller.setThemeMode(mode);
                   },
                   items: const [
-                    DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
-                    DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
-                    DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
+                    DropdownMenuItem(
+                      value: ThemeMode.system,
+                      child: Text('System'),
+                    ),
+                    DropdownMenuItem(
+                      value: ThemeMode.light,
+                      child: Text('Light'),
+                    ),
+                    DropdownMenuItem(
+                      value: ThemeMode.dark,
+                      child: Text('Dark'),
+                    ),
                   ],
                 ),
               ),
@@ -63,20 +72,32 @@ class SettingsPage extends ConsumerWidget {
                 trailing: const SizedBox(),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
+                padding: const EdgeInsets.fromLTRB(
+                  Space.md,
+                  0,
+                  Space.md,
+                  Space.md,
+                ),
                 child: Wrap(
                   spacing: Space.sm,
                   runSpacing: Space.sm,
                   children: AccentPalette.values.map((p) {
                     final isSelected = settings.accentPalette == p;
-                    final activeColor = colours.isDark ? p.darkColor : p.lightColor;
+                    final activeColor = colours.isDark
+                        ? p.darkColor
+                        : p.lightColor;
                     return InkWell(
                       borderRadius: BorderRadius.circular(RadiusTokens.sm),
                       onTap: () => controller.setAccentPalette(p),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: isSelected ? activeColor.withValues(alpha: 0.2) : colours.surfaceElevated,
+                          color: isSelected
+                              ? activeColor.withValues(alpha: 0.2)
+                              : colours.surfaceElevated,
                           borderRadius: BorderRadius.circular(RadiusTokens.sm),
                           border: Border.all(
                             color: isSelected ? activeColor : colours.border,
@@ -99,7 +120,9 @@ class SettingsPage extends ConsumerWidget {
                               p.label,
                               style: TextStyle(
                                 fontSize: 13,
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
                                 color: colours.textPrimary,
                               ),
                             ),
@@ -179,7 +202,10 @@ class SettingsPage extends ConsumerWidget {
                 subtitle: 'Local-first, encrypted offline SQLite',
                 trailing: Text(
                   'Offline',
-                  style: TextStyle(color: colours.success, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: colours.success,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const Divider(height: 1),
@@ -279,10 +305,7 @@ class _TileRow extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colours.textTertiary,
-                  ),
+                  style: TextStyle(fontSize: 13, color: colours.textTertiary),
                 ),
               ],
             ),
@@ -331,10 +354,7 @@ class _SwitchRow extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colours.textTertiary,
-                  ),
+                  style: TextStyle(fontSize: 13, color: colours.textTertiary),
                 ),
               ],
             ),

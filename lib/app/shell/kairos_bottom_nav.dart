@@ -44,7 +44,9 @@ class KairosBottomNav extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: colours.isDark ? 0.35 : 0.08),
+                  color: Colors.black.withValues(
+                    alpha: colours.isDark ? 0.35 : 0.08,
+                  ),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
@@ -131,7 +133,9 @@ class _FloatingNavItem extends StatelessWidget {
                     child: IconTheme(
                       data: IconThemeData(
                         size: 20,
-                        color: _selected ? colours.accent : colours.textTertiary,
+                        color: _selected
+                            ? colours.accent
+                            : colours.textTertiary,
                       ),
                       child: icon,
                     ),

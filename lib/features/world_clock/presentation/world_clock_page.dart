@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/time/time_service.dart';
+import 'world_clock_globe_widget.dart';
 
-/// World clock baseline: city list with day/night bar, date line and
-/// offset in words. Search and dial strip are open (P1-03).
 class WorldClockPage extends StatefulWidget {
   const WorldClockPage({super.key, this.clock = const SystemClock()});
 
@@ -23,7 +23,7 @@ class _City {
   final int utcOffsetMinutes;
 }
 
-const List<_City> _cities = <_City>[
+const List<_City> _defaultCities = <_City>[
   _City('Mumbai', 330),
   _City('London', 0),
   _City('New York', -300),
@@ -32,10 +32,35 @@ const List<_City> _cities = <_City>[
   _City('Dubai', 240),
   _City('Paris', 60),
   _City('Singapore', 480),
+  _City('San Francisco', -420),
+  _City('Berlin', 60),
+  _City('Toronto', -300),
+  _City('Auckland', 720),
 ];
 
 class _WorldClockPageState extends State<WorldClockPage> {
   final TextEditingController _search = TextEditingController();
+  List<_City> _displayedCities = List.of(_defaultCities);
+  double _timeTravelHours = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _search.addListener(_filterCities);
+  }
+
+  void _filterCities() {
+    final query = _search.text.trim().toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        _displayedCities = List.of(_defaultCities);
+      } else {
+        _displayedCities = _defaultCities
+            .where((c) => c.name.toLowerCase().contains(query))
+            .toList();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -47,88 +72,199 @@ class _WorldClockPageState extends State<WorldClockPage> {
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
-    final now = widget.clock.nowUtc();
-    final homeOffset = 330; // user's offset (Mumbai default)
+    final baseNow = widget.clock.nowUtc();
+    final adjustedNow = baseNow.add(
+      Duration(minutes: (_timeTravelHours * 60).round()),
+    );
+    const homeOffset = 330; // user's offset (Mumbai)
 
     return Scaffold(
       backgroundColor: colours.background,
+      appBar: AppBar(
+        title: Text(
+          'World Clock',
+          style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+            color: colours.textPrimary,
+          ),
+        ),
+        backgroundColor: colours.background,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: colours.textPrimary,
+          ),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+        actions: [
+          if (_timeTravelHours != 0)
+            TextButton(
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                setState(() => _timeTravelHours = 0);
+              },
+              child: Text(
+                'Reset',
+                style: TextStyle(
+                  color: colours.accent,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+        ],
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(
             horizontal: Space.phoneMargin,
-            vertical: Space.lg,
+            vertical: Space.md,
           ),
           children: <Widget>[
-            Row(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: colours.textPrimary),
-                  onPressed: () => Navigator.of(context).maybePop(),
-                ),
-                Expanded(
-                  child: Text(
-                    'World clock',
-                    textAlign: TextAlign.center,
-                    style: kairos.typeScale.title.copyWith(
-                      color: colours.textPrimary,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: Space.touchTargetIos),
-              ],
-            ),
-            const SizedBox(height: Space.lg),
-            // Search field
+            // Search Input with Apple Inset Look
             Container(
               height: 44,
               decoration: BoxDecoration(
                 color: colours.surface,
-                borderRadius: RadiusTokens.mdRadius,
+                borderRadius: BorderRadius.circular(RadiusTokens.md),
                 border: Border.all(color: colours.border),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: Space.md),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Row(
                 children: <Widget>[
-                  Icon(Icons.search, color: colours.textTertiary, size: 20),
-                  const SizedBox(width: Space.sm),
+                  Icon(
+                    Icons.search_rounded,
+                    color: colours.textTertiary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: _search,
-                      style: kairos.typeScale.body.copyWith(
+                      style: TextStyle(
+                        fontSize: 15,
                         color: colours.textPrimary,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Search a city or airport code',
-                        hintStyle: kairos.typeScale.body.copyWith(
+                        hintText: 'Search city or airport code...',
+                        hintStyle: TextStyle(
                           color: colours.textTertiary,
+                          fontSize: 14,
                         ),
                         border: InputBorder.none,
                         isDense: true,
                       ),
                     ),
                   ),
+                  if (_search.text.isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        _search.clear();
+                        HapticFeedback.selectionClick();
+                      },
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 18,
+                        color: colours.textTertiary,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: Space.md),
+
+            // Globe Terminator View
+            WorldClockGlobeWidget(
+              selectedOffsetMinutes: (_timeTravelHours * 60).round(),
+              nowUtc: adjustedNow,
+            ),
+            const SizedBox(height: Space.sm),
+
+            // Time Travel Meeting Planner Slider
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colours.surface,
+                borderRadius: BorderRadius.circular(RadiusTokens.lg),
+                border: Border.all(color: colours.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.tune_rounded,
+                            size: 16,
+                            color: colours.accent,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Time-Travel Planner',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: colours.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        _timeTravelHours == 0
+                            ? 'Now'
+                            : '${_timeTravelHours > 0 ? "+" : ""}${_timeTravelHours.toStringAsFixed(1)} hours',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: _timeTravelHours == 0
+                              ? colours.textTertiary
+                              : colours.accent,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: colours.accent,
+                      thumbColor: colours.accent,
+                      inactiveTrackColor: colours.border,
+                      overlayColor: colours.accent.withValues(alpha: 0.15),
+                      trackHeight: 3,
+                    ),
+                    child: Slider(
+                      value: _timeTravelHours,
+                      min: -12,
+                      max: 12,
+                      divisions: 48, // 30-min increments
+                      onChanged: (val) {
+                        HapticFeedback.selectionClick();
+                        setState(() => _timeTravelHours = val);
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: Space.lg),
-            for (final city in _cities) ...<Widget>[
+
+            // Cities List
+            for (final city in _displayedCities) ...<Widget>[
               _CityRow(
                 city: city.name,
-                nowUtc: now,
+                nowUtc: adjustedNow,
                 offsetMinutes: city.utcOffsetMinutes,
                 homeOffsetMinutes: homeOffset,
                 kairos: kairos,
               ),
               const SizedBox(height: Space.sm),
             ],
-            const SizedBox(height: Space.md),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                '+ Add city',
-                style: kairos.typeScale.body.copyWith(color: colours.accent),
-              ),
-            ),
+            const SizedBox(height: 100),
           ],
         ),
       ),
@@ -158,19 +294,22 @@ class _CityRow extends StatelessWidget {
     final time =
         '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
     final isNight = local.hour < 6 || local.hour >= 19;
-    final diff = offsetMinutes - homeOffsetMinutes;
-    String offsetLabel;
-    if (diff == 0) {
-      offsetLabel = 'same as you';
+
+    // Difference relative to home
+    final diffMinutes = offsetMinutes - homeOffsetMinutes;
+    final diffHours = diffMinutes ~/ 60;
+    final diffRemMin = (diffMinutes % 60).abs();
+    final String offsetLabel;
+    if (diffMinutes == 0) {
+      offsetLabel = 'Your time';
     } else {
-      final sign = diff > 0 ? 'ahead of you' : 'behind you';
-      final abs = diff.abs();
-      final h = abs ~/ 60;
-      final m = abs % 60;
-      final mm = m == 0 ? '' : ':${m.toString().padLeft(2, '0')}';
-      offsetLabel = '$h$mm $sign';
+      final sign = diffMinutes > 0 ? '+' : '';
+      final minPart = diffRemMin == 0 ? '' : ':$diffRemMin';
+      offsetLabel = '$sign$diffHours$minPart hrs';
     }
-    final months = const <String>[
+
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const months = [
       'Jan',
       'Feb',
       'Mar',
@@ -184,35 +323,22 @@ class _CityRow extends StatelessWidget {
       'Nov',
       'Dec',
     ];
-    final weekdays = const <String>[
-      'Mon',
-      'Tue',
-      'Wed',
-      'Thu',
-      'Fri',
-      'Sat',
-      'Sun',
-    ];
     final dateLine =
         '${weekdays[local.weekday - 1]}, ${local.day} ${months[local.month - 1]}';
 
     return Container(
-      height: 76,
-      padding: const EdgeInsets.symmetric(
-        horizontal: Space.md,
-        vertical: Space.sm,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 10),
       decoration: BoxDecoration(
         color: colours.surface,
-        borderRadius: RadiusTokens.mdRadius,
+        borderRadius: BorderRadius.circular(RadiusTokens.lg),
         border: Border.all(color: colours.border),
       ),
       child: Row(
         children: <Widget>[
-          // day/night bar
+          // day/night indicator bar
           Container(
-            width: 3,
-            height: 40,
+            width: 3.5,
+            height: 42,
             decoration: BoxDecoration(
               color: isNight ? colours.night : colours.accent,
               borderRadius: BorderRadius.circular(2),
@@ -226,18 +352,16 @@ class _CityRow extends StatelessWidget {
               children: <Widget>[
                 Text(
                   city,
-                  style: kairos.typeScale.section.copyWith(
+                  style: TextStyle(
                     fontSize: 17,
-                    color: colours.textPrimary,
                     fontWeight: FontWeight.w600,
+                    color: colours.textPrimary,
                   ),
                 ),
-                const SizedBox(height: Space.xxs),
+                const SizedBox(height: 3),
                 Text(
                   dateLine,
-                  style: kairos.typeScale.caption.copyWith(
-                    color: colours.textTertiary,
-                  ),
+                  style: TextStyle(fontSize: 13, color: colours.textTertiary),
                 ),
               ],
             ),
@@ -248,8 +372,9 @@ class _CityRow extends StatelessWidget {
             children: <Widget>[
               Text(
                 time,
-                style: kairos.typeScale.title.copyWith(
-                  fontSize: 28,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w600,
                   color: isNight ? colours.textSecondary : colours.textPrimary,
                   fontFeatures: const <FontFeature>[
                     FontFeature.tabularFigures(),
@@ -258,9 +383,7 @@ class _CityRow extends StatelessWidget {
               ),
               Text(
                 offsetLabel,
-                style: kairos.typeScale.caption.copyWith(
-                  color: colours.textTertiary,
-                ),
+                style: TextStyle(fontSize: 12, color: colours.textTertiary),
               ),
             ],
           ),

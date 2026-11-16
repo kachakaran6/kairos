@@ -3,11 +3,31 @@ import 'package:flutter/material.dart';
 import '../../../core/design/palette_tokens.dart';
 
 enum AccentPalette {
-  terracotta('Terracotta', KairosAccentPalettes.terracottaLight, KairosAccentPalettes.terracottaDark),
-  oceanBlue('Ocean Blue', KairosAccentPalettes.oceanBlueLight, KairosAccentPalettes.oceanBlueDark),
-  forestGreen('Forest Green', KairosAccentPalettes.forestGreenLight, KairosAccentPalettes.forestGreenDark),
-  lavender('Lavender', KairosAccentPalettes.lavenderLight, KairosAccentPalettes.lavenderDark),
-  graphite('Graphite', KairosAccentPalettes.graphiteLight, KairosAccentPalettes.graphiteDark);
+  terracotta(
+    'Terracotta',
+    KairosAccentPalettes.terracottaLight,
+    KairosAccentPalettes.terracottaDark,
+  ),
+  oceanBlue(
+    'Ocean Blue',
+    KairosAccentPalettes.oceanBlueLight,
+    KairosAccentPalettes.oceanBlueDark,
+  ),
+  forestGreen(
+    'Forest Green',
+    KairosAccentPalettes.forestGreenLight,
+    KairosAccentPalettes.forestGreenDark,
+  ),
+  lavender(
+    'Lavender',
+    KairosAccentPalettes.lavenderLight,
+    KairosAccentPalettes.lavenderDark,
+  ),
+  graphite(
+    'Graphite',
+    KairosAccentPalettes.graphiteLight,
+    KairosAccentPalettes.graphiteDark,
+  );
 
   const AccentPalette(this.label, this.lightColor, this.darkColor);
 

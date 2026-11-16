@@ -215,7 +215,9 @@ class _EmptyState extends StatelessWidget {
               ),
               child: Center(
                 child: Icon(
-                  upcoming ? Icons.arrow_outward_rounded : Icons.history_rounded,
+                  upcoming
+                      ? Icons.arrow_outward_rounded
+                      : Icons.history_rounded,
                   size: 38,
                   color: colours.accent,
                 ),
@@ -332,19 +334,22 @@ class _EmptyState extends StatelessWidget {
             _MomentExplainerRow(
               icon: Icons.arrow_outward_rounded,
               title: 'Next: Count Down',
-              description: 'Track upcoming exams, trips, anniversaries and milestones as they draw closer.',
+              description:
+                  'Track upcoming exams, trips, anniversaries and milestones as they draw closer.',
             ),
             const SizedBox(height: 14),
             _MomentExplainerRow(
               icon: Icons.radio_button_checked_rounded,
               title: 'Now: Live Clock & Instruments',
-              description: 'Focus on today with active ongoing moments, alarms, world clock and timers.',
+              description:
+                  'Focus on today with active ongoing moments, alarms, world clock and timers.',
             ),
             const SizedBox(height: 14),
             _MomentExplainerRow(
               icon: Icons.history_rounded,
               title: 'Then: Count Up',
-              description: 'Celebrate past milestones, memories and elapsed days that stay with you forever.',
+              description:
+                  'Celebrate past milestones, memories and elapsed days that stay with you forever.',
             ),
           ],
         ),

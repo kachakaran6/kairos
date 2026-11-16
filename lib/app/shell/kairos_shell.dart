@@ -89,11 +89,17 @@ class _NowPage extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: _LiveClockBlock(clock: ref.read(clockProvider))),
+                Expanded(
+                  child: _LiveClockBlock(clock: ref.read(clockProvider)),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: IconButton(
-                    icon: Icon(Icons.settings_outlined, color: colours.textTertiary, size: 24),
+                    icon: Icon(
+                      Icons.settings_outlined,
+                      color: colours.textTertiary,
+                      size: 24,
+                    ),
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
@@ -352,7 +358,9 @@ class _InstrumentTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: RadiusTokens.lgRadius,
             border: Border.all(
-              color: isLive ? colours.accent.withValues(alpha: 0.4) : colours.border,
+              color: isLive
+                  ? colours.accent.withValues(alpha: 0.4)
+                  : colours.border,
             ),
           ),
           child: Column(
@@ -365,11 +373,16 @@ class _InstrumentTile extends StatelessWidget {
                   Icon(
                     instrument.icon,
                     size: 22,
-                    color: isLive ? colours.accent : colours.accent.withValues(alpha: 0.8),
+                    color: isLive
+                        ? colours.accent
+                        : colours.accent.withValues(alpha: 0.8),
                   ),
                   if (span)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: colours.surfaceElevated,
                         borderRadius: BorderRadius.circular(RadiusTokens.sm),
