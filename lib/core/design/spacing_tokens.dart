@@ -1,36 +1,28 @@
-/// Spacing tokens based on the 4pt grid.
-/// All layout spacing must come from these tokens — no hardcoded numbers in widgets.
-/// Constraint per AGENTS.md §6: 4pt spacing grid, 8pt layout grid.
-/// No magic spacing numbers — every px must be a token.
-/// Spacing tokens based on the 4pt grid.
-/// All layout spacing must come from these tokens — no hardcoded numbers in widgets.
+/// Spacing tokens. Every value is a multiple of 4; layout gaps use 8.
 ///
-/// Constraint per AGENTS.md §6: 4pt spacing grid, 8pt layout grid.
-/// No magic spacing numbers — every px must be a token.
-class SpacingTokens {
-  const SpacingTokens._internal();
-  static const SpacingTokens instance = SpacingTokens._internal();
-  factory SpacingTokens() => instance;
-
-  // 4pt grid spacing values
+/// Widgets must read from [Space], never from a numeric literal.
+abstract final class Space {
   static const double xxs = 4;
   static const double xs = 8;
-  static const double s = 12;
-  static const double m = 16;
-  static const double ml = 20;
-  static const double l = 24;
-  static const double xl = 28;
+  static const double sm = 12;
+  static const double md = 16;
+  static const double lg = 20;
+  static const double xl = 24;
   static const double xxl = 32;
   static const double xxxl = 40;
+  static const double huge = 64;
 
-  // Touch target minimums per AGENTS.md §2
-  static const double touchTargetMin = 44;
+  /// Screen margins: 20 on phone, 32 on tablet.
+  static const double phoneMargin = 20;
+  static const double tabletMargin = 32;
+
+  /// Minimum touch targets: 44pt iOS, 48dp Android.
+  static const double touchTargetIos = 44;
   static const double touchTargetAndroid = 48;
 
-  // 8pt layout grid milestones
-  static const double layoutGrid8 = 32;
-  static const double layoutGrid8Large = 64;
+  /// Breakpoint used to pick the tablet margin.
+  static const double tabletBreakpoint = 600;
 
-  // Convenience insets
-  static const double contrastRatioMinimum = 4.5;
+  /// WCAG minimum contrast for body text.
+  static const double contrastMinimum = 4.5;
 }

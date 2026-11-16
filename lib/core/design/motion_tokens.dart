@@ -1,29 +1,20 @@
-/// Motion / animation tokens for transitions and timing.
-/// All duration and curve values must come from these tokens — no hardcoded durations in code.
-///
-/// Constraints per AGENTS.md §2: Reduce Motion must be handled.
-class MotionTokens {
-  const MotionTokens._internal();
-  static const MotionTokens _instance = MotionTokens._internal();
-  factory MotionTokens() => _instance;
+import 'package:flutter/animation.dart';
 
-  // Duration tokens (all in milliseconds)
-  static const Duration micro = Duration(milliseconds: 150);
-  static const Duration short = Duration(milliseconds: 200);
-  static const Duration medium = Duration(milliseconds: 300);
-  static const Duration long = Duration(milliseconds: 500);
-  static const Duration veryLong = Duration(milliseconds: 750);
+/// Motion tokens. Springs run 0.3 to 0.5 seconds; linear easing is banned.
+abstract final class MotionTokens {
+  static const Duration fast = Duration(milliseconds: 300);
+  static const Duration standard = Duration(milliseconds: 400);
+  static const Duration slow = Duration(milliseconds: 500);
 
-  // Curve tokens (values represent control point for animation curves)
-  static const double linear = 1.0;
-  static const double easeIn = 0.0;
-  static const double easeOut = 1.0;
-  static const double easeInOut = 0.5;
-  static const double fastOutSlowIn = 0.0;
-  static const double bounceInOut = 0.5;
+  /// Reduce Motion collapses movement to an instant state change.
+  static const Duration reduceMotion = Duration.zero;
 
-  // Reduce Motion consideration
-  static const Duration reduceMotionShort = Duration(milliseconds: 0);
-  static const Duration reduceMotionMedium = Duration(milliseconds: 150);
-  static const Duration reduceMotionLong = Duration(milliseconds: 300);
+  /// Decelerating curve used for entrances and number rolls.
+  static const Curve enter = Curves.easeOutCubic;
+
+  /// Decelerating curve with no perceptible overshoot.
+  static const Curve emphasized = Cubic(0.2, 0.0, 0.0, 1.0);
+
+  /// Symmetric curve used when a surface moves both in and out.
+  static const Curve move = Curves.easeInOutCubic;
 }

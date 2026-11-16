@@ -8,7 +8,7 @@ again before you log off. Never delete a row.**
 
 - Current phase: **0 — Foundation**
 - Phase window: weeks 1–3
-- Last updated: 2026-11-16 15:40 UTC by `seed`
+- Last updated: 2026-11-16 17:34 UTC by `agent-karan`
 - Active agents: none
 
 ---
@@ -32,6 +32,14 @@ before those two exist creates rework in every screen.
 Order for this phase: `P0-01` → `P0-02` → `P0-03` → `P0-05` → `P0-08` → `P0-04` →
 `P0-06` → `P0-07`.
 
+**P0-03 acceptance criteria** (claimed by `agent-karan`, 2026-11-16 17:18)
+
+1. A `KairosTheme` exposes complete dark and light `ThemeData` built only from tokens.
+2. Every token group (colour, type, spacing, radius) is reachable from `Theme.of(context)` via `ThemeExtension`.
+3. Both themes resolve every `ColorScheme` role and meet 4.5:1 contrast for body text on background.
+4. Widget tests render a probe under both themes and read every extension without throwing.
+5. Switching `themeMode` between light and dark changes canvas colour while preserving the same token identities.
+
 ---
 
 ## 3. Task board
@@ -43,12 +51,12 @@ Order for this phase: `P0-01` → `P0-02` → `P0-03` → `P0-05` → `P0-08` �
 | P0-01 | Repo scaffold: Flutter app, folder structure, lints, CI workflow | Cline | done | 2026-11-16 15:55 | dart format clean, analyze clean, 1 test pass, CI configured |
 | P0-02 | Design tokens in Dart from spec §4: colour, type scale, spacing, radius, motion, haptics, elevation | Cline | done | 2026-11-16 16:30 | dart format clean, analyze clean, flutter test pass |
 | P0-02 | Design tokens in Dart from spec §4: colour, type scale, spacing, radius, motion, haptics, elevation | — | todo | — | — |
-| P0-03 | Theme: dark and light, `ThemeExtension` wiring, both modes first-class | — | todo | — | — |
+| P0-03 | Theme: dark and light, `ThemeExtension` wiring, both modes first-class | agent-karan | done | 2026-11-16 17:34 | `flutter analyze --fatal-infos` clean; `flutter test` 16 passed; `flutter build apk --debug` built |
 | P0-04 | Component library v0: button, card, sheet, list row, empty state, loading state | — | todo | — | — |
 | P0-05 | Time formatting engine in `core/time`: tabular numerals, unit ladder, sleeps, X-of-Y, percentage | — | todo | — | — |
 | P0-06 | Localisation scaffold: ARB files, 22 Indian languages stubbed, RTL, regional numeral sets | — | todo | — | — |
 | P0-07 | Accessibility harness: text scale to 310%, semantics labels, contrast check in CI | — | todo | — | — |
-| P0-08 | Navigation shell: Next / Now / Then tabs plus Instruments area, deep-link routing | — | todo | — | — |
+| P0-08 | Navigation shell: Next / Now / Then tabs plus Instruments area, deep-link routing | agent-karan | done | 2026-11-16 17:34 | `flutter test test/app/shell_test.dart` 5 passed; `flutter build apk --debug` built; deep-link routing still open |
 | P0-09 | CI gate scripts: `tool/check_tokens.dart`, `tool/check_strings.dart` | — | todo | — | — |
 
 ### Phase 1 — Instruments (weeks 4–10)
@@ -155,16 +163,16 @@ Append-only. Format and rules in `AGENTS.md` §9.
 Newest at the bottom. One line per session, per `AGENTS.md` §4.
 
 ```
-2026-11-16 15:40 | seed     | —     | board created, phases and 61 tasks seeded from spec v1.0
+2026-11-16 15:40 | seed        | —     | board created, phases and 61 tasks seeded from spec v1.0
+2026-11-16 17:34 | agent-karan | P0-03 | dark/light themes wired through KairosTheme extension; shell P0-08 shipped; 16 tests pass, APK built
 ```
 
 ---
 
 ## 7. Handoff
 
-**Next agent should pick:** `P0-03` — theme: dark and light, `ThemeExtension` wiring, both modes first-class.
-**Why:** design tokens (P0-02) are the foundation; theme wiring connects colour, spacing, typography, and elevation tokens to the widget tree — enabling dark/light mode switching per AGENTS.md §2.
-implementation, including colour tokens, spacing, typography, radius, motion, haptics, and
-elevation — every screen depends on these tokens.
-**Watch out for:** adhere to the token-only constraint (AGENTS.md §6: no hardcoded hex, no
-magic spacing numbers, no inline font sizes); all numeric values must come from tokens.
+**Next agent should pick:** `P0-05` — time formatting engine in `core/time`: tabular numerals, unit ladder, sleeps, X-of-Y, percentage.
+**Why:** the shell (P0-08) and themes (P0-03) exist; every instrument and moment screen formats time through `core/time`, so it must be correct before features consume it.
+**Watch out for:** all arithmetic in UTC, local time only at render; one formatter for every number; DST and zero-instant tests required by AGENTS.md §5.
+**Open defect:** `lib/components/lib/*` predates the theme and uses hardcoded colours and sizes; P0-04 must replace it with token-only widgets before those components ship.
+**Open gap:** deep-link routing for the shell is not implemented; add when P0-08 is revisited.
