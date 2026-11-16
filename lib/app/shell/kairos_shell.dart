@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/design/radius_tokens.dart';
 import '../../core/design/spacing_tokens.dart';
 import '../../core/theme/theme_extension.dart';
 import '../../features/focus/presentation/focus_page.dart';
+import '../../features/moments/domain/moment_phase.dart';
+import '../../features/moments/presentation/moment_controller.dart';
+import '../../features/moments/presentation/moment_detail_page.dart';
+import '../../features/moments/presentation/moment_list_tab.dart';
 import '../../features/stopwatch/presentation/stopwatch_page.dart';
 import '../../features/timer/presentation/timer_page.dart';
 import '../../features/world_clock/presentation/world_clock_page.dart';
-import 'empty_tab.dart';
 
 /// Three-tab shell: Next, Now, Then. Instruments live inside Now.
 class KairosShell extends StatefulWidget {
@@ -26,17 +30,9 @@ class _KairosShellState extends State<KairosShell> {
       body: IndexedStack(
         index: _index,
         children: const <Widget>[
-          EmptyTab(
-            title: 'Next',
-            headline: 'Nothing ahead yet',
-            body: 'Moments you add will count down here.',
-          ),
+          MomentListTab(upcoming: true),
           _NowPage(),
-          EmptyTab(
-            title: 'Then',
-            headline: 'Nothing behind yet',
-            body: 'Moments that pass move here and count up forever.',
-          ),
+          MomentListTab(upcoming: false),
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -64,7 +60,7 @@ class _KairosShellState extends State<KairosShell> {
   }
 }
 
-class _NowPage extends StatelessWidget {
+class _NowPage extends ConsumerWidget {
   const _NowPage();
 
   static const List<_Instrument> _instruments = <_Instrument>[
@@ -75,8 +71,13 @@ class _NowPage extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final kairos = KairosTheme.of(context);
+    final moments = ref.watch(momentListProvider).value ?? const [];
+    final now = ref.read(clockProvider).nowUtc();
+    final ongoing = moments
+        .where((moment) => phaseAt(moment, now) is NowPhase)
+        .toList(growable: false);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Now')),
@@ -96,12 +97,26 @@ class _NowPage extends StatelessWidget {
             const SizedBox(height: Space.xxl),
             Text('Happening now', style: kairos.typeScale.section),
             const SizedBox(height: Space.sm),
-            Text(
-              'Ongoing moments appear here once you add one.',
-              style: kairos.typeScale.body.copyWith(
-                color: kairos.colours.textSecondary,
-              ),
-            ),
+            if (ongoing.isEmpty)
+              Text(
+                'Ongoing moments appear here once you add one with an end date.',
+                style: kairos.typeScale.body.copyWith(
+                  color: kairos.colours.textSecondary,
+                ),
+              )
+            else
+              for (final moment in ongoing) ...<Widget>[
+                MomentCard(
+                  moment: moment,
+                  nowUtc: now,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => MomentDetailPage(momentId: moment.id),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: Space.xs),
+              ],
           ],
         ),
       ),

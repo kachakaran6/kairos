@@ -3,8 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos/app/theme/kairos_theme_data.dart';
 import 'package:kairos/core/theme/theme_extension.dart';
 import 'package:kairos/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+  });
+
   testWidgets('app boots in light mode with Kairos theme attached', (
     tester,
   ) async {

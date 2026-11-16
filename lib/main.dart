@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/shell/kairos_shell.dart';
 import 'app/theme/kairos_theme_data.dart';
@@ -12,13 +13,15 @@ class KairosApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Kairos',
-      debugShowCheckedModeBanner: false,
-      theme: KairosThemeData.light(),
-      darkTheme: KairosThemeData.dark(),
-      themeMode: ThemeMode.system,
-      home: const KairosShell(),
+    return ProviderScope(
+      child: MaterialApp(
+        title: 'Kairos',
+        debugShowCheckedModeBanner: false,
+        theme: KairosThemeData.light(),
+        darkTheme: KairosThemeData.dark(),
+        themeMode: ThemeMode.system,
+        home: const KairosShell(),
+      ),
     );
   }
 }

@@ -1,0 +1,912 @@
+--- PAGE 1 ---
+PRODUCT SPECIFICATION
+Kairos
+Every moment, in three tenses.
+A world clock, an alarm, a timer, a stopwatch, a focus timer — and the
+one thing no clock app has ever kept: a living record of the moments
+you are waiting for and the moments you never want to lose.
+Version 1.0  ·  16 November 2026  ·  Prepared for Karan Kacha
+
+--- PAGE 2 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+01
+01  What Kairos is
+Kairos is a clock app that remembers your life. It ships every time instrument a phone should have
+— world clock, alarm, timer, stopwatch, focus sessions — and adds the layer those instruments
+have never carried: a living timeline of the moments ahead of you and the moments behind you.
+Phone clocks tell you what time it is. They say nothing about what the time is for. A person counting down to a
+wedding, a result day, a flight home, or counting up from the day a parent died, is holding that number in their
+head and losing it daily. Kairos holds it instead, and puts it where a phone is actually looked at: the home screen.
+5
+ 12
+ 3
+ 0
+time instruments in one app
+widget designs, all resizable
+tenses — next, now, then
+ads, ever, in any tier
+What version 1 ships
+■
+ World clock, alarm, timer, stopwatch and focus timer, each built to the standard of a dedicated app rather than
+bolted on.
+■
+ The moments engine: countdowns, count-ups, ongoing events, streaks, intervals and a life list, all in one timeline.
+■
+ Twelve widget designs across the home screen, lock screen, StandBy, Dynamic Island and Apple Watch, plus
+Android Glance widgets.
+■
+ Indian calendar awareness from day one — panchang festivals, regional new years and Hijri dates — not a
+Gregorian-only app with translation.
+■
+ Local-first storage. Every feature works offline and without an account.
+02  The gap: instruments have no memory, memories have no
+instruments
+The category splits cleanly in two, and the split is the opening. Clock apps are reliable and forget everything.
+Countdown apps remember and are mostly ad-supported and visually dated. Nobody has built the
+instrument-grade clock that also keeps a life.
+App
+What it does well
+What it leaves open
+Countdown Star
+Best-loved countdown app on iOS — 4.8 from
+217,000 ratings; 15+ wallpapers, celebration
+animations, iCloud sync
+Countdowns only. No lock-screen widget
+listed. Ad tier. No clock, alarm, timer or
+stopwatch
+Days
+4.8 from 12,000+ ratings; a full-bleed photo
+behind every event; lock-screen and
+home-screen widgets
+Countdowns only. No instruments, no
+streaks, no shared moments
+Days Matter
+1M+ installs on Android; lunar calendar
+support, 10,000-year range, passcode lock
+Rated 3.9 from 4,780 reviews. Ad-supported.
+Dated visual design
+Apple Clock / Google
+Clock
+Free, pre-installed, reliable alarms and timers;
+excellent notification integration
+No memory layer at all. No countdowns. One
+widget style each
+Widgetsmith and
+widget makers
+Deep widget customisation; large template
+libraries
+A design tool, not a time app. No moments
+model, no instruments
+
+--- PAGE 3 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+02
+Three conclusions follow, and they set the whole specification. First, the moments model has to be the product,
+not a tab inside a clock — because that is where the emotional pull is and where the existing apps stop. Second,
+the instruments must be genuinely good, because a clock app that loses an alarm is deleted the same week.
+Third, the widget is the product surface, not a shortcut: in this category the home screen is where the app is
+actually used.
+03  One object, three tenses
+Every moment in Kairos is a single record that moves through three tenses on its own. It counts
+down before it happens, becomes ongoing while it lasts, and counts up forever afterwards —
+without the user creating a second entry, duplicating a date, or archiving anything.
+Tense
+The question it answers
+On screen
+Where it appears
+Next
+How long until this happens?
+11 days until the wedding
+Widget, timeline top, lock screen
+Now
+What is happening right now?
+Goa · day 3 of 9
+Live Activity, Dynamic Island,
+lock screen
+Then
+How long since it happened?
+1,284 days since we met
+Memory wall, weekly digest,
+widget
+Why one object and not three
+A birthday is not three things. It is one date that is 200 days away, then today, then 1 day ago. Apps that model
+countdowns and count-ups as separate features force the user to re-enter the same event twice and then
+remember to switch it over. Modelling direction as a property of time rather than a property of the record removes
+that work entirely, and it makes the zero moment — the instant the number reaches zero — a designed event
+rather than a dead end.
+The information architecture that follows
+Three tabs, not eight. Next holds everything ahead, Now holds anything in progress plus the live instruments
+(timer, stopwatch, focus), Then holds everything behind. Clock, alarm and world time live in one Instruments area
+reachable from Now. The user learns the model once and never has to think about where a thing is.
+04  The design language
+The visual target is the standard set by the best Apple system apps: a near-black canvas, one
+enormous number, and nothing else competing for attention. Ten rules govern every screen, and
+they are enforced in the design tokens so no screen can drift.
+Rule
+What it means in practice
+One hero number
+Every screen has exactly one number at display size. Everything else is 11 to 13pt. Two big
+numbers is a failed screen
+Tabular figures
+All digits are fixed-width, so a ticking countdown never reflows or jitters as the seconds change
+The odometer rule
+Digits roll to their new value, never cut. A number change is the only motion on screen by
+default
+Dark-first, not dark-only
+Default canvas is #0C0C0F. Light mode is a designed parallel theme, not an inverted one
+
+--- PAGE 4 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+03
+Rule
+What it means in practice
+Material, not decoration
+One translucent layer, one elevation. No shadows on text, no gradient that is not doing a job
+Colour from the moment
+Each moment carries one accent. Widgets tint from it, from the photo, or from the wallpaper on
+Android 12+
+Motion at 120Hz
+Springs of 0.3 to 0.5 seconds, no linear easing, overshoot capped at 4 per cent
+Haptics as punctuation
+Five patterns only: tick, roll, complete, milestone, error. No decorative buzzing
+Silence by default
+No sound for moments. Sound is opt-in per moment and on for alarms
+The 4pt grid
+All spacing in multiples of 4, layout in multiples of 8. Margins are 20pt on phone, 32pt on tablet
+Type scale
+Role
+Size / leading
+Weight
+Used for
+Display
+96 / 92
+Bold
+The hero countdown on a moment screen
+Title
+28 / 32
+Bold
+Screen titles and the zero moment
+Section
+17 / 21
+Semibold
+Section headers and card titles
+Body
+15 / 22
+Regular
+Paragraphs and descriptions
+Caption
+12 / 16
+Regular
+Units, labels, secondary metadata
+Micro
+10 / 13
+Medium
+Widget footnotes, tab labels, badges
+SF Pro on iOS, Inter on Android, with a Devanagari and a Tamil companion face so the same layout holds in
+Indian scripts. Numerals are tabular in every face used for a countdown.
+05  The five instruments
+These are the default expectations of a clock app, and they are where trust is won or lost. Each
+one is specified to the depth of a standalone product, because a missed alarm or a timer that
+drifts deletes the app before the moments layer is ever seen.
+World clock
+Feature
+What it does
+Globe
+Rotatable globe with a live day/night terminator; drag to scrub the hour
+City list
+Local time, offset from you, and a sun arc with sunrise and sunset
+Time travel slider
+Scrub plus or minus 24 hours to see who is awake before you call
+Meeting planner
+Up to six cities; shades the hours inside everyone's working day and names the best hour
+Search
+By city, country or airport code — DEL, BOM, BLR, JFK
+Accuracy
+Bundled IANA time zone data; correct DST and half-hour offsets such as IST +5:30
+Defaults
+IST first, 12 or 24 hour, regional city names
+Widgets
+Analog dial, digital stack, two-city split, four-city grid
+
+--- PAGE 5 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+04
+Alarm
+Feature
+What it does
+Wake window
+Set a 30-minute window; the alarm rings at the lightest point in it
+Cycle-aware
+Suggests a bedtime and a wake time in 90-minute cycles from now
+Volume ramp
+Starts at 20 per cent and rises over 30 seconds, with optional ambient fade-in
+Dismissal
+Math, a typed phrase, a QR code across the room, or a shake — chosen per alarm
+Snooze rules
+Cap the number of snoozes, set the interval, and see how often you actually snooze
+Skip once
+Skip the next occurrence without deleting the alarm
+Holiday-aware
+Skips Indian public holidays and your own leave days automatically
+Backup alarm
+Rings through silent mode and Do Not Disturb where the platform permits
+Wake analytics
+Wake-time consistency and sleep debt over the last 30 days
+Timer
+Feature
+What it does
+Concurrent timers
+Run several at once, each with its own name and colour
+Recipes
+Chai 4 min, rice 12 min, pasta 9 min, eggs 6 min — one tap to start
+Multi-stage
+Chain stages: boil 8, add 3, simmer 5, with a prompt between each
+Interval timer
+Work and rest rounds for HIIT and stretching, with a round counter
+Live surfaces
+Counts down on the lock screen, in the Dynamic Island and in the widget
+Voice
+Announces the end aloud and reads the name of the finished timer
+Loop
+Repeat automatically, or restart with one tap
+Widget chips
+Four saved timers as one-tap buttons on the home screen
+Stopwatch
+Feature
+What it does
+Precision
+Hundredths of a second on a monotonic clock; no drift when the screen locks
+Laps and splits
+Lap, split, and automatic best and worst lap highlighting
+Ghost lap
+Compare the current lap against your best in real time
+Faces
+Digital, analog, and a single oversized number for the gym
+Share
+Export laps as CSV, or share a lap card
+Keep awake
+Screen stays on while running, with an option to dim
+
+--- PAGE 6 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+05
+Focus
+Feature
+What it does
+Sessions
+Pomodoro at 25/5, deep work at 50/10, or any custom length
+Sounds
+Rain, cafe, brown noise and a tanpura drone
+Blocking
+Blocks chosen apps for the session using platform screen-time APIs
+Do Not Disturb
+Turns on DND and an auto-reply for the duration
+Streaks
+Daily streak, weekly heat map, total focused hours
+Widget
+Remaining session time as a ring on the home screen
+History
+Sessions per day, best day, and the time-of-day pattern
+06  The moments engine
+This is the reason the app exists. A moment is one record with a date, a look and a reminder
+schedule, and the engine decides how it reads at any given second — as a countdown, as an
+ongoing event, or as a memory.
+Anatomy of a moment
+Feature
+What it does
+Title
+Free text to 60 characters, with an optional subtitle
+Date and time
+Date-only for all-day moments; exact time for timed events
+Time zone
+Device default, overridable per moment — a flight landing in Dubai
+Direction
+Counts down, counts up, or both at once
+Recurrence
+None, yearly, monthly, weekly, custom interval, or lunar
+Category
+Birthday, exam, travel, work, health, festival, memorial, custom
+Visual
+A theme, a photo, or both, plus one accent colour
+Reminders
+A ladder of alerts from 30 days out to the moment itself
+People
+Optional shared access for up to 20 people
+Importance
+Pinned, normal, or archived
+Notes
+Free text plus attachments — a ticket, a boarding pass, a photo
+
+--- PAGE 7 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+06
+The seven moment types
+Type
+Example
+How it counts
+Upcoming
+NEET result day
+Down to the second, or in sleeps
+Ongoing
+Goa, day 3 of 9
+Progress bar plus days remaining
+Memory
+1,284 days since we met
+Up from a past date, forever
+Interval
+Every 40 days; next full moon
+To the next occurrence, then advances
+Streak
+47 days without a cigarette
+Consecutive days, with a reset
+Life list
+See the northern lights
+Open item; can be given a date later
+Lunar anniversary
+Diwali 2027
+Computed from the panchang, not fixed
+Six counting modes, because one is not enough
+■
+ Days, sleeps, hours, minutes, weeks, months and years — the same moment read at any scale by dragging a
+slider.
+■
+ Sleeps as the default for children's moments: 11 sleeps is a real quantity to a seven-year-old in a way that 11
+days is not.
+■
+ Percentage complete, with a progress ring, for anything with a start and an end.
+■
+ X of Y for countable journeys: 12 of 30 classes, 4 of 7 exams, 9 of 16 chapters.
+■
+ Weekday-only counting for work deadlines, so a Friday deadline reads as 5 days and not 7.
+■
+ Both directions at once: day 214 together, 151 to the wedding.
+Calendars — the part that decides whether India adopts it
+A clock app for Indian users that only knows the Gregorian calendar fails on the first festival. Diwali, Holi, Raksha
+Bandhan, Janmashtami, Ganesh Chaturthi and Navratri move every year, and a Gujarati and a Tamil calendar
+can legitimately differ by a day. This is treated as core functionality, not a later localisation pass.
+■
+ Gregorian by default, with the panchang available per moment.
+■
+ Hindu lunisolar dates for major festivals, with the regional variant selectable.
+■
+ Islamic Hijri, with both Umm al-Qura and sighting-based adjustment.
+■
+ Hebrew, Persian for Nowruz, Chinese and Buddhist calendars.
+■
+ Regional new years: Pongal, Baisakhi, Poila Boishakh, Onam, Bihu, Gudi Padwa.
+■
+ Birthdays can be stored in the lunar calendar and converted for the reminder.
+■
+ Leap day handled explicitly: a 29 February birthday fires on 28 February or 1 March, chosen by the user.
+■
+ Panchang data is licensed from a verified source and shipped as data. It is never computed on device.
+Milestones the app notices for you
+Round numbers land on their own and the app offers them as a card rather than forcing them into the timeline:
+100, 500, 1,000, 5,000 and 10,000 days; 1,000 weeks; 10,000 hours; the 100th workout; one year into a streak;
+half-birthdays; and the quietly devastating one — the day you have been married as long as you were single.
+Shared moments
+A moment can be shared by link with up to 20 people. Both sides see the same countdown, the same theme and
+the same zero moment, and a shared widget can show it on two home screens at once. There is no feed, no
+follower graph and no public profile: sharing is a private link between people who already know each other, and
+that is the entire social layer.
+
+--- PAGE 8 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+07
+Templates, written for India first
+A template library removes the blank-screen problem: board exams for class 10 and 12, NEET, JEE, UPSC
+prelims and mains, CA finals, a wedding muhurat, griha pravesh, a baby's due date, the first day of school, a visa
+appointment, salary day, and a retirement date. Each template pre-fills the category, the theme, the counting
+mode and a sensible reminder ladder.
+The zero moment
+When a countdown reaches zero the app takes the whole screen: the photo full-bleed, the number dissolving into
+the title, an animation chosen by category, one haptic pattern, optional sound, and a share card offered once and
+never again. Then the moment flips to counting up on its own. This is the app's signature thirty seconds, and it is
+the screen that gets posted.
+07  Widgets and system surfaces
+In this category the widget is the product. A countdown you have to open an app to read is a
+countdown you stop checking. Kairos treats the home screen, the lock screen, the Dynamic
+Island and the watch as first-class outputs, each with its own layout rules rather than a shrunken
+copy of the app.
+Every surface covered
+Platform
+Surface
+Families
+iOS
+Home screen
+2x2 small, 4x2 medium, 4x4 large, 8x4 extra large on iPad
+iOS
+Lock screen
+Circular, rectangular and inline accessory families
+iOS
+StandBy
+Full-width night clock plus a moment card
+iOS
+Dynamic Island
+A running timer or an ongoing moment, with progress
+iOS
+Live Activity
+Ongoing moments on the lock screen for their full duration
+iOS
+Apple Watch
+Corner, circular, rectangular and inline complications
+iOS
+Smart Stack
+Moments rotate into the stack as they approach
+Android
+Home screen
+1x1 up to 5x2, fully resizable, built in Jetpack Glance
+Android
+Lock screen
+Keyguard widgets on Android 14 and later
+Android
+Always-on display
+Minimal time and the next moment
+Android
+Status bar
+Live Update progress chip on Android 16
+Android
+Material You
+Widget tint follows the wallpaper; themed app icon
+
+--- PAGE 9 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+08
+The twelve widget designs
+Widget
+What it shows
+Best for
+Dial
+Analog face with the countdown as a progress arc
+World clock, focus
+Odometer
+One enormous rolling number, nothing else
+The next big thing
+Photo
+Full-bleed photo with the date in the corner
+Birthdays, trips
+Ring
+Percentage complete as a ring
+Long journeys, semesters
+Stack
+Three moments in a column, nearest first
+Busy calendars
+Split
+Two cities or two moments side by side
+Couples, travellers
+Sleeps
+The word sleeps, set in type
+Children, holidays
+Ambient
+A gradient that shifts with the time of day
+Background calm
+Flip
+Flip-clock digits on a dark plate
+Timers, retro feel
+Constellation
+All moments as dots along a horizontal line
+Overview at a glance
+Streak
+A day grid with the current streak lit
+Habits, abstinence
+Minimal
+A label and a number, 8pt type, nothing else
+People who hate widgets
+Every widget instance is configured independently: which moment, which design, which theme, which font, and
+whether it counts in sleeps or days. A user can run six widgets showing six different moments, and each one
+deep-links to its own screen on tap.
+How the digits stay live
+iOS rations widget refreshes to a handful per hour, which is far too few for a countdown that ticks. Kairos renders
+the moving text with the platform's own timer text — WidgetKit's timer style on iOS, Chronometer on Android —
+so the digits advance without a single refresh request. Only the label, the photo and the theme need a refresh,
+and those change rarely. This is the difference between a widget that is correct when you glance at it and one
+showing a number from four hours ago.
+08  Notifications that arrive once and matter
+A moments app lives or dies on notification discipline. One unnecessary alert per day and the
+user turns everything off, and the app becomes decorative. The default set is deliberately small
+and every item is individually switchable.
+Trigger
+Default
+Behaviour
+On creation
+Off
+Offer a reminder ladder: 30 days, 7 days, 1 day, morning of, 1 hour, at zero
+Morning of
+On
+08:00 local, one line, no badge count
+At zero
+On
+Immediate, opening the zero moment on tap
+Weekly digest
+On
+Sunday 19:00, up to five moments for the week ahead
+Moment of the day
+Off
+One moment chosen at the user's usual open time
+Milestone
+On
+The day a round number lands
+
+--- PAGE 10 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+09
+Trigger
+Default
+Behaviour
+Streak at risk
+Off
+20:00 if a streak has not been logged
+Anything marketing
+Never
+Not built into the product at all
+■
+ Quiet hours of 22:00 to 07:00 by default, with a per-moment override.
+■
+ Focus modes and Do Not Disturb are respected; only alarms and the at-zero alert may interrupt.
+■
+ A hard ceiling of one notification per moment per day.
+■
+ No badge count on the app icon. Ever.
+■
+ Every notification names the moment and the number, so it is worth reading on its own: 3 days until Ananya's
+wedding.
+09  Personalisation without a theme store
+Twelve themes, seven clock faces, six typefaces and four app icons. That is enough to make the
+app feel owned and few enough that every option is good — the opposite of a template
+marketplace where nine in ten choices look cheap.
+Theme
+Mood
+Ground / accent
+Midnight
+Default, neutral, quiet
+#0C0C0F / #E8E4DC
+Solar
+Warm, high contrast
+#1A120B / #E9A97B
+Monsoon
+Cool grey-green, rain
+#0F1614 / #7FB3A3
+Terracotta
+Earthy, Indian, warm
+#1C110C / #C4703F
+Sakura
+Soft pink, gentle
+#170F12 / #E8A0AE
+Aurora
+Cold, northern, luminous
+#0B1E2D / #6FE3C4
+Ink
+Paper-like light mode
+#FBFAF7 / #1B1B1E
+Ember
+Deep red, memorial tone
+#160B0B / #C2453C
+Tide
+Blue, calm, aquatic
+#08131C / #5AA0D8
+Dune
+Sand and shadow
+#14100B / #C9A97A
+Frost
+Pale, wintry, low contrast
+#101418 / #B8CBD8
+Paper
+Print-like, off-white, editorial
+#F3EFE7 / #3A3226
+Clock faces run from Bauhaus and Swiss through Sundial, Neon, Roman, Minimal and Flip. The six typefaces
+include one Devanagari and one Tamil companion, so a Hindi or Tamil moment is set properly rather than
+substituted. Ambient soundscapes, photo moments and a live wallpaper round out the set.
+10  Data, sync and privacy
+Kairos is local-first. Every moment, alarm and setting lives on the device, the app works fully
+offline, and no account is needed to use any feature. Sync exists for people who want it and is off
+until asked for.
+■
+ Sync is opt-in, across phone, tablet and watch, end-to-end encrypted with keys that never leave the device.
+
+--- PAGE 11 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+10
+■
+ Import from Google Calendar, Apple Calendar, .ics files and contact birthdays.
+■
+ Export to .ics, to CSV, and to a PDF memory book of any year — a printable record of everything that happened.
+■
+ Automatic weekly local backup, plus a manual encrypted cloud backup.
+■
+ Face ID, fingerprint or passcode lock on the whole app or on chosen moments.
+■
+ No advertising SDKs, no third-party analytics by default, no data sale, and no account required.
+■
+ One tap deletes everything, including from the sync server.
+The privacy position is also the business position: an app that holds the date a parent died cannot be an app that
+sells an advertising profile. That constraint is written into the architecture, not the policy page.
+11  Accessibility and language, from the first build
+An app about the moments of a life has to work for the whole of a life, including the years when
+eyesight and dexterity decline. These are acceptance criteria, not a later audit.
+Area
+Requirement
+Text size
+Dynamic Type to 310 per cent; layouts reflow instead of truncating
+Screen readers
+VoiceOver and TalkBack read a countdown as a sentence: 11 days, 4 hours until Ananya's
+wedding
+Motion
+Reduce Motion swaps the odometer for a fade; Reduce Transparency swaps glass for solid
+Contrast
+4.5:1 minimum on every theme, checked in CI against the token set
+Colour independence
+No state is carried by colour alone; every one has a shape or a label
+Targets
+44pt minimum touch target, 48dp on Android
+Languages
+English plus 22 scheduled Indian languages; right-to-left layout for Urdu and Sindhi
+Numerals
+Devanagari, Tamil, Bengali, Gujarati, Gurmukhi, Odia, Telugu, Kannada and Malayalam numeral
+sets
+Formats
+dd/mm/yyyy default, week start Monday or Sunday, configurable working days
+12  Pricing: free is generous, Pro is for the committed
+The category monetises with advertising, which is exactly why the best-designed entrant can
+charge instead. The free tier has to be good enough to earn a five-star review from someone who
+never pays.
+Capability
+Free
+Pro
+All five instruments
+Yes, unlimited
+Yes
+Moments
+Up to 5
+Unlimited
+Widget designs
+4 of 12
+All 12, all sizes
+Themes and clock faces
+3 themes, 2 faces
+All 12 and all 7
+Shared moments
+No
+Up to 20 people
+Sync across devices
+No
+Yes, end-to-end encrypted
+
+--- PAGE 12 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+11
+Capability
+Free
+Pro
+Panchang and lunar calendars
+No
+Yes
+Focus statistics
+7 days
+Full history
+PDF memory book export
+No
+Yes
+Ads
+None
+None
+Proposed pricing, to be validated with a price test before launch: Rs. 399 per year, Rs. 899 for lifetime, or Rs. 99
+per month, with a seven-day trial and no card required. Lifetime matters in the Indian market, where subscription
+fatigue is real and a one-time purchase reads as fair. International pricing sits at $19.99 per year and $49.99
+lifetime.
+13  Technology: Flutter for the app, native for the widgets
+The recommendation is Flutter for the application shell with native widget extensions on both
+platforms. That split is not a compromise — it is what the platform actually requires, because
+neither iOS nor Android lets a cross-platform engine draw a home screen widget.
+Layer
+Choice
+Why
+App shell
+Flutter 3.x, Dart
+One codebase, 120Hz rendering, custom painting for analog
+faces, fragment shaders for glow and gradients
+State
+Riverpod 2
+Testable, compile-safe, no service locator
+Local database
+Drift over SQLite
+Relational, migrations, full-text search over moments and
+notes
+Time engine
+timezone package plus bundled
+IANA data
+All arithmetic in UTC, rendered in local time; correct across
+DST and half-hour offsets
+iOS widgets
+SwiftUI and WidgetKit extension
+The system draws widgets; Flutter writes data to a shared
+App Group container
+Android widgets
+Jetpack Glance
+Modern Compose-style widgets, Material You tint, resizable
+to any cell size
+Live surfaces
+ActivityKit and Live Updates
+Ongoing moments on the lock screen and Dynamic Island;
+progress chip on Android 16
+Notifications
+flutter_local_notifications plus FCM
+Exact alarms locally, push only for shared moments
+Animation
+Rive for the zero moment, Lottie for
+micro-interaction
+Designer-editable, small, GPU-accelerated
+Sync backend
+Supabase with row-level security
+Postgres and realtime at a fraction of Firestore cost for
+read-heavy sync
+Payments
+RevenueCat
+One integration for Play Billing and StoreKit
+Analytics
+PostHog, self-hosted
+DPDP-friendly, no third-party ad SDKs
+Crash and
+performance
+Sentry
+Frame drops and ANRs tracked per release
+CI and release
+GitHub Actions, Fastlane
+TestFlight and Play internal track on every merge
+
+--- PAGE 13 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+12
+Why not native on both platforms
+SwiftUI plus Jetpack Compose has the higher ceiling, particularly for watch complications, and costs roughly 1.8
+times the effort with two native developers instead of one. Choose it only if the budget supports a team of three
+and widgets are judged worth more than half the product. For a first release, Flutter plus native widget extensions
+reaches the same visual quality on the surfaces users actually see.
+One further constraint is worth stating plainly: Flutter does not render inside a widget or a Live Activity. The widget
+UI is a native extension on each platform and Flutter only passes data across the bridge. Budget two to three
+weeks of Swift and Kotlin work for the widget layer alone, and treat it as a first-class workstream rather than a
+plugin install.
+14  Build sequence
+Four phases, roughly thirty weeks for one Flutter developer plus a designer, with the widget layer
+running in parallel from phase one. The sequencing rule is that every phase ends with something
+shippable to real users.
+Phase
+Weeks
+Scope
+Ends with
+0 · Foundation
+1–3
+Design system in Figma, tokens exported to Dart,
+twelve widget designs drawn, app skeleton, CI
+Clickable prototype
+1 · Instruments
+4–10
+World clock, alarm, timer, stopwatch, focus, local
+storage, notifications
+Internal alpha
+2 · Moments
+11–17
+Moments engine, three tenses, seven types,
+counting modes, zero moment, six widgets, lock
+screen
+Closed beta
+3 · Depth
+18–24
+Shared moments, panchang calendars, sync, Live
+Activities, watch app, all twelve widgets
+Public launch
+4 · Reach
+25–30
+Memory book export, AI moment suggestions, web
+read-only view, widget gallery
+Growth release
+Phase 2 is the risk point. If the moments engine is not delightful by week 17, the answer is more design time on
+the zero moment and the widget designs, not more features.
+15  How success is measured, and what could go wrong
+The leading indicator is not installs. It is whether someone puts a widget on their home screen in
+the first session, because that is the only act that turns a clock app into a daily habit.
+Metric
+Target by month 6
+Why it matters
+Widget attached in first session
+60 per cent
+The habit signal
+Three moments created in session one
+45 per cent
+Proves the core loop
+Day-30 retention
+35 per cent
+Countdown apps churn hard; clocks do not
+Pro conversion
+3 to 5 per cent
+Funds the product without ads
+Crash-free sessions
+99.5 per cent
+One lost alarm costs the install
+
+--- PAGE 14 ---
+KAIROS   ·   PRODUCT FEATURE SPECIFICATION
+v1.0  ·  Nov 2026
+Kairos  ·  draft for review
+13
+Metric
+Target by month 6
+Why it matters
+Play Store rating
+4.6 or higher
+Category leaders sit at 3.9 to 4.8
+The five risks that could sink it
+Risk
+Mitigation
+Alarm reliability on Xiaomi, Oppo, Vivo and
+Realme, which dominate the Indian market and
+kill background processes
+Foreground service, exact-alarm permission, and a first-run guide to
+whitelisting the app from battery optimisation
+Panchang dates wrong by a day in some regions
+License a verified panchang dataset with regional variants; never
+compute in-house
+iOS refresh budget starves the widgets
+Render ticking text with the native timer text so no refresh is needed
+for the number itself
+Crowded, ad-funded category with entrenched
+leaders
+Compete on design, lock-screen coverage and the instruments the
+leaders do not have
+Subscription resistance in the Indian market
+A lifetime tier from day one, a genuinely useful free tier, and no ads
+in any tier
+16  Store positioning
+Kairos is the working title. Before launch it needs a trademark check in India, the US and the EU,
+and an App Store and Play Store name-availability check, since several apps already use the
+word for unrelated products. The listing below assumes the name survives.
+Element
+Draft
+Name
+Kairos
+Tagline
+Every moment, in three tenses
+Short description
+A beautiful clock, alarm, timer and stopwatch that also counts down to what you are waiting for
+and up from what you never want to lose
+Primary keywords
+countdown widget, days since, world clock, alarm, anniversary, birthday countdown, sleep
+timer
+Screenshot 1
+The hero countdown at 96pt on near-black, photo behind it
+Screenshot 2
+Six widgets on a home screen, no phone frame, just the grid
+Screenshot 3
+The zero moment, mid-animation
+Screenshot 4
+Lock screen and Dynamic Island with a running timer
+Screenshot 5
+The memory wall, counting up from real dates
+Screenshot 6
+No ads, no account, works offline — stated plainly
+The listing should show the widgets before it shows the app. Buyers in this category are searching for something
+to put on their home screen, and a screenshot of a phone frame wastes the only two seconds of attention the
+listing gets.

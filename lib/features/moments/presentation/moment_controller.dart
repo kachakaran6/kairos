@@ -1,0 +1,108 @@
+import 'dart:math';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/time/time_service.dart';
+import '../data/moment_repository.dart';
+import '../domain/moment.dart';
+
+final clockProvider = Provider<Clock>((ref) => const SystemClock());
+
+final momentRepositoryProvider = Provider<MomentRepository>(
+  (ref) => PreferencesMomentRepository(),
+);
+
+final momentListProvider =
+    AsyncNotifierProvider<MomentListNotifier, List<Moment>>(
+      MomentListNotifier.new,
+    );
+
+class MomentListNotifier extends AsyncNotifier<List<Moment>> {
+  MomentRepository get _repository => ref.read(momentRepositoryProvider);
+
+  @override
+  Future<List<Moment>> build() async {
+    final moments = await _repository.load();
+    return _sorted(moments);
+  }
+
+  Future<void> add({
+    required String title,
+    String? subtitle,
+    required DateTime targetUtc,
+    DateTime? endUtc,
+    bool isAllDay = true,
+    MomentDirection direction = MomentDirection.down,
+    MomentCategory category = MomentCategory.custom,
+    String? notes,
+  }) async {
+    final now = ref.read(clockProvider).nowUtc();
+    final moment = Moment(
+      id: _newId(now),
+      title: title.trim(),
+      subtitle: _emptyToNull(subtitle),
+      targetUtc: targetUtc.toUtc(),
+      endUtc: endUtc?.toUtc(),
+      isAllDay: isAllDay,
+      direction: direction,
+      category: category,
+      notes: _emptyToNull(notes),
+      createdAtUtc: now,
+    );
+    await _commit(<Moment>[...?_value, moment]);
+  }
+
+  Future<void> replace(Moment moment) async {
+    final current = _value;
+    if (current == null) return;
+    await _commit(
+      current.map((item) => item.id == moment.id ? moment : item).toList(),
+    );
+  }
+
+  Future<void> remove(String id) async {
+    final current = _value;
+    if (current == null) return;
+    await _commit(current.where((item) => item.id != id).toList());
+  }
+
+  Future<void> togglePinned(String id) async {
+    final current = _value;
+    if (current == null) return;
+    await _commit(
+      current
+          .map(
+            (item) =>
+                item.id == id ? item.copyWith(pinned: !item.pinned) : item,
+          )
+          .toList(),
+    );
+  }
+
+  List<Moment>? get _value => state.value;
+
+  Future<void> _commit(List<Moment> moments) async {
+    final sorted = _sorted(moments);
+    state = AsyncData(sorted);
+    await _repository.saveAll(sorted);
+  }
+
+  List<Moment> _sorted(List<Moment> moments) {
+    final copy = List<Moment>.of(moments);
+    copy.sort((a, b) {
+      if (a.pinned != b.pinned) return a.pinned ? -1 : 1;
+      return a.targetUtc.compareTo(b.targetUtc);
+    });
+    return List<Moment>.unmodifiable(copy);
+  }
+
+  String _newId(DateTime now) {
+    final random = Random().nextInt(1 << 32).toRadixString(16);
+    return '${now.microsecondsSinceEpoch.toRadixString(16)}-$random';
+  }
+
+  String? _emptyToNull(String? value) {
+    final trimmed = value?.trim();
+    return (trimmed == null || trimmed.isEmpty) ? null : trimmed;
+  }
+}
