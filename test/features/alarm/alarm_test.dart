@@ -79,14 +79,15 @@ void main() {
   });
 
   test('an alarm round-trips through JSON', () {
-    final alarm = _alarm(
-      repeatDays: <int>{DateTime.tuesday, DateTime.thursday},
-      skipNext: true,
-    ).copyWith(
-      wakeWindowMinutes: 30,
-      volumeRampMinutes: 5,
-      dismissal: AlarmDismissal.shake,
-    );
+    final alarm =
+        _alarm(
+          repeatDays: <int>{DateTime.tuesday, DateTime.thursday},
+          skipNext: true,
+        ).copyWith(
+          wakeWindowMinutes: 30,
+          volumeRampMinutes: 5,
+          dismissal: AlarmDismissal.shake,
+        );
 
     final decoded = Alarm.fromJson(alarm.toJson());
 

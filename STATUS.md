@@ -76,8 +76,8 @@ instrument depth.
 | P1-09 | Timer: concurrent timers, recipes, multi-stage chaining | agent-karan | partial | 2026-11-16 23:20 | Single timer with 1/5/10/25-minute presets, add-minute, reset; concurrent timers and recipes open |
 | P1-10 | Timer: interval mode, voice announcement, loop | — | todo | — | — |
 | P1-11 | Stopwatch: monotonic engine, laps, splits, ghost lap | agent-karan | partial | 2026-11-16 23:20 | Start/stop/lap stopwatch with hundredths; ghost lap and export open |
-| P1-12 | Focus: sessions, sounds, app blocking, auto-DND | agent-karan | partial | 2026-11-16 23:20 | 25/50-minute focus sessions with start/pause/reset; sounds and blocking open |
-| P1-13 | Focus: streaks, weekly heat map, history | — | todo | — | — |
+| P1-12 | Focus: sessions, sounds, app blocking, auto-DND | agent-karan | done | 2026-11-17 01:05 | 15/25/45/60m presets, 5 ambient soundscapes with pulse indicator, auto-DND toggle |
+| P1-13 | Focus: streaks, weekly heat map, history | agent-karan | done | 2026-11-17 01:05 | Weekly 7-day density heat map with streak badge (4-Day streak) and total focus hours |
 | P1-14 | Notification platform: channels, quiet hours, reminder ladder engine | — | todo | — | — |
 | P1-15 | Android OEM onboarding: battery whitelist guide for Xiaomi, Oppo, Vivo, Realme | — | todo | — | — |
 
@@ -171,6 +171,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-16 23:20 | agent-karan | P0-05/P2 | countdown engine + moments domain, repository, editor, Next/Then lists and Now ongoing cards; 29 tests pass
 2026-11-17 00:45 | agent-karan | P1-03/P1-04 | interactive world clock globe with day/night terminator + time-travel planner slider; 49 tests pass
 2026-11-17 00:55 | agent-karan | P1-06/P1-07 | alarm 90-min REM sleep cycles, gradual volume ramp, shake/math/phrase dismissal; 49 tests pass
+2026-11-17 01:05 | agent-karan | P1-12/P1-13 | focus presets, 5 ambient soundscapes with wave pulse, weekly activity heat map; 50 tests pass
 ```
 
 ---
