@@ -2,11 +2,9 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/time/time_service.dart';
+import '../../../core/time/clock_provider.dart';
 import '../data/moment_repository.dart';
 import '../domain/moment.dart';
-
-final clockProvider = Provider<Clock>((ref) => const SystemClock());
 
 final momentRepositoryProvider = Provider<MomentRepository>(
   (ref) => PreferencesMomentRepository(),

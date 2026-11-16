@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
+import '../../../core/time/clock_provider.dart';
 import '../../../core/time/countdown.dart';
 import '../domain/moment.dart';
 import '../domain/moment_phase.dart';
