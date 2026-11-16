@@ -183,61 +183,111 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
-    final height = MediaQuery.of(context).size.height;
-    final top = height * 0.38;
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          Space.phoneMargin,
-          top,
-          Space.phoneMargin,
-          Space.xl,
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Space.phoneMargin,
+          vertical: Space.xl,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              upcoming ? Icons.arrow_outward : Icons.history,
-              size: 40,
-              color: colours.accent.withValues(alpha: 0.45),
+            // Elegant glowing circular illustration badge
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colours.surface,
+                border: Border.all(
+                  color: colours.accent.withValues(alpha: 0.25),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: colours.accent.withValues(alpha: 0.12),
+                    blurRadius: 32,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  upcoming ? Icons.arrow_outward_rounded : Icons.history_rounded,
+                  size: 38,
+                  color: colours.accent,
+                ),
+              ),
             ),
             const SizedBox(height: Space.xl),
             Text(
               upcoming ? 'Nothing ahead yet' : 'Nothing behind yet',
+              textAlign: TextAlign.center,
               style: kairos.typeScale.title.copyWith(
+                fontSize: 26,
+                fontWeight: FontWeight.w700,
                 color: colours.textPrimary,
-              ),
-            ),
-            const SizedBox(height: Space.xs),
-            Text(
-              upcoming
-                  ? 'Add the day you are counting to. It will sit here, at the top of your day, until it happens.'
-                  : 'Moments move here once they pass, and count up from then on. Add one that already happened.',
-              style: kairos.typeScale.body.copyWith(
-                color: colours.textSecondary,
-              ),
-            ),
-            const SizedBox(height: Space.xxl),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: onAdd,
-                child: Text(upcoming ? 'Add a moment' : 'Add a past date'),
+                letterSpacing: -0.4,
               ),
             ),
             const SizedBox(height: Space.sm),
-            if (upcoming)
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: Text(
+                upcoming
+                    ? 'Add the day you are counting to. It will sit here, at the top of your day, until it happens.'
+                    : 'Moments move here once they pass, and count up from then on. Add one that already happened.',
+                textAlign: TextAlign.center,
+                style: kairos.typeScale.body.copyWith(
+                  fontSize: 15,
+                  height: 1.45,
+                  color: colours.textTertiary,
+                ),
+              ),
+            ),
+            const SizedBox(height: Space.xxl),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 280),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: onAdd,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colours.accent,
+                    foregroundColor: colours.onAccent,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(RadiusTokens.pill),
+                    ),
+                  ),
+                  icon: const Icon(Icons.add, size: 20),
+                  label: Text(
+                    upcoming ? 'Add a moment' : 'Add a past date',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (upcoming) ...[
+              const SizedBox(height: Space.sm),
               TextButton(
                 onPressed: () {},
                 child: Text(
                   'See how moments work',
-                  style: kairos.typeScale.body.copyWith(
-                    color: colours.textSecondary,
+                  style: kairos.typeScale.caption.copyWith(
+                    fontSize: 13,
+                    color: colours.textTertiary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
+            ],
           ],
         ),
       ),
