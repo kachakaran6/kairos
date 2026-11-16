@@ -12,6 +12,7 @@ import '../domain/moment.dart';
 import '../domain/moment_phase.dart';
 import 'moment_controller.dart';
 import 'moment_editor_page.dart';
+import 'zero_moment_page.dart';
 
 class MomentDetailPage extends ConsumerStatefulWidget {
   const MomentDetailPage({super.key, required this.momentId});
@@ -163,6 +164,22 @@ class _MomentDetailPageState extends ConsumerState<MomentDetailPage> {
                 ),
               ],
               const SizedBox(height: Space.xl),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => ZeroMomentPage(moment: moment),
+                  ),
+                ),
+                icon: const Icon(Icons.auto_awesome),
+                label: const Text('Preview the zero instant'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(Space.touchTargetAndroid),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: RadiusTokens.mdRadius,
+                  ),
+                ),
+              ),
+              const SizedBox(height: Space.sm),
               OutlinedButton.icon(
                 onPressed: () async {
                   final confirmed = await showDialog<bool>(
