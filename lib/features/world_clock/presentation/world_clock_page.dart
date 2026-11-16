@@ -214,7 +214,7 @@ class _CityRow extends StatelessWidget {
             width: 3,
             height: 40,
             decoration: BoxDecoration(
-              color: isNight ? const Color(0xFF5A6B8C) : colours.accent,
+              color: isNight ? colours.night : colours.accent,
               borderRadius: BorderRadius.circular(2),
             ),
           ),

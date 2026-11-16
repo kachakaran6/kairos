@@ -60,6 +60,7 @@ class KairosTheme extends ThemeExtension<KairosTheme> {
       danger: mix(a.danger, b.danger),
       success: mix(a.success, b.success),
       warning: mix(a.warning, b.warning),
+      night: mix(a.night, b.night),
       isDark: t < 0.5 ? a.isDark : b.isDark,
     );
   }

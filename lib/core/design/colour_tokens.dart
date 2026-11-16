@@ -20,6 +20,7 @@ class KairosColourTokens {
     required this.danger,
     required this.success,
     required this.warning,
+    required this.night,
     required this.isDark,
   });
 
@@ -36,6 +37,7 @@ class KairosColourTokens {
   final Color danger;
   final Color success;
   final Color warning;
+  final Color night;
   final bool isDark;
 
   /// Default canvas: #0C0C0F, warm off-white text: #E8E4DC.
@@ -53,6 +55,7 @@ class KairosColourTokens {
     danger: Color(0xFFC2453C),
     success: Color(0xFF7FB3A3),
     warning: Color(0xFFE9A97B),
+    night: Color(0xFF5A6B8C),
     isDark: true,
   );
 
@@ -71,6 +74,7 @@ class KairosColourTokens {
     danger: Color(0xFFC2453C),
     success: Color(0xFF7FB3A3),
     warning: Color(0xFFA9552B),
+    night: Color(0xFF4A5A7A),
     isDark: false,
   );
 
