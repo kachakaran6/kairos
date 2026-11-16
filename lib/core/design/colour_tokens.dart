@@ -78,6 +78,27 @@ class KairosColourTokens {
     isDark: false,
   );
 
+  /// Creates a copy with an updated accent color.
+  KairosColourTokens withAccent(Color newAccent) {
+    return KairosColourTokens(
+      background: background,
+      surface: surface,
+      surfaceElevated: surfaceElevated,
+      textPrimary: textPrimary,
+      textSecondary: textSecondary,
+      textTertiary: textTertiary,
+      border: border,
+      accent: newAccent,
+      onAccent: onAccent,
+      accentMuted: accentMuted,
+      danger: danger,
+      success: success,
+      warning: warning,
+      night: night,
+      isDark: isDark,
+    );
+  }
+
   /// Contrast ratio of [foreground] on [background] per WCAG 2.1.
   static double contrastRatio(Color foreground, Color background) {
     final l1 = foreground.computeLuminance();

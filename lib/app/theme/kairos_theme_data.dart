@@ -9,9 +9,15 @@ import '../../core/theme/theme_extension.dart';
 
 /// Builds the two first-class Kairos themes from tokens only.
 abstract final class KairosThemeData {
-  static ThemeData dark() => _build(KairosColourTokens.dark);
+  static ThemeData dark({Color? accentOverride}) =>
+      _build(accentOverride != null
+          ? KairosColourTokens.dark.withAccent(accentOverride)
+          : KairosColourTokens.dark);
 
-  static ThemeData light() => _build(KairosColourTokens.light);
+  static ThemeData light({Color? accentOverride}) =>
+      _build(accentOverride != null
+          ? KairosColourTokens.light.withAccent(accentOverride)
+          : KairosColourTokens.light);
 
   static ThemeData _build(KairosColourTokens c) {
     final scale = KairosTypeScale.standard;
