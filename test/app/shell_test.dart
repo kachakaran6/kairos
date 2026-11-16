@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kairos/app/shell/kairos_bottom_nav.dart';
 import 'package:kairos/app/shell/kairos_shell.dart';
 import 'package:kairos/app/theme/kairos_theme_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +24,7 @@ void main() {
     expect(find.text('Now'), findsWidgets);
     expect(find.text('Next'), findsWidgets);
     expect(find.text('Then'), findsWidgets);
-    expect(find.text('Instruments'), findsOneWidget);
+    expect(find.text('INSTRUMENTS'), findsOneWidget);
   });
 
   testWidgets('Next tab shows its empty state', (tester) async {
@@ -31,7 +32,7 @@ void main() {
 
     await tester.tap(
       find.descendant(
-        of: find.byType(NavigationBar),
+        of: find.byType(KairosBottomNav),
         matching: find.text('Next'),
       ),
     );
@@ -45,7 +46,7 @@ void main() {
 
     await tester.tap(
       find.descendant(
-        of: find.byType(NavigationBar),
+        of: find.byType(KairosBottomNav),
         matching: find.text('Then'),
       ),
     );
