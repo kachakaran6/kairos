@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
+import '../../../core/widgets/glass/glass.dart';
 import '../domain/moment.dart';
 import 'moment_controller.dart';
 
@@ -169,254 +170,266 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
 
-    return Scaffold(
-      backgroundColor: colours.background,
-      appBar: AppBar(
-        title: Text(
-          _editing ? 'Edit Moment' : 'New Moment',
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-            color: colours.textPrimary,
+    return AtmosphericBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            _editing ? 'Edit Moment' : 'New Moment',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color: colours.textPrimary,
+            ),
           ),
-        ),
-        backgroundColor: colours.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.close_rounded, color: colours.textSecondary),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: _saving ? null : _save,
-            child: Text(
-              'Save',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: colours.accent,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.close_rounded, color: colours.textSecondary),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: GlassButton(
+                onPressed: _saving ? null : _save,
+                intensity: GlassIntensity.primary,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Text(
+                  'Save',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: colours.accent,
+                  ),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Space.phoneMargin,
-            vertical: Space.md,
-          ),
-          children: <Widget>[
-            // Group: Title & Subtitle
-            _GroupedCard(
-              children: [
-                TextField(
-                  controller: _title,
-                  maxLength: 60,
-                  style: TextStyle(fontSize: 17, color: colours.textPrimary),
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    hintText: 'What are you counting to?',
-                    hintStyle: TextStyle(color: colours.textTertiary),
-                    border: InputBorder.none,
-                    counterText: '',
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                  ),
-                ),
-                Divider(height: 1, color: colours.border),
-                TextField(
-                  controller: _subtitle,
-                  maxLength: 80,
-                  style: TextStyle(fontSize: 14, color: colours.textSecondary),
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    hintText: 'Subtitle or description (optional)',
-                    hintStyle: TextStyle(color: colours.textTertiary),
-                    border: InputBorder.none,
-                    counterText: '',
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                  ),
-                ),
-              ],
+          ],
+        ),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Space.phoneMargin,
+              vertical: Space.md,
             ),
-            const SizedBox(height: Space.lg),
-
-            // Group: Category selection
-            _SectionLabel(title: 'CATEGORY'),
-            Wrap(
-              spacing: Space.xs,
-              runSpacing: Space.xs,
-              children: <Widget>[
-                for (final category in MomentCategory.values)
-                  ChoiceChip(
-                    label: Text(_categoryLabel(category)),
-                    selected: _category == category,
-                    selectedColor: colours.accent.withValues(alpha: 0.2),
-                    backgroundColor: colours.surface,
-                    labelStyle: TextStyle(
-                      fontSize: 13,
-                      fontWeight: _category == category
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                      color: _category == category
-                          ? colours.accent
-                          : colours.textSecondary,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(RadiusTokens.pill),
-                      side: BorderSide(
-                        color: _category == category
-                            ? colours.accent
-                            : colours.border,
+            children: <Widget>[
+              // Group: Title & Subtitle
+              _GroupedCard(
+                children: [
+                  TextField(
+                    controller: _title,
+                    maxLength: 60,
+                    style: TextStyle(fontSize: 17, color: colours.textPrimary),
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      hintText: 'What are you counting to?',
+                      hintStyle: TextStyle(color: colours.textTertiary),
+                      border: InputBorder.none,
+                      counterText: '',
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
                       ),
                     ),
-                    onSelected: (_) {
-                      HapticFeedback.selectionClick();
-                      setState(() => _category = category);
-                    },
                   ),
-              ],
-            ),
-            const SizedBox(height: Space.lg),
-
-            // Group: Date & Time configuration
-            _SectionLabel(title: 'SCHEDULE'),
-            _GroupedCard(
-              children: [
-                SwitchListTile.adaptive(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                  title: Text(
-                    'All-day moment',
+                  Divider(
+                    height: 1,
+                    color: colours.border.withValues(alpha: 0.3),
+                  ),
+                  TextField(
+                    controller: _subtitle,
+                    maxLength: 80,
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: colours.textPrimary,
+                      fontSize: 14,
+                      color: colours.textSecondary,
+                    ),
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      hintText: 'Subtitle or description (optional)',
+                      hintStyle: TextStyle(color: colours.textTertiary),
+                      border: InputBorder.none,
+                      counterText: '',
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                     ),
                   ),
-                  subtitle: Text(
-                    'Counts calendar days rather than hours',
-                    style: TextStyle(fontSize: 13, color: colours.textTertiary),
-                  ),
-                  activeTrackColor: colours.accent,
-                  value: _allDay,
-                  onChanged: (value) {
-                    HapticFeedback.selectionClick();
-                    setState(() => _allDay = value);
-                  },
-                ),
-                Divider(height: 1, color: colours.border),
-                _GroupedActionRow(
-                  label: _allDay ? 'Date' : 'Date and time',
-                  value: _allDay
-                      ? _formatDate(_date)
-                      : '${_formatDate(_date)} · ${_formatTime(_date)}',
-                  onTap: () async {
-                    await _pickDate();
-                    if (!_allDay) await _pickTime();
-                  },
-                ),
-                Divider(height: 1, color: colours.border),
-                _GroupedActionRow(
-                  label: 'Ends (optional)',
-                  value: _endDate == null
-                      ? 'No end date'
-                      : _formatDate(_endDate!),
-                  onTap: () => _pickDate(end: true),
-                ),
-              ],
-            ),
-            if (_endDate != null)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 6, left: 4),
-                  child: TextButton(
-                    onPressed: () {
+                ],
+              ),
+              const SizedBox(height: Space.lg),
+
+              // Group: Category selection
+              const GlassSectionHeader(title: 'CATEGORY'),
+              Wrap(
+                spacing: Space.xs,
+                runSpacing: Space.xs,
+                children: <Widget>[
+                  for (final category in MomentCategory.values)
+                    ChoiceChip(
+                      label: Text(_categoryLabel(category)),
+                      selected: _category == category,
+                      selectedColor: colours.accent.withValues(alpha: 0.22),
+                      backgroundColor: colours.surface.withValues(alpha: 0.3),
+                      labelStyle: TextStyle(
+                        fontSize: 13,
+                        fontWeight: _category == category
+                            ? FontWeight.w600
+                            : FontWeight.normal,
+                        color: _category == category
+                            ? colours.accent
+                            : colours.textSecondary,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(RadiusTokens.pill),
+                        side: BorderSide(
+                          color: _category == category
+                              ? colours.accent
+                              : colours.border.withValues(alpha: 0.4),
+                        ),
+                      ),
+                      onSelected: (_) {
+                        HapticFeedback.selectionClick();
+                        setState(() => _category = category);
+                      },
+                    ),
+                ],
+              ),
+              const SizedBox(height: Space.lg),
+
+              // Group: Date & Time configuration
+              const GlassSectionHeader(title: 'SCHEDULE'),
+              _GroupedCard(
+                children: [
+                  SwitchListTile.adaptive(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    title: Text(
+                      'All-day moment',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: colours.textPrimary,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Counts calendar days rather than hours',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colours.textTertiary,
+                      ),
+                    ),
+                    activeTrackColor: colours.accent,
+                    value: _allDay,
+                    onChanged: (value) {
                       HapticFeedback.selectionClick();
-                      setState(() => _endDate = null);
+                      setState(() => _allDay = value);
                     },
-                    child: Text(
-                      'Clear end date',
-                      style: TextStyle(color: colours.danger, fontSize: 13),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: colours.border.withValues(alpha: 0.3),
+                  ),
+                  _GroupedActionRow(
+                    label: _allDay ? 'Date' : 'Date and time',
+                    value: _allDay
+                        ? _formatDate(_date)
+                        : '${_formatDate(_date)} · ${_formatTime(_date)}',
+                    onTap: () async {
+                      await _pickDate();
+                      if (!_allDay) await _pickTime();
+                    },
+                  ),
+                  Divider(
+                    height: 1,
+                    color: colours.border.withValues(alpha: 0.3),
+                  ),
+                  _GroupedActionRow(
+                    label: 'Ends (optional)',
+                    value: _endDate == null
+                        ? 'No end date'
+                        : _formatDate(_endDate!),
+                    onTap: () => _pickDate(end: true),
+                  ),
+                ],
+              ),
+              if (_endDate != null)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 6, left: 4),
+                    child: TextButton(
+                      onPressed: () {
+                        HapticFeedback.selectionClick();
+                        setState(() => _endDate = null);
+                      },
+                      child: Text(
+                        'Clear end date',
+                        style: TextStyle(color: colours.danger, fontSize: 13),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            const SizedBox(height: Space.lg),
+              const SizedBox(height: Space.lg),
 
-            // Group: Counting Direction
-            _SectionLabel(title: 'COUNTING MODE'),
-            SegmentedButton<MomentDirection>(
-              style: SegmentedButton.styleFrom(
-                backgroundColor: colours.surface,
-                selectedBackgroundColor: colours.accent.withValues(alpha: 0.16),
-                selectedForegroundColor: colours.accent,
-                foregroundColor: colours.textSecondary,
-                side: BorderSide(color: colours.border),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(RadiusTokens.pill),
-                ),
+              // Group: Counting Direction
+              const GlassSectionHeader(title: 'COUNTING MODE'),
+              GlassSegmentedControl<MomentDirection>(
+                selectedValue: _direction,
+                onChanged: (value) {
+                  HapticFeedback.selectionClick();
+                  setState(() => _direction = value);
+                },
+                segments: const [
+                  GlassSegment(
+                    value: MomentDirection.down,
+                    label: 'Count down',
+                  ),
+                  GlassSegment(value: MomentDirection.up, label: 'Count up'),
+                  GlassSegment(value: MomentDirection.both, label: 'Both'),
+                ],
               ),
-              segments: const <ButtonSegment<MomentDirection>>[
-                ButtonSegment(
-                  value: MomentDirection.down,
-                  label: Text('Count down'),
-                ),
-                ButtonSegment(
-                  value: MomentDirection.up,
-                  label: Text('Count up'),
-                ),
-                ButtonSegment(value: MomentDirection.both, label: Text('Both')),
-              ],
-              selected: <MomentDirection>{_direction},
-              onSelectionChanged: (value) {
-                HapticFeedback.selectionClick();
-                setState(() => _direction = value.first);
-              },
-            ),
-            const SizedBox(height: Space.lg),
+              const SizedBox(height: Space.lg),
 
-            // Group: Notes
-            _SectionLabel(title: 'PERSONAL NOTES'),
-            _GroupedCard(
-              children: [
-                TextField(
-                  controller: _notes,
-                  maxLines: 3,
-                  style: TextStyle(fontSize: 14, color: colours.textPrimary),
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    hintText: 'Add thoughts, memory details, or milestones...',
-                    hintStyle: TextStyle(color: colours.textTertiary),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.all(16),
+              // Group: Notes
+              const GlassSectionHeader(title: 'PERSONAL NOTES'),
+              _GroupedCard(
+                children: [
+                  TextField(
+                    controller: _notes,
+                    maxLines: 3,
+                    style: TextStyle(fontSize: 14, color: colours.textPrimary),
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      hintText:
+                          'Add thoughts, memory details, or milestones...',
+                      hintStyle: TextStyle(color: colours.textTertiary),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
+                  ),
+                ],
+              ),
+
+              if (_error != null) ...<Widget>[
+                const SizedBox(height: Space.md),
+                Center(
+                  child: Text(
+                    _error!,
+                    style: TextStyle(
+                      color: colours.danger,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
-            ),
-
-            if (_error != null) ...<Widget>[
-              const SizedBox(height: Space.md),
-              Center(
-                child: Text(
-                  _error!,
-                  style: TextStyle(
-                    color: colours.danger,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
+              const SizedBox(height: Space.huge),
             ],
-            const SizedBox(height: Space.huge),
-          ],
+          ),
         ),
       ),
     );
@@ -450,29 +463,6 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
   }
 }
 
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final colours = KairosTheme.of(context).colours;
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: Space.xs),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: colours.textTertiary,
-          letterSpacing: 0.6,
-        ),
-      ),
-    );
-  }
-}
-
 class _GroupedCard extends StatelessWidget {
   const _GroupedCard({required this.children});
 
@@ -480,13 +470,9 @@ class _GroupedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colours = KairosTheme.of(context).colours;
-    return Container(
-      decoration: BoxDecoration(
-        color: colours.surface,
-        borderRadius: BorderRadius.circular(RadiusTokens.lg),
-        border: Border.all(color: colours.border),
-      ),
+    return GlassContainer(
+      intensity: GlassIntensity.secondary,
+      borderRadius: BorderRadius.circular(RadiusTokens.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: children,

@@ -7,6 +7,7 @@ import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/time/time_service.dart';
+import '../../../core/widgets/glass/glass.dart';
 
 /// Countdown timer with presets. Runs while the screen is open; persistence and
 /// background alarms land with the timer data layer (P1-09).
@@ -93,81 +94,157 @@ class _TimerPageState extends State<TimerPage> {
   @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
+    final colours = kairos.colours;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Timer')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Space.phoneMargin,
-            vertical: Space.lg,
+    return AtmosphericBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            'Timer',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color: colours.textPrimary,
+            ),
           ),
-          child: Column(
-            children: <Widget>[
-              const Spacer(),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  formatDuration(Duration(seconds: _remainingSeconds)),
-                  style: kairos.typeScale.display.copyWith(
-                    color: kairos.colours.textPrimary,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 20,
+              color: colours.textPrimary,
+            ),
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Space.phoneMargin,
+              vertical: Space.lg,
+            ),
+            child: Column(
+              children: <Widget>[
+                const Spacer(),
+                GlassContainer(
+                  intensity: GlassIntensity.primary,
+                  borderRadius: BorderRadius.circular(RadiusTokens.xxl),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Space.xxl,
+                    vertical: Space.xxl,
                   ),
-                ),
-              ),
-              const SizedBox(height: Space.sm),
-              Text(
-                _running ? 'Running' : 'Paused',
-                style: kairos.typeScale.caption.copyWith(
-                  color: kairos.colours.textSecondary,
-                ),
-              ),
-              const Spacer(),
-              Wrap(
-                spacing: Space.xs,
-                runSpacing: Space.xs,
-                alignment: WrapAlignment.center,
-                children: <Widget>[
-                  for (final preset in _presets)
-                    ChoiceChip(
-                      label: Text('$preset min'),
-                      selected: _totalSeconds == preset * 60,
-                      onSelected: (_) => _selectPreset(preset),
-                    ),
-                ],
-              ),
-              const SizedBox(height: Space.lg),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _reset,
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(
-                          Space.touchTargetAndroid,
-                        ),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: RadiusTokens.mdRadius,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          formatDuration(Duration(seconds: _remainingSeconds)),
+                          style: kairos.typeScale.display.copyWith(
+                            color: colours.textPrimary,
+                            fontSize: 54,
+                            fontWeight: FontWeight.w300,
+                          ),
                         ),
                       ),
-                      child: const Text('Reset'),
+                      const SizedBox(height: Space.xs),
+                      Text(
+                        _running ? 'Running' : 'Paused',
+                        style: kairos.typeScale.caption.copyWith(
+                          color: _running
+                              ? colours.accent
+                              : colours.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                Wrap(
+                  spacing: Space.sm,
+                  runSpacing: Space.sm,
+                  alignment: WrapAlignment.center,
+                  children: <Widget>[
+                    for (final preset in _presets)
+                      ChoiceChip(
+                        label: Text('$preset min'),
+                        selected: _totalSeconds == preset * 60,
+                        selectedColor: colours.accent.withValues(alpha: 0.22),
+                        backgroundColor: colours.surface.withValues(alpha: 0.3),
+                        labelStyle: TextStyle(
+                          fontSize: 13,
+                          fontWeight: _totalSeconds == preset * 60
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                          color: _totalSeconds == preset * 60
+                              ? colours.accent
+                              : colours.textSecondary,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            RadiusTokens.pill,
+                          ),
+                          side: BorderSide(
+                            color: _totalSeconds == preset * 60
+                                ? colours.accent
+                                : colours.border.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        onSelected: (_) => _selectPreset(preset),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: Space.lg),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: GlassButton(
+                        onPressed: _reset,
+                        intensity: GlassIntensity.subtle,
+                        child: Text(
+                          'Reset',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: colours.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: Space.md),
+                    Expanded(
+                      flex: 2,
+                      child: GlassButton(
+                        onPressed: _toggle,
+                        intensity: GlassIntensity.primary,
+                        child: Text(
+                          _running ? 'Pause' : 'Start',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: colours.accent,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: Space.sm),
+                TextButton(
+                  onPressed: _addMinute,
+                  child: Text(
+                    '+1 minute',
+                    style: TextStyle(
+                      color: colours.textSecondary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(width: Space.sm),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: _toggle,
-                      child: Text(_running ? 'Pause' : 'Start'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: Space.xs),
-              TextButton(
-                onPressed: _addMinute,
-                child: const Text('Add one minute'),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

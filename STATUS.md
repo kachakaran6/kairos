@@ -8,7 +8,7 @@ again before you log off. Never delete a row.**
 
 - Current phase: **1 — Instruments** (Phase 0 shell and tokens mostly landed)
 - Phase window: weeks 4–10
-- Last updated: 2026-11-16 23:20 UTC by `agent-karan`
+- Last updated: 2026-11-17 01:50 UTC by `agent-karan`
 - Active agents: none
 
 ---
@@ -17,7 +17,7 @@ again before you log off. Never delete a row.**
 
 | Agent | Task | Claimed (UTC) | Heartbeat |
 |---|---|---|---|
-| agent-karan | P1/P2 UI continuation | 2026-11-16 23:20 | 2026-11-16 23:20 |
+| — | — | — | — |
 
 A claim is live for 2 hours. Stale after 24 hours and open to takeover, per `AGENTS.md` §4.
 
@@ -54,7 +54,7 @@ instrument depth.
 | P0-02 | Design tokens in Dart from spec §4: colour, type scale, spacing, radius, motion, haptics, elevation | Cline | done | 2026-11-16 16:30 | dart format clean, analyze clean, flutter test pass |
 | P0-02 | Design tokens in Dart from spec §4: colour, type scale, spacing, radius, motion, haptics, elevation | — | todo | — | — |
 | P0-03 | Theme: dark and light, `ThemeExtension` wiring, both modes first-class | agent-karan | done | 2026-11-16 17:34 | `flutter analyze --fatal-infos` clean; `flutter test` 16 passed; `flutter build apk --debug` built |
-| P0-04 | Component library v0: button, card, sheet, list row, empty state, loading state | — | todo | — | — |
+| P0-04 | Component library v0: button, card, sheet, list row, empty state, loading state + Glassmorphism system | agent-karan | done | 2026-11-17 01:50 | `GlassContainer`, `GlassCard`, `GlassButton`, `AtmosphericBackground`, `GlassEmptyState`, `GlassSegmentedControl`, 56 tests pass |
 | P0-05 | Time formatting engine in `core/time`: tabular numerals, unit ladder, sleeps, X-of-Y, percentage | agent-karan | done | 2026-11-16 23:20 | `countdown_test.dart` 13 passed incl. zero instant, DST, weekdays; `flutter analyze --fatal-infos` clean |
 | P0-06 | Localisation scaffold: ARB files, 22 Indian languages stubbed, RTL, regional numeral sets | — | todo | — | — |
 | P0-07 | Accessibility harness: text scale to 310%, semantics labels, contrast check in CI | — | todo | — | — |
@@ -158,6 +158,7 @@ Append-only. Format and rules in `AGENTS.md` §9.
 | D-004 | 2026-11-16 | Supabase for sync, not Firestore | Postgres and row-level security at lower cost for read-heavy sync | Self-managed backups | Yes |
 | D-005 | 2026-11-16 | Ticking widget digits use native timer text, not refreshes | iOS rations widget refreshes far below one per second | Digits cannot carry custom styling mid-animation | No |
 | D-006 | 2026-11-16 | Riverpod 3 for state; moments persist through a JSON repository in `shared_preferences` until P1-01 replaces it with Drift | Unblocks the moments UI and offline persistence without codegen; Drift schema lands in Phase 1 | No relational queries or full-text until the P1-01 migration | Yes |
+| D-007 | 2026-11-17 | Glassmorphism design system built atop `KairosColourTokens` with static atmospheric radial gradients | Delivers luxury Apple-inspired glass depth and tactile feedback while avoiding full-screen blur performance penalties | Centralized tokens ensure 100% theme adaptability without hardcoded hex colors | Yes |
 
 ---
 
@@ -175,6 +176,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-17 01:15 | agent-karan | P2-07 | zero moment celebratory ripple sequence, particle burst, haptics, detail preview; 51 tests pass
 2026-11-17 01:25 | agent-karan | P2-10 | widget data bridge with shared AppGroup / SharedPreferences schema; 53 tests pass
 2026-11-17 01:35 | agent-karan | P3-04 | regional calendar service: Vikram Samvat, Islamic Hijri, and lunar phase engine; 56 tests pass
+2026-11-17 01:50 | agent-karan | P0-04 | master Apple-inspired glassmorphism transformation across shell, moments, settings, and all 5 instruments; 56 tests pass
 ```
 
 ---

@@ -5,6 +5,7 @@ import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/time/time_service.dart';
+import '../../../core/widgets/glass/glass.dart';
 import 'world_clock_globe_widget.dart';
 
 class WorldClockPage extends StatefulWidget {
@@ -78,194 +79,190 @@ class _WorldClockPageState extends State<WorldClockPage> {
     );
     const homeOffset = 330; // user's offset (Mumbai)
 
-    return Scaffold(
-      backgroundColor: colours.background,
-      appBar: AppBar(
-        title: Text(
-          'World Clock',
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-            color: colours.textPrimary,
+    return AtmosphericBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            'World Clock',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color: colours.textPrimary,
+            ),
           ),
-        ),
-        backgroundColor: colours.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: colours.textPrimary,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 20,
+              color: colours.textPrimary,
+            ),
+            onPressed: () => Navigator.of(context).maybePop(),
           ),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-        actions: [
-          if (_timeTravelHours != 0)
-            TextButton(
-              onPressed: () {
-                HapticFeedback.lightImpact();
-                setState(() => _timeTravelHours = 0);
-              },
-              child: Text(
-                'Reset',
-                style: TextStyle(
-                  color: colours.accent,
-                  fontWeight: FontWeight.w700,
+          actions: [
+            if (_timeTravelHours != 0)
+              TextButton(
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  setState(() => _timeTravelHours = 0);
+                },
+                child: Text(
+                  'Reset',
+                  style: TextStyle(
+                    color: colours.accent,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
+          ],
+        ),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Space.phoneMargin,
+              vertical: Space.md,
             ),
-        ],
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Space.phoneMargin,
-            vertical: Space.md,
-          ),
-          children: <Widget>[
-            // Search Input with Apple Inset Look
-            Container(
-              height: 44,
-              decoration: BoxDecoration(
-                color: colours.surface,
+            children: <Widget>[
+              // Search Input with Glass Look
+              GlassContainer(
+                height: 48,
+                intensity: GlassIntensity.subtle,
                 borderRadius: BorderRadius.circular(RadiusTokens.md),
-                border: Border.all(color: colours.border),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              child: Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.search_rounded,
-                    color: colours.textTertiary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      controller: _search,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: colours.textPrimary,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Search city or airport code...',
-                        hintStyle: TextStyle(
-                          color: colours.textTertiary,
-                          fontSize: 14,
-                        ),
-                        border: InputBorder.none,
-                        isDense: true,
-                      ),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.search_rounded,
+                      color: colours.textTertiary,
+                      size: 20,
                     ),
-                  ),
-                  if (_search.text.isNotEmpty)
-                    GestureDetector(
-                      onTap: () {
-                        _search.clear();
-                        HapticFeedback.selectionClick();
-                      },
-                      child: Icon(
-                        Icons.close_rounded,
-                        size: 18,
-                        color: colours.textTertiary,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(height: Space.md),
-
-            // Globe Terminator View
-            WorldClockGlobeWidget(
-              selectedOffsetMinutes: (_timeTravelHours * 60).round(),
-              nowUtc: adjustedNow,
-            ),
-            const SizedBox(height: Space.sm),
-
-            // Time Travel Meeting Planner Slider
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: colours.surface,
-                borderRadius: BorderRadius.circular(RadiusTokens.lg),
-                border: Border.all(color: colours.border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.tune_rounded,
-                            size: 16,
-                            color: colours.accent,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Time-Travel Planner',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: colours.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        _timeTravelHours == 0
-                            ? 'Now'
-                            : '${_timeTravelHours > 0 ? "+" : ""}${_timeTravelHours.toStringAsFixed(1)} hours',
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: _search,
                         style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: _timeTravelHours == 0
-                              ? colours.textTertiary
-                              : colours.accent,
+                          fontSize: 15,
+                          color: colours.textPrimary,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Search city or airport code...',
+                          hintStyle: TextStyle(
+                            color: colours.textTertiary,
+                            fontSize: 14,
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      activeTrackColor: colours.accent,
-                      thumbColor: colours.accent,
-                      inactiveTrackColor: colours.border,
-                      overlayColor: colours.accent.withValues(alpha: 0.15),
-                      trackHeight: 3,
                     ),
-                    child: Slider(
-                      value: _timeTravelHours,
-                      min: -12,
-                      max: 12,
-                      divisions: 48, // 30-min increments
-                      onChanged: (val) {
-                        HapticFeedback.selectionClick();
-                        setState(() => _timeTravelHours = val);
-                      },
-                    ),
-                  ),
-                ],
+                    if (_search.text.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          _search.clear();
+                          HapticFeedback.selectionClick();
+                        },
+                        child: Icon(
+                          Icons.close_rounded,
+                          size: 18,
+                          color: colours.textTertiary,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: Space.lg),
+              const SizedBox(height: Space.md),
 
-            // Cities List
-            for (final city in _displayedCities) ...<Widget>[
-              _CityRow(
-                city: city.name,
+              // Globe Terminator View
+              WorldClockGlobeWidget(
+                selectedOffsetMinutes: (_timeTravelHours * 60).round(),
                 nowUtc: adjustedNow,
-                offsetMinutes: city.utcOffsetMinutes,
-                homeOffsetMinutes: homeOffset,
-                kairos: kairos,
               ),
               const SizedBox(height: Space.sm),
+
+              // Time Travel Meeting Planner Slider
+              GlassContainer(
+                intensity: GlassIntensity.secondary,
+                borderRadius: BorderRadius.circular(RadiusTokens.lg),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.tune_rounded,
+                              size: 16,
+                              color: colours.accent,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Time-Travel Planner',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: colours.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          _timeTravelHours == 0
+                              ? 'Now'
+                              : '${_timeTravelHours > 0 ? "+" : ""}${_timeTravelHours.toStringAsFixed(1)} hours',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: _timeTravelHours == 0
+                                ? colours.textTertiary
+                                : colours.accent,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: colours.accent,
+                        thumbColor: colours.accent,
+                        inactiveTrackColor: colours.border,
+                        overlayColor: colours.accent.withValues(alpha: 0.15),
+                        trackHeight: 3,
+                      ),
+                      child: Slider(
+                        value: _timeTravelHours,
+                        min: -12,
+                        max: 12,
+                        divisions: 48, // 30-min increments
+                        onChanged: (val) {
+                          HapticFeedback.selectionClick();
+                          setState(() => _timeTravelHours = val);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: Space.lg),
+
+              // Cities List
+              for (final city in _displayedCities) ...<Widget>[
+                _CityRow(
+                  city: city.name,
+                  nowUtc: adjustedNow,
+                  offsetMinutes: city.utcOffsetMinutes,
+                  homeOffsetMinutes: homeOffset,
+                  kairos: kairos,
+                ),
+                const SizedBox(height: Space.sm),
+              ],
+              const SizedBox(height: 100),
             ],
-            const SizedBox(height: 100),
-          ],
+          ),
         ),
       ),
     );
@@ -326,13 +323,10 @@ class _CityRow extends StatelessWidget {
     final dateLine =
         '${weekdays[local.weekday - 1]}, ${local.day} ${months[local.month - 1]}';
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 10),
-      decoration: BoxDecoration(
-        color: colours.surface,
-        borderRadius: BorderRadius.circular(RadiusTokens.lg),
-        border: Border.all(color: colours.border),
-      ),
+    return GlassCard(
+      intensity: GlassIntensity.secondary,
+      borderRadius: BorderRadius.circular(RadiusTokens.lg),
+      padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 12),
       child: Row(
         children: <Widget>[
           // day/night indicator bar

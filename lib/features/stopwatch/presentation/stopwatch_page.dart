@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
+import '../../../core/widgets/glass/glass.dart';
 
 /// Monotonic stopwatch with laps. Uses [Stopwatch] so it does not drift when
 /// frames are dropped or the screen locks.
@@ -67,85 +69,155 @@ class _StopwatchPageState extends State<StopwatchPage> {
   @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
+    final colours = kairos.colours;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Stopwatch')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Space.phoneMargin,
-            vertical: Space.lg,
+    return AtmosphericBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            'Stopwatch',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color: colours.textPrimary,
+            ),
           ),
-          child: Column(
-            children: <Widget>[
-              const Spacer(),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  _format(_stopwatch.elapsed),
-                  style: kairos.typeScale.display.copyWith(
-                    color: kairos.colours.textPrimary,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 20,
+              color: colours.textPrimary,
+            ),
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Space.phoneMargin,
+              vertical: Space.lg,
+            ),
+            child: Column(
+              children: <Widget>[
+                const Spacer(),
+                GlassContainer(
+                  intensity: GlassIntensity.primary,
+                  borderRadius: BorderRadius.circular(RadiusTokens.xxl),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Space.xxl,
+                    vertical: Space.xxl,
+                  ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      _format(_stopwatch.elapsed),
+                      style: kairos.typeScale.display.copyWith(
+                        color: colours.textPrimary,
+                        fontSize: 54,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: Space.lg),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _stopwatch.isRunning ? _lap : null,
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(
-                          Space.touchTargetAndroid,
-                        ),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: RadiusTokens.mdRadius,
+                const SizedBox(height: Space.xl),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: GlassButton(
+                        onPressed: _stopwatch.isRunning
+                            ? () {
+                                HapticFeedback.selectionClick();
+                                _lap();
+                              }
+                            : null,
+                        intensity: GlassIntensity.subtle,
+                        child: Text(
+                          'Lap',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: _stopwatch.isRunning
+                                ? colours.textPrimary
+                                : colours.textTertiary,
+                          ),
                         ),
                       ),
-                      child: const Text('Lap'),
                     ),
-                  ),
-                  const SizedBox(width: Space.sm),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: _toggle,
-                      child: Text(_stopwatch.isRunning ? 'Pause' : 'Start'),
+                    const SizedBox(width: Space.md),
+                    Expanded(
+                      flex: 2,
+                      child: GlassButton(
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          _toggle();
+                        },
+                        intensity: GlassIntensity.primary,
+                        child: Text(
+                          _stopwatch.isRunning ? 'Pause' : 'Start',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: colours.accent,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: Space.xs),
-              TextButton(onPressed: _reset, child: const Text('Reset')),
-              const Spacer(),
-              if (_laps.isNotEmpty)
-                SizedBox(
-                  height: 220,
-                  child: ListView.separated(
-                    itemCount: _laps.length,
-                    separatorBuilder: (_, __) =>
-                        const SizedBox(height: Space.xxs),
-                    itemBuilder: (context, index) {
-                      final lapNumber = _laps.length - index;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            'Lap $lapNumber',
-                            style: kairos.typeScale.caption.copyWith(
-                              color: kairos.colours.textSecondary,
-                            ),
-                          ),
-                          Text(
-                            _format(_laps[index]),
-                            style: kairos.typeScale.section,
-                          ),
-                        ],
-                      );
-                    },
+                  ],
+                ),
+                const SizedBox(height: Space.xs),
+                TextButton(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    _reset();
+                  },
+                  child: Text(
+                    'Reset',
+                    style: TextStyle(
+                      color: colours.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-            ],
+                const Spacer(),
+                if (_laps.isNotEmpty)
+                  GlassContainer(
+                    intensity: GlassIntensity.secondary,
+                    borderRadius: BorderRadius.circular(RadiusTokens.lg),
+                    padding: const EdgeInsets.all(Space.md),
+                    height: 200,
+                    child: ListView.separated(
+                      itemCount: _laps.length,
+                      separatorBuilder: (_, __) => Divider(
+                        height: Space.sm,
+                        color: colours.border.withValues(alpha: 0.3),
+                      ),
+                      itemBuilder: (context, index) {
+                        final lapNumber = _laps.length - index;
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              'Lap $lapNumber',
+                              style: kairos.typeScale.caption.copyWith(
+                                color: colours.textSecondary,
+                              ),
+                            ),
+                            Text(
+                              _format(_laps[index]),
+                              style: kairos.typeScale.section.copyWith(
+                                color: colours.textPrimary,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

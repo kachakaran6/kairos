@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
+import '../../../core/widgets/glass/glass.dart';
 import '../domain/user_settings.dart';
 import 'settings_controller.dart';
 
@@ -24,203 +25,207 @@ class SettingsPage extends ConsumerWidget {
           'Settings',
           style: kairos.typeScale.title.copyWith(color: colours.textPrimary),
         ),
-        backgroundColor: colours.background,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: colours.textPrimary),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Space.phoneMargin,
-          vertical: Space.md,
-        ),
-        children: <Widget>[
-          // Section: Appearance
-          _SectionHeader(title: 'APPEARANCE'),
-          _SettingsContainer(
-            children: <Widget>[
-              _TileRow(
-                title: 'Theme Mode',
-                subtitle: 'Match system, light or dark appearance',
-                trailing: DropdownButton<ThemeMode>(
-                  value: settings.themeMode,
-                  dropdownColor: colours.surface,
-                  style: TextStyle(color: colours.textPrimary),
-                  underline: const SizedBox(),
-                  onChanged: (mode) {
-                    if (mode != null) controller.setThemeMode(mode);
-                  },
-                  items: const [
-                    DropdownMenuItem(
-                      value: ThemeMode.system,
-                      child: Text('System'),
-                    ),
-                    DropdownMenuItem(
-                      value: ThemeMode.light,
-                      child: Text('Light'),
-                    ),
-                    DropdownMenuItem(
-                      value: ThemeMode.dark,
-                      child: Text('Dark'),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              _TileRow(
-                title: 'Accent Palette',
-                subtitle: 'Curated Apple-inspired brand accent',
-                trailing: const SizedBox(),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  Space.md,
-                  0,
-                  Space.md,
-                  Space.md,
-                ),
-                child: Wrap(
-                  spacing: Space.sm,
-                  runSpacing: Space.sm,
-                  children: AccentPalette.values.map((p) {
-                    final isSelected = settings.accentPalette == p;
-                    final activeColor = colours.isDark
-                        ? p.darkColor
-                        : p.lightColor;
-                    return InkWell(
-                      borderRadius: BorderRadius.circular(RadiusTokens.sm),
-                      onTap: () => controller.setAccentPalette(p),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? activeColor.withValues(alpha: 0.2)
-                              : colours.surfaceElevated,
-                          borderRadius: BorderRadius.circular(RadiusTokens.sm),
-                          border: Border.all(
-                            color: isSelected ? activeColor : colours.border,
-                            width: isSelected ? 2 : 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                color: activeColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              p.label,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                                color: colours.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
+      body: AtmosphericBackground(
+        child: ListView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Space.phoneMargin,
+            vertical: Space.md,
+          ),
+          children: <Widget>[
+            // Section: Appearance
+            _SectionHeader(title: 'APPEARANCE'),
+            _SettingsContainer(
+              children: <Widget>[
+                _TileRow(
+                  title: 'Theme Mode',
+                  subtitle: 'Match system, light or dark appearance',
+                  trailing: DropdownButton<ThemeMode>(
+                    value: settings.themeMode,
+                    dropdownColor: colours.surface,
+                    style: TextStyle(color: colours.textPrimary),
+                    underline: const SizedBox(),
+                    onChanged: (mode) {
+                      if (mode != null) controller.setThemeMode(mode);
+                    },
+                    items: const [
+                      DropdownMenuItem(
+                        value: ThemeMode.system,
+                        child: Text('System'),
                       ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: Space.lg),
-
-          // Section: Time & Date
-          _SectionHeader(title: 'TIME & DATE'),
-          _SettingsContainer(
-            children: <Widget>[
-              _SwitchRow(
-                title: '24-Hour Time',
-                subtitle: 'Use 23:08 instead of 11:08 PM',
-                value: settings.use24HourFormat,
-                onChanged: controller.set24HourFormat,
-              ),
-              const Divider(height: 1),
-              _SwitchRow(
-                title: 'Show Seconds',
-                subtitle: 'Live ticking seconds on clock header',
-                value: settings.showSeconds,
-                onChanged: controller.setShowSeconds,
-              ),
-              const Divider(height: 1),
-              _SwitchRow(
-                title: 'Start Week on Monday',
-                subtitle: 'Calendar and week calculation standard',
-                value: settings.firstDayMonday,
-                onChanged: controller.setFirstDayMonday,
-              ),
-            ],
-          ),
-          const SizedBox(height: Space.lg),
-
-          // Section: Notifications & Accessibility
-          _SectionHeader(title: 'PREFERENCES & ACCESSIBILITY'),
-          _SettingsContainer(
-            children: <Widget>[
-              _SwitchRow(
-                title: 'Moment Reminders',
-                subtitle: 'Local notification ladder before moments arrive',
-                value: settings.notificationsEnabled,
-                onChanged: controller.setNotificationsEnabled,
-              ),
-              const Divider(height: 1),
-              _SwitchRow(
-                title: 'Reduce Motion',
-                subtitle: 'Simpler, calmer interface transitions',
-                value: settings.reduceMotion,
-                onChanged: controller.setReduceMotion,
-              ),
-              const Divider(height: 1),
-              _SwitchRow(
-                title: 'High Contrast Mode',
-                subtitle: 'Enhanced text borders and separations',
-                value: settings.highContrast,
-                onChanged: controller.setHighContrast,
-              ),
-            ],
-          ),
-          const SizedBox(height: Space.lg),
-
-          // Section: Data & About
-          _SectionHeader(title: 'DATA & ABOUT'),
-          _SettingsContainer(
-            children: <Widget>[
-              _TileRow(
-                title: 'Storage Architecture',
-                subtitle: 'Local-first, encrypted offline SQLite',
-                trailing: Text(
-                  'Offline',
-                  style: TextStyle(
-                    color: colours.success,
-                    fontWeight: FontWeight.w600,
+                      DropdownMenuItem(
+                        value: ThemeMode.light,
+                        child: Text('Light'),
+                      ),
+                      DropdownMenuItem(
+                        value: ThemeMode.dark,
+                        child: Text('Dark'),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const Divider(height: 1),
-              _TileRow(
-                title: 'Version',
-                subtitle: 'Kairos v1.0.0 (Production Release)',
-                trailing: Text(
-                  '1.0.0+1',
-                  style: TextStyle(color: colours.textTertiary),
+                const Divider(height: 1),
+                _TileRow(
+                  title: 'Accent Palette',
+                  subtitle: 'Curated Apple-inspired brand accent',
+                  trailing: const SizedBox(),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: Space.xxl),
-        ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    Space.md,
+                    0,
+                    Space.md,
+                    Space.md,
+                  ),
+                  child: Wrap(
+                    spacing: Space.sm,
+                    runSpacing: Space.sm,
+                    children: AccentPalette.values.map((p) {
+                      final isSelected = settings.accentPalette == p;
+                      final activeColor = colours.isDark
+                          ? p.darkColor
+                          : p.lightColor;
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(RadiusTokens.sm),
+                        onTap: () => controller.setAccentPalette(p),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? activeColor.withValues(alpha: 0.2)
+                                : colours.surfaceElevated,
+                            borderRadius: BorderRadius.circular(
+                              RadiusTokens.sm,
+                            ),
+                            border: Border.all(
+                              color: isSelected ? activeColor : colours.border,
+                              width: isSelected ? 2 : 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: activeColor,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                p.label,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                  color: colours.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: Space.lg),
+
+            // Section: Time & Date
+            _SectionHeader(title: 'TIME & DATE'),
+            _SettingsContainer(
+              children: <Widget>[
+                _SwitchRow(
+                  title: '24-Hour Time',
+                  subtitle: 'Use 23:08 instead of 11:08 PM',
+                  value: settings.use24HourFormat,
+                  onChanged: controller.set24HourFormat,
+                ),
+                const Divider(height: 1),
+                _SwitchRow(
+                  title: 'Show Seconds',
+                  subtitle: 'Live ticking seconds on clock header',
+                  value: settings.showSeconds,
+                  onChanged: controller.setShowSeconds,
+                ),
+                const Divider(height: 1),
+                _SwitchRow(
+                  title: 'Start Week on Monday',
+                  subtitle: 'Calendar and week calculation standard',
+                  value: settings.firstDayMonday,
+                  onChanged: controller.setFirstDayMonday,
+                ),
+              ],
+            ),
+            const SizedBox(height: Space.lg),
+
+            // Section: Notifications & Accessibility
+            _SectionHeader(title: 'PREFERENCES & ACCESSIBILITY'),
+            _SettingsContainer(
+              children: <Widget>[
+                _SwitchRow(
+                  title: 'Moment Reminders',
+                  subtitle: 'Local notification ladder before moments arrive',
+                  value: settings.notificationsEnabled,
+                  onChanged: controller.setNotificationsEnabled,
+                ),
+                const Divider(height: 1),
+                _SwitchRow(
+                  title: 'Reduce Motion',
+                  subtitle: 'Simpler, calmer interface transitions',
+                  value: settings.reduceMotion,
+                  onChanged: controller.setReduceMotion,
+                ),
+                const Divider(height: 1),
+                _SwitchRow(
+                  title: 'High Contrast Mode',
+                  subtitle: 'Enhanced text borders and separations',
+                  value: settings.highContrast,
+                  onChanged: controller.setHighContrast,
+                ),
+              ],
+            ),
+            const SizedBox(height: Space.lg),
+
+            // Section: Data & About
+            _SectionHeader(title: 'DATA & ABOUT'),
+            _SettingsContainer(
+              children: <Widget>[
+                _TileRow(
+                  title: 'Storage Architecture',
+                  subtitle: 'Local-first, encrypted offline SQLite',
+                  trailing: Text(
+                    'Offline',
+                    style: TextStyle(
+                      color: colours.success,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const Divider(height: 1),
+                _TileRow(
+                  title: 'Version',
+                  subtitle: 'Kairos v1.0.0 (Production Release)',
+                  trailing: Text(
+                    '1.0.0+1',
+                    style: TextStyle(color: colours.textTertiary),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: Space.xxl),
+          ],
+        ),
       ),
     );
   }
@@ -233,18 +238,7 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final kairos = KairosTheme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: Space.sm),
-      child: Text(
-        title,
-        style: kairos.typeScale.section.copyWith(
-          color: kairos.colours.textTertiary,
-          letterSpacing: 0.6,
-          fontSize: 12,
-        ),
-      ),
-    );
+    return GlassSectionHeader(title: title);
   }
 }
 
@@ -255,13 +249,8 @@ class _SettingsContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colours = KairosTheme.of(context).colours;
-    return Container(
-      decoration: BoxDecoration(
-        color: colours.surface,
-        borderRadius: BorderRadius.circular(RadiusTokens.lg),
-        border: Border.all(color: colours.border),
-      ),
+    return GlassContainer(
+      intensity: GlassIntensity.secondary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: children,

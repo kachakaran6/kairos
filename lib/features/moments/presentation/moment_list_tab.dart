@@ -6,6 +6,7 @@ import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/time/clock_provider.dart';
 import '../../../core/time/countdown.dart';
+import '../../../core/widgets/glass/glass.dart';
 import '../domain/moment.dart';
 import '../domain/moment_phase.dart';
 import 'moment_controller.dart';
@@ -91,24 +92,52 @@ class MomentListTab extends ConsumerWidget {
                 ),
                 SliverList.separated(
                   itemCount: visible.length,
-                  itemBuilder: (context, index) => Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      Space.phoneMargin,
-                      0,
-                      Space.phoneMargin,
-                      index == visible.length - 1 ? 110.0 : 0,
-                    ),
-                    child: MomentCard(
-                      moment: visible[index],
-                      nowUtc: now,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) =>
-                              MomentDetailPage(momentId: visible[index].id),
+                  itemBuilder: (context, index) {
+                    final isBottom = index == visible.length - 1;
+                    final bottomPadding = isBottom ? 110.0 : 0.0;
+
+                    if (upcoming && index == 0) {
+                      return Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          Space.phoneMargin,
+                          0,
+                          Space.phoneMargin,
+                          bottomPadding,
+                        ),
+                        child: _GlassHeroMomentCard(
+                          moment: visible[0],
+                          nowUtc: now,
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  MomentDetailPage(momentId: visible[0].id),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        Space.phoneMargin,
+                        0,
+                        Space.phoneMargin,
+                        bottomPadding,
+                      ),
+                      child: MomentCard(
+                        moment: visible[index],
+                        nowUtc: now,
+                        isTimeline: !upcoming,
+                        isLast: isBottom,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) =>
+                                MomentDetailPage(momentId: visible[index].id),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                   separatorBuilder: (_, __) => const SizedBox(height: Space.sm),
                 ),
               ],
@@ -181,147 +210,32 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final kairos = KairosTheme.of(context);
-    final colours = kairos.colours;
-
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Space.phoneMargin,
-          vertical: Space.xl,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            // Elegant glowing circular illustration badge
-            Container(
-              width: 88,
-              height: 88,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colours.surface,
-                border: Border.all(
-                  color: colours.accent.withValues(alpha: 0.25),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: colours.accent.withValues(alpha: 0.12),
-                    blurRadius: 32,
-                    spreadRadius: 4,
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Icon(
-                  upcoming
-                      ? Icons.arrow_outward_rounded
-                      : Icons.history_rounded,
-                  size: 38,
-                  color: colours.accent,
-                ),
-              ),
-            ),
-            const SizedBox(height: Space.xl),
-            Text(
-              upcoming ? 'Nothing ahead yet' : 'Nothing behind yet',
-              textAlign: TextAlign.center,
-              style: kairos.typeScale.title.copyWith(
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
-                color: colours.textPrimary,
-                letterSpacing: -0.4,
-              ),
-            ),
-            const SizedBox(height: Space.sm),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 320),
-              child: Text(
-                upcoming
-                    ? 'Add the day you are counting to. It will sit here, at the top of your day, until it happens.'
-                    : 'Moments move here once they pass, and count up from then on. Add one that already happened.',
-                textAlign: TextAlign.center,
-                style: kairos.typeScale.body.copyWith(
-                  fontSize: 15,
-                  height: 1.45,
-                  color: colours.textTertiary,
-                ),
-              ),
-            ),
-            const SizedBox(height: Space.xxl),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 280),
-              child: SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton.icon(
-                  onPressed: onAdd,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colours.accent,
-                    foregroundColor: colours.onAccent,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(RadiusTokens.pill),
-                    ),
-                  ),
-                  icon: const Icon(Icons.add, size: 20),
-                  label: Text(
-                    upcoming ? 'Add a moment' : 'Add a past date',
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (upcoming) ...[
-              const SizedBox(height: Space.sm),
-              TextButton(
-                onPressed: () => _showHowMomentsWorkSheet(context),
-                child: Text(
-                  'See how moments work',
-                  style: kairos.typeScale.caption.copyWith(
-                    fontSize: 13,
-                    color: colours.textTertiary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
+    return GlassEmptyState(
+      icon: upcoming ? Icons.arrow_outward_rounded : Icons.history_rounded,
+      heading: upcoming ? 'Nothing ahead yet' : 'Nothing behind yet',
+      description: upcoming
+          ? 'Add the day you are counting to. It will sit here, at the top of your day, until it happens.'
+          : 'Moments move here once they pass, and count up from then on. Add one that already happened.',
+      primaryActionLabel: upcoming ? 'Add a moment' : 'Add a past date',
+      onPrimaryAction: onAdd,
+      secondaryActionLabel: upcoming ? 'See how moments work' : null,
+      onSecondaryAction: upcoming
+          ? () => _showHowMomentsWorkSheet(context)
+          : null,
     );
   }
 
   void _showHowMomentsWorkSheet(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
-    showModalBottomSheet<void>(
+    showGlassBottomSheet<void>(
       context: context,
-      backgroundColor: colours.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: colours.border,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
             Text(
               'How Moments Work',
               style: TextStyle(
@@ -331,21 +245,21 @@ class _EmptyState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _MomentExplainerRow(
+            const _MomentExplainerRow(
               icon: Icons.arrow_outward_rounded,
               title: 'Next: Count Down',
               description:
                   'Track upcoming exams, trips, anniversaries and milestones as they draw closer.',
             ),
             const SizedBox(height: 14),
-            _MomentExplainerRow(
+            const _MomentExplainerRow(
               icon: Icons.radio_button_checked_rounded,
               title: 'Now: Live Clock & Instruments',
               description:
                   'Focus on today with active ongoing moments, alarms, world clock and timers.',
             ),
             const SizedBox(height: 14),
-            _MomentExplainerRow(
+            const _MomentExplainerRow(
               icon: Icons.history_rounded,
               title: 'Then: Count Up',
               description:
@@ -476,11 +390,15 @@ class MomentCard extends StatelessWidget {
     required this.moment,
     required this.nowUtc,
     required this.onTap,
+    this.isTimeline = false,
+    this.isLast = false,
   });
 
   final Moment moment;
   final DateTime nowUtc;
   final VoidCallback onTap;
+  final bool isTimeline;
+  final bool isLast;
 
   @override
   Widget build(BuildContext context) {
@@ -498,85 +416,245 @@ class MomentCard extends StatelessWidget {
       ThenPhase() => (countdown.value, '${countdown.unit} since'),
     };
 
-    return Material(
-      color: colours.surface,
-      borderRadius: RadiusTokens.lgRadius,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: RadiusTokens.lgRadius,
-        child: Container(
-          height: 72,
-          padding: const EdgeInsets.symmetric(horizontal: Space.md),
-          decoration: BoxDecoration(
-            borderRadius: RadiusTokens.lgRadius,
-            border: Border.all(color: colours.border),
-          ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      moment.category.name.toUpperCase(),
-                      style: kairos.typeScale.micro.copyWith(
-                        color: colours.textTertiary,
-                      ),
-                    ),
-                    const SizedBox(height: Space.xxs),
-                    Text(
-                      moment.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: kairos.typeScale.section.copyWith(
-                        color: colours.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (phase is NowPhase) ...<Widget>[
-                      const SizedBox(height: Space.xxs),
-                      ClipRRect(
-                        borderRadius: RadiusTokens.pillRadius,
-                        child: LinearProgressIndicator(
-                          value: phase.fraction,
-                          minHeight: Space.xxs,
-                          backgroundColor: colours.accentMuted,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            colours.accent,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(width: Space.md),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    value,
-                    style: kairos.typeScale.title.copyWith(
-                      color: colours.textPrimary,
-                      fontFeatures: const <FontFeature>[
-                        FontFeature.tabularFigures(),
-                      ],
-                    ),
+    final card = GlassCard(
+      intensity: GlassIntensity.secondary,
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(
+        horizontal: Space.md,
+        vertical: Space.sm,
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  moment.category.name.toUpperCase(),
+                  style: kairos.typeScale.micro.copyWith(
+                    color: colours.textTertiary,
+                    letterSpacing: 0.6,
                   ),
-                  Text(
-                    unit,
-                    style: kairos.typeScale.caption.copyWith(
-                      color: colours.textSecondary,
+                ),
+                const SizedBox(height: Space.xxs),
+                Text(
+                  moment.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: kairos.typeScale.section.copyWith(
+                    color: colours.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (phase is NowPhase) ...<Widget>[
+                  const SizedBox(height: Space.xs),
+                  ClipRRect(
+                    borderRadius: RadiusTokens.pillRadius,
+                    child: LinearProgressIndicator(
+                      value: phase.fraction,
+                      minHeight: Space.xxs,
+                      backgroundColor: colours.accentMuted,
+                      valueColor: AlwaysStoppedAnimation<Color>(colours.accent),
                     ),
                   ),
                 ],
+              ],
+            ),
+          ),
+          const SizedBox(width: Space.md),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Text(
+                value,
+                style: kairos.typeScale.title.copyWith(
+                  color: colours.textPrimary,
+                  fontFeatures: const <FontFeature>[
+                    FontFeature.tabularFigures(),
+                  ],
+                ),
+              ),
+              Text(
+                unit,
+                style: kairos.typeScale.caption.copyWith(
+                  color: colours.textSecondary,
+                ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
+
+    if (!isTimeline) return card;
+
+    // Refined timeline connector for Then screen
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            const SizedBox(height: 18),
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colours.accent,
+                boxShadow: [
+                  BoxShadow(
+                    color: colours.accent.withValues(alpha: 0.4),
+                    blurRadius: 6,
+                  ),
+                ],
+              ),
+            ),
+            if (!isLast)
+              Container(
+                width: 1.5,
+                height: 60,
+                color: colours.border.withValues(alpha: 0.7),
+              ),
+          ],
+        ),
+        const SizedBox(width: Space.sm),
+        Expanded(child: card),
+      ],
+    );
+  }
+}
+
+class _GlassHeroMomentCard extends StatelessWidget {
+  const _GlassHeroMomentCard({
+    required this.moment,
+    required this.nowUtc,
+    required this.onTap,
+  });
+
+  final Moment moment;
+  final DateTime nowUtc;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final kairos = KairosTheme.of(context);
+    final colours = kairos.colours;
+    final countdown = Countdown.format(nowUtc, moment.targetUtc);
+    final date = moment.targetUtc.toLocal();
+    final dateLabel = '${date.day} ${_monthName(date.month)} ${date.year}';
+
+    return GlassCard(
+      intensity: GlassIntensity.primary,
+      onTap: onTap,
+      padding: const EdgeInsets.all(Space.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: colours.accent.withValues(alpha: 0.15),
+                  borderRadius: RadiusTokens.pillRadius,
+                  border: Border.all(
+                    color: colours.accent.withValues(alpha: 0.35),
+                    width: 0.8,
+                  ),
+                ),
+                child: Text(
+                  moment.category.name.toUpperCase(),
+                  style: kairos.typeScale.caption.copyWith(
+                    color: colours.accent,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+              Text(
+                dateLabel,
+                style: kairos.typeScale.caption.copyWith(
+                  color: colours.textTertiary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Space.md),
+          Text(
+            moment.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: kairos.typeScale.title.copyWith(
+              color: colours.textPrimary,
+              fontWeight: FontWeight.w700,
+              fontSize: 22,
+            ),
+          ),
+          if (moment.subtitle != null &&
+              moment.subtitle!.isNotEmpty) ...<Widget>[
+            const SizedBox(height: Space.xxs),
+            Text(
+              moment.subtitle!,
+              style: kairos.typeScale.caption.copyWith(
+                color: colours.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+          ],
+          const SizedBox(height: Space.lg),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: <Widget>[
+              Text(
+                countdown.value,
+                style: kairos.typeScale.display.copyWith(
+                  color: colours.accent,
+                  fontSize: 52,
+                  height: 1.0,
+                  fontFeatures: const <FontFeature>[
+                    FontFeature.tabularFigures(),
+                  ],
+                ),
+              ),
+              const SizedBox(width: Space.xs),
+              Text(
+                countdown.unit,
+                style: kairos.typeScale.section.copyWith(
+                  color: colours.textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _monthName(int month) {
+    const names = <String>[
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return names[month - 1];
   }
 }

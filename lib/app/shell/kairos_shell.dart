@@ -7,6 +7,7 @@ import '../../core/design/radius_tokens.dart';
 import '../../core/design/spacing_tokens.dart';
 import '../../core/theme/theme_extension.dart';
 import '../../core/time/clock_provider.dart';
+import '../../core/widgets/glass/glass.dart';
 import '../../features/alarm/presentation/alarm_controller.dart';
 import '../../features/alarm/presentation/alarm_page.dart';
 import '../../features/focus/presentation/focus_page.dart';
@@ -37,13 +38,15 @@ class _KairosShellState extends State<KairosShell> {
     return Scaffold(
       backgroundColor: kairos.colours.background,
       extendBody: true,
-      body: IndexedStack(
-        index: _index,
-        children: const <Widget>[
-          MomentListTab(upcoming: true),
-          _NowPage(),
-          MomentListTab(upcoming: false),
-        ],
+      body: AtmosphericBackground(
+        child: IndexedStack(
+          index: _index,
+          children: const <Widget>[
+            MomentListTab(upcoming: true),
+            _NowPage(),
+            MomentListTab(upcoming: false),
+          ],
+        ),
       ),
       bottomNavigationBar: KairosBottomNav(
         currentIndex: _index,
@@ -75,7 +78,7 @@ class _NowPage extends ConsumerWidget {
         .toList(growable: false);
 
     return Scaffold(
-      backgroundColor: colours.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(
@@ -94,11 +97,11 @@ class _NowPage extends ConsumerWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: IconButton(
+                  child: GlassIconButton(
                     icon: Icon(
                       Icons.settings_outlined,
-                      color: colours.textTertiary,
-                      size: 24,
+                      color: colours.textPrimary,
+                      size: 22,
                     ),
                     onPressed: () {
                       Navigator.of(context).push(
@@ -111,33 +114,30 @@ class _NowPage extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: Space.lg),
-            Divider(color: colours.border, height: 1, thickness: 1),
-            const SizedBox(height: Space.lg),
-            Text(
-              'INSTRUMENTS',
-              style: kairos.typeScale.section.copyWith(
-                color: colours.textTertiary,
-              ),
-            ),
             const SizedBox(height: Space.md),
+            const GlassSectionHeader(title: 'INSTRUMENTS'),
             _InstrumentGrid(instruments: _instruments),
-            const SizedBox(height: Space.xxl),
-            Text(
-              'HAPPENING NOW',
-              style: kairos.typeScale.section.copyWith(
-                color: colours.textTertiary,
-              ),
-            ),
-            const SizedBox(height: Space.sm),
+            const SizedBox(height: Space.lg),
+            const GlassSectionHeader(title: 'Happening Now'),
             if (ongoing.isEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: Space.xs),
-                child: Text(
-                  'No moment in progress.',
-                  style: kairos.typeScale.body.copyWith(
-                    color: colours.textTertiary,
-                  ),
+              GlassContainer(
+                intensity: GlassIntensity.subtle,
+                padding: const EdgeInsets.all(Space.md),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.hourglass_empty_rounded,
+                      size: 20,
+                      color: colours.textTertiary,
+                    ),
+                    const SizedBox(width: Space.sm),
+                    Text(
+                      'No moment in progress.',
+                      style: kairos.typeScale.body.copyWith(
+                        color: colours.textTertiary,
+                      ),
+                    ),
+                  ],
                 ),
               )
             else
@@ -343,86 +343,75 @@ class _InstrumentTile extends StatelessWidget {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
 
-    return Material(
-      color: colours.surface,
-      borderRadius: RadiusTokens.lgRadius,
-      child: InkWell(
-        borderRadius: RadiusTokens.lgRadius,
-        onTap: () => Navigator.of(
-          context,
-        ).push(MaterialPageRoute<void>(builder: (_) => instrument.page)),
-        child: Container(
-          height: 96,
-          width: span ? double.infinity : null,
-          padding: const EdgeInsets.all(Space.md),
-          decoration: BoxDecoration(
-            borderRadius: RadiusTokens.lgRadius,
-            border: Border.all(
-              color: isLive
-                  ? colours.accent.withValues(alpha: 0.4)
-                  : colours.border,
+    return GlassCard(
+      intensity: GlassIntensity.secondary,
+      borderColor: isLive ? colours.accent.withValues(alpha: 0.5) : null,
+      onTap: () => Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (_) => instrument.page)),
+      child: Container(
+        height: 96,
+        width: span ? double.infinity : null,
+        padding: const EdgeInsets.all(Space.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(
+                  instrument.icon,
+                  size: 22,
+                  color: isLive
+                      ? colours.accent
+                      : colours.accent.withValues(alpha: 0.85),
+                ),
+                if (span)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colours.surfaceElevated,
+                      borderRadius: BorderRadius.circular(RadiusTokens.sm),
+                    ),
+                    child: Text(
+                      'FOCUS MODE',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.8,
+                        color: colours.textTertiary,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(
-                    instrument.icon,
-                    size: 22,
-                    color: isLive
-                        ? colours.accent
-                        : colours.accent.withValues(alpha: 0.8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  instrument.label,
+                  style: kairos.typeScale.section.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: colours.textPrimary,
                   ),
-                  if (span)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colours.surfaceElevated,
-                        borderRadius: BorderRadius.circular(RadiusTokens.sm),
-                      ),
-                      child: Text(
-                        'FOCUS MODE',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.8,
-                          color: colours.textTertiary,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    instrument.label,
-                    style: kairos.typeScale.section.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: colours.textPrimary,
-                    ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  microValue,
+                  style: kairos.typeScale.caption.copyWith(
+                    fontSize: 12,
+                    fontWeight: isLive ? FontWeight.w600 : FontWeight.w500,
+                    color: isLive ? colours.accent : colours.textTertiary,
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    microValue,
-                    style: kairos.typeScale.caption.copyWith(
-                      fontSize: 12,
-                      fontWeight: isLive ? FontWeight.w600 : FontWeight.w500,
-                      color: isLive ? colours.accent : colours.textTertiary,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

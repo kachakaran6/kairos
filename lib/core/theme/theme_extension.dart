@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../design/colour_tokens.dart';
+import '../design/glass_tokens.dart';
 import '../design/type_scale_tokens.dart';
 
 /// Theme extension that carries Kairos tokens through [Theme.of].
 ///
-/// Widgets read colours and type from here rather than importing token
+/// Widgets read colours, glass, and type from here rather than importing token
 /// constants, so a theme swap moves every surface at once.
 @immutable
 class KairosTheme extends ThemeExtension<KairosTheme> {
-  const KairosTheme({required this.colours, required this.typeScale});
+  KairosTheme({
+    required this.colours,
+    required this.typeScale,
+    KairosGlassTokens? glass,
+  }) : glass = glass ?? KairosGlassTokens.fromColours(colours);
 
   final KairosColourTokens colours;
   final KairosTypeScale typeScale;
+  final KairosGlassTokens glass;
 
   static KairosTheme of(BuildContext context) {
     final theme = Theme.of(context).extension<KairosTheme>();
@@ -24,19 +30,28 @@ class KairosTheme extends ThemeExtension<KairosTheme> {
   KairosTheme copyWith({
     KairosColourTokens? colours,
     KairosTypeScale? typeScale,
+    KairosGlassTokens? glass,
   }) {
+    final newColours = colours ?? this.colours;
     return KairosTheme(
-      colours: colours ?? this.colours,
+      colours: newColours,
       typeScale: typeScale ?? this.typeScale,
+      glass:
+          glass ??
+          (colours != null
+              ? KairosGlassTokens.fromColours(newColours)
+              : this.glass),
     );
   }
 
   @override
   KairosTheme lerp(KairosTheme? other, double t) {
     if (other == null) return this;
+    final lerpedColours = _lerpColours(colours, other.colours, t);
     return KairosTheme(
-      colours: _lerpColours(colours, other.colours, t),
+      colours: lerpedColours,
       typeScale: t < 0.5 ? typeScale : other.typeScale,
+      glass: KairosGlassTokens.fromColours(lerpedColours),
     );
   }
 

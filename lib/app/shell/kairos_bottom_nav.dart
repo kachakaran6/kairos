@@ -20,7 +20,6 @@ class KairosBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
-    final colours = kairos.colours;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Padding(
@@ -32,25 +31,17 @@ class KairosBottomNav extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(RadiusTokens.pill),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(
+            sigmaX: kairos.glass.primaryBlur,
+            sigmaY: kairos.glass.primaryBlur,
+          ),
           child: Container(
             height: 64,
             decoration: BoxDecoration(
-              color: colours.surface.withValues(alpha: 0.85),
+              color: kairos.glass.primaryBackground,
               borderRadius: BorderRadius.circular(RadiusTokens.pill),
-              border: Border.all(
-                color: colours.border.withValues(alpha: 0.8),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(
-                    alpha: colours.isDark ? 0.35 : 0.08,
-                  ),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              border: Border.all(color: kairos.glass.primaryBorder, width: 1.2),
+              boxShadow: kairos.glass.heroShadow,
             ),
             child: Row(
               children: <Widget>[
