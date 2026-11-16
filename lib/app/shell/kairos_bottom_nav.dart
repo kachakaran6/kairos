@@ -1,10 +1,12 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
+import '../../core/design/radius_tokens.dart';
 import '../../core/design/spacing_tokens.dart';
 import '../../core/theme/theme_extension.dart';
 
-/// Custom three-tab bottom navigation per spec §6.3.
-/// No pill, no Material component. Colour change + scale is the affordance.
+/// Floating pill bottom navigation bar with Apple-inspired frosted glass aesthetic.
 class KairosBottomNav extends StatelessWidget {
   const KairosBottomNav({
     super.key,
@@ -19,48 +21,69 @@ class KairosBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
-    final bottom = MediaQuery.of(context).padding.bottom;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colours.background,
-        border: Border(top: BorderSide(color: colours.border, width: 1)),
+    return Padding(
+      padding: EdgeInsets.only(
+        left: Space.phoneMargin,
+        right: Space.phoneMargin,
+        bottom: bottomPadding > 0 ? bottomPadding : Space.md,
       ),
-      padding: EdgeInsets.only(bottom: bottom),
-      child: SizedBox(
-        height: 72,
-        child: Row(
-          children: <Widget>[
-            _NavItem(
-              index: 0,
-              label: 'Next',
-              icon: const _NextIcon(),
-              currentIndex: currentIndex,
-              onTap: onChanged,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(RadiusTokens.pill),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            height: 64,
+            decoration: BoxDecoration(
+              color: colours.surface.withValues(alpha: 0.85),
+              borderRadius: BorderRadius.circular(RadiusTokens.pill),
+              border: Border.all(
+                color: colours.border.withValues(alpha: 0.8),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: colours.isDark ? 0.35 : 0.08),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            _NavItem(
-              index: 1,
-              label: 'Now',
-              icon: const _NowIcon(),
-              currentIndex: currentIndex,
-              onTap: onChanged,
+            child: Row(
+              children: <Widget>[
+                _FloatingNavItem(
+                  index: 0,
+                  label: 'Next',
+                  icon: const _NextIcon(),
+                  currentIndex: currentIndex,
+                  onTap: onChanged,
+                ),
+                _FloatingNavItem(
+                  index: 1,
+                  label: 'Now',
+                  icon: const _NowIcon(),
+                  currentIndex: currentIndex,
+                  onTap: onChanged,
+                ),
+                _FloatingNavItem(
+                  index: 2,
+                  label: 'Then',
+                  icon: const _ThenIcon(),
+                  currentIndex: currentIndex,
+                  onTap: onChanged,
+                ),
+              ],
             ),
-            _NavItem(
-              index: 2,
-              label: 'Then',
-              icon: const _ThenIcon(),
-              currentIndex: currentIndex,
-              onTap: onChanged,
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _NavItem extends StatelessWidget {
-  const _NavItem({
+class _FloatingNavItem extends StatelessWidget {
+  const _FloatingNavItem({
     required this.index,
     required this.label,
     required this.icon,
@@ -74,43 +97,57 @@ class _NavItem extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
+  bool get _selected => index == currentIndex;
+
   @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
-    final active = index == currentIndex;
-    final color = active ? colours.accent : colours.textTertiary;
 
     return Expanded(
-      child: Semantics(
-        button: true,
-        selected: active,
-        label: label,
+      child: Material(
+        color: Colors.transparent,
         child: InkWell(
+          borderRadius: BorderRadius.circular(RadiusTokens.pill),
           onTap: () => onTap(index),
-          child: SizedBox(
-            height: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                AnimatedScale(
-                  scale: active ? 1.06 : 1.0,
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOutCubic,
-                  child: IconTheme(
-                    data: IconThemeData(color: color, size: 24),
-                    child: icon,
+          child: Center(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: _selected
+                    ? colours.accent.withValues(alpha: 0.14)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(RadiusTokens.pill),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  AnimatedScale(
+                    scale: _selected ? 1.08 : 1.0,
+                    duration: const Duration(milliseconds: 200),
+                    child: IconTheme(
+                      data: IconThemeData(
+                        size: 20,
+                        color: _selected ? colours.accent : colours.textTertiary,
+                      ),
+                      child: icon,
+                    ),
                   ),
-                ),
-                const SizedBox(height: Space.xxs),
-                Text(
-                  label,
-                  style: kairos.typeScale.micro.copyWith(
-                    color: active ? colours.textPrimary : colours.textTertiary,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(width: Space.xs),
+                  Text(
+                    label,
+                    style: kairos.typeScale.caption.copyWith(
+                      fontSize: 12,
+                      fontWeight: _selected ? FontWeight.w700 : FontWeight.w500,
+                      color: _selected ? colours.accent : colours.textTertiary,
+                      letterSpacing: 0.2,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -119,57 +156,45 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-// ---- Custom tab glyphs (§5.8), drawn as CustomPainter, 24x24, 1.75pt stroke ----
-
 class _NextIcon extends StatelessWidget {
   const _NextIcon();
 
   @override
   Widget build(BuildContext context) {
     final color = IconTheme.of(context).color ?? Colors.white;
-    return CustomPaint(size: const Size(24, 24), painter: _NextPainter(color));
+    return CustomPaint(
+      size: const Size.square(22),
+      painter: _NextIconPainter(color: color),
+    );
   }
 }
 
-class _NextPainter extends CustomPainter {
-  _NextPainter(this.color);
+class _NextIconPainter extends CustomPainter {
+  const _NextIconPainter({required this.color});
+
   final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 1.75
+      ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
-    final c = Offset(size.width / 2, size.height / 2);
-    final r = size.width / 2 - 2;
-    // Circle with a gap at top-right (~45deg region).
-    canvas.drawArc(
-      Rect.fromCircle(center: c, radius: r),
-      0.9,
-      4.2,
-      false,
-      paint,
-    );
-    // Arrow leaving the gap, pointing up-right.
-    final start = Offset(c.dx + r * 0.7, c.dy - r * 0.7);
-    canvas.drawLine(start, start + const Offset(5, -5), paint);
-    canvas.drawLine(
-      start + const Offset(5, -5),
-      start + const Offset(2, -5),
-      paint,
-    );
-    canvas.drawLine(
-      start + const Offset(5, -5),
-      start + const Offset(5, -2),
-      paint,
-    );
+
+    final rect = Rect.fromLTWH(2, 2, size.width - 4, size.height - 4);
+    canvas.drawArc(rect, 0.45, 4.9, false, paint);
+
+    final tip = Offset(size.width - 3, 3);
+    canvas.drawLine(Offset(size.width * 0.48, size.height * 0.52), tip, paint);
+    canvas.drawLine(tip, Offset(tip.dx - 6, tip.dy), paint);
+    canvas.drawLine(tip, Offset(tip.dx, tip.dy + 6), paint);
   }
 
   @override
-  bool shouldRepaint(covariant _NextPainter old) => old.color != color;
+  bool shouldRepaint(covariant _NextIconPainter oldDelegate) =>
+      oldDelegate.color != color;
 }
 
 class _NowIcon extends StatelessWidget {
@@ -178,32 +203,38 @@ class _NowIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = IconTheme.of(context).color ?? Colors.white;
-    return CustomPaint(size: const Size(24, 24), painter: _NowPainter(color));
+    return CustomPaint(
+      size: const Size.square(22),
+      painter: _NowIconPainter(color: color),
+    );
   }
 }
 
-class _NowPainter extends CustomPainter {
-  _NowPainter(this.color);
+class _NowIconPainter extends CustomPainter {
+  const _NowIconPainter({required this.color});
+
   final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    final stroke = Paint()
       ..color = color
-      ..strokeWidth = 1.75
-      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
-    final c = Offset(size.width / 2, size.height / 2);
-    canvas.drawCircle(c, 9, paint);
-    canvas.drawCircle(c, 4, paint);
-    final dot = Paint()
+
+    final center = Offset(size.width / 2, size.height / 2);
+    canvas.drawCircle(center, size.width / 2 - 2, stroke);
+    canvas.drawCircle(center, size.width / 2 - 6, stroke);
+
+    final fill = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
-    canvas.drawCircle(c, 1.6, dot);
+    canvas.drawCircle(center, 2.2, fill);
   }
 
   @override
-  bool shouldRepaint(covariant _NowPainter old) => old.color != color;
+  bool shouldRepaint(covariant _NowIconPainter oldDelegate) =>
+      oldDelegate.color != color;
 }
 
 class _ThenIcon extends StatelessWidget {
@@ -212,51 +243,48 @@ class _ThenIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = IconTheme.of(context).color ?? Colors.white;
-    return CustomPaint(size: const Size(24, 24), painter: _ThenPainter(color));
+    return CustomPaint(
+      size: const Size.square(22),
+      painter: _ThenIconPainter(color: color),
+    );
   }
 }
 
-class _ThenPainter extends CustomPainter {
-  _ThenPainter(this.color);
+class _ThenIconPainter extends CustomPainter {
+  const _ThenIconPainter({required this.color});
+
   final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 1.75
+      ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
-    final c = Offset(size.width / 2, size.height / 2);
-    final r = size.width / 2 - 2;
-    canvas.drawCircle(c, r, paint);
-    // Trail of two arcs behind (left side), fading.
-    final fade1 = Paint()
-      ..color = color.withValues(alpha: 0.55)
-      ..strokeWidth = 1.75
+
+    final center = Offset(size.width / 2 + 1, size.height / 2);
+    canvas.drawCircle(center, size.width / 2 - 3, paint);
+
+    canvas.drawLine(center, Offset(center.dx, center.dy - 5.5), paint);
+    canvas.drawLine(center, Offset(center.dx - 4.5, center.dy), paint);
+
+    final trail = Paint()
+      ..color = color.withValues(alpha: 0.45)
+      ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
-    final fade2 = Paint()
-      ..color = color.withValues(alpha: 0.25)
-      ..strokeWidth = 1.75
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
+
     canvas.drawArc(
-      Rect.fromCircle(center: c, radius: r + 2),
-      2.6,
-      0.9,
+      Rect.fromCircle(center: Offset(center.dx - 3, center.dy), radius: 5.5),
+      2.0,
+      2.4,
       false,
-      fade1,
-    );
-    canvas.drawArc(
-      Rect.fromCircle(center: c, radius: r + 4),
-      2.7,
-      0.7,
-      false,
-      fade2,
+      trail,
     );
   }
 
   @override
-  bool shouldRepaint(covariant _ThenPainter old) => old.color != color;
+  bool shouldRepaint(covariant _ThenIconPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

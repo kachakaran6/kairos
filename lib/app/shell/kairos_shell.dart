@@ -36,6 +36,7 @@ class _KairosShellState extends State<KairosShell> {
     final kairos = KairosTheme.of(context);
     return Scaffold(
       backgroundColor: kairos.colours.background,
+      extendBody: true,
       body: IndexedStack(
         index: _index,
         children: const <Widget>[
