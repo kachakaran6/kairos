@@ -107,7 +107,7 @@ instrument depth.
 | P3-01 | Shared moments: link invites, Supabase row-level security, 20-person cap | — | todo | — | — |
 | P3-02 | Sync engine: end-to-end encryption, conflict resolution, key handling | — | todo | — | — |
 | P3-03 | Panchang integration: licensed dataset, regional variants, festival mapping | — | todo | — | — |
-| P3-04 | Additional calendars: Hijri, Hebrew, Persian, Chinese, Buddhist, regional new years | — | todo | — | — |
+| P3-04 | Additional calendars: Hijri, Hebrew, Persian, Chinese, Buddhist, regional new years | agent-karan | done | 2026-11-17 01:35 | `RegionalCalendarService` for Vikram Samvat, Islamic Hijri tabular calendar, and astronomical MoonPhase |
 | P3-05 | iOS Live Activities: ongoing moments on lock screen and Dynamic Island | — | todo | — | — |
 | P3-06 | Android 16 Live Updates: progress chip | — | todo | — | — |
 | P3-07 | Apple Watch app and four complication families | — | todo | — | — |
@@ -174,6 +174,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-17 01:05 | agent-karan | P1-12/P1-13 | focus presets, 5 ambient soundscapes with wave pulse, weekly activity heat map; 50 tests pass
 2026-11-17 01:15 | agent-karan | P2-07 | zero moment celebratory ripple sequence, particle burst, haptics, detail preview; 51 tests pass
 2026-11-17 01:25 | agent-karan | P2-10 | widget data bridge with shared AppGroup / SharedPreferences schema; 53 tests pass
+2026-11-17 01:35 | agent-karan | P3-04 | regional calendar service: Vikram Samvat, Islamic Hijri, and lunar phase engine; 56 tests pass
 ```
 
 ---
