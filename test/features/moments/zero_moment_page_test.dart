@@ -5,7 +5,9 @@ import 'package:kairos/features/moments/domain/moment.dart';
 import 'package:kairos/features/moments/presentation/zero_moment_page.dart';
 
 void main() {
-  testWidgets('ZeroMomentPage renders celebratory statement and moment title', (tester) async {
+  testWidgets('ZeroMomentPage renders celebratory statement and moment title', (
+    tester,
+  ) async {
     final moment = Moment(
       id: 'm1',
       title: 'Graduation Ceremony',

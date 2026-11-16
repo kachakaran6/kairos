@@ -94,7 +94,7 @@ instrument depth.
 | P2-07 | Zero moment screen with Rive animation and haptic | agent-karan | done | 2026-11-17 01:15 | Full-bleed zero moment celebration sequence with radiating ripples, confetti burst, and haptic progression |
 | P2-08 | Share cards: 9:16, 1:1, 16:9, no watermark | — | todo | — | — |
 | P2-09 | Reminder ladder UI and scheduling | — | todo | — | — |
-| P2-10 | Widget data bridge: App Group contract, SharedPreferences contract, refresh triggers | — | todo | — | — |
+| P2-10 | Widget data bridge: App Group contract, SharedPreferences contract, refresh triggers | agent-karan | done | 2026-11-17 01:25 | `KairosWidgetPayload` schema + `MethodChannelWidgetBridge` for iOS AppGroup / Android Glance sync |
 | P2-11 | iOS WidgetKit extension: first six designs (Dial, Odometer, Photo, Ring, Stack, Split) | — | todo | — | — |
 | P2-12 | Android Glance widgets: the same six designs, resizable | — | todo | — | — |
 | P2-13 | Lock-screen surfaces: iOS accessory families, Android 14 keyguard widgets | — | todo | — | — |
@@ -173,6 +173,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-17 00:55 | agent-karan | P1-06/P1-07 | alarm 90-min REM sleep cycles, gradual volume ramp, shake/math/phrase dismissal; 49 tests pass
 2026-11-17 01:05 | agent-karan | P1-12/P1-13 | focus presets, 5 ambient soundscapes with wave pulse, weekly activity heat map; 50 tests pass
 2026-11-17 01:15 | agent-karan | P2-07 | zero moment celebratory ripple sequence, particle burst, haptics, detail preview; 51 tests pass
+2026-11-17 01:25 | agent-karan | P2-10 | widget data bridge with shared AppGroup / SharedPreferences schema; 53 tests pass
 ```
 
 ---
