@@ -13,6 +13,7 @@ import '../../features/moments/domain/moment_phase.dart';
 import '../../features/moments/presentation/moment_controller.dart';
 import '../../features/moments/presentation/moment_detail_page.dart';
 import '../../features/moments/presentation/moment_list_tab.dart';
+import '../../features/settings/presentation/settings_page.dart';
 import '../../features/stopwatch/presentation/stopwatch_page.dart';
 import '../../features/timer/presentation/timer_page.dart';
 import '../../features/world_clock/presentation/world_clock_page.dart';
@@ -80,7 +81,22 @@ class _NowPage extends ConsumerWidget {
             vertical: Space.lg,
           ),
           children: <Widget>[
-            _LiveClockBlock(clock: ref.read(clockProvider)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _LiveClockBlock(clock: ref.read(clockProvider)),
+                IconButton(
+                  icon: Icon(Icons.settings_outlined, color: colours.textTertiary),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const SettingsPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
             const SizedBox(height: Space.xxl),
             Text(
               'INSTRUMENTS',
