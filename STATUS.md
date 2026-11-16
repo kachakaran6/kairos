@@ -70,8 +70,8 @@ instrument depth.
 | P1-03 | World clock: globe with day/night terminator, city list with sun arcs | agent-karan | done | 2026-11-17 00:45 | `flutter test` 49 passed; globe widget + day/night terminator + sun indicators |
 | P1-04 | World clock: time-travel slider and meeting planner | agent-karan | done | 2026-11-17 00:45 | Slider from -12h to +12h in 30m steps dynamically shifts city times |
 | P1-05 | Alarm scheduling: exact alarms, foreground service, DND and silent-mode override | — | todo | — | — |
-| P1-06 | Alarm: wake window, 90-minute cycle suggestion, volume ramp | — | todo | — | — |
-| P1-07 | Alarm dismissal: math, typed phrase, QR code, shake | — | todo | — | — |
+| P1-06 | Alarm: wake window, 90-minute cycle suggestion, volume ramp | agent-karan | done | 2026-11-17 00:55 | Wake window (0/15/30m), 90m cycle suggestions chips, 0/1/5/10m volume ramp |
+| P1-07 | Alarm dismissal: math, typed phrase, QR code, shake | agent-karan | done | 2026-11-17 00:55 | Interactive math sum solver, exact phrase typing, 10-shake detector with haptics |
 | P1-08 | Alarm: holiday skip, skip-once, wake analytics | — | todo | — | — |
 | P1-09 | Timer: concurrent timers, recipes, multi-stage chaining | agent-karan | partial | 2026-11-16 23:20 | Single timer with 1/5/10/25-minute presets, add-minute, reset; concurrent timers and recipes open |
 | P1-10 | Timer: interval mode, voice announcement, loop | — | todo | — | — |
@@ -170,6 +170,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-16 17:34 | agent-karan | P0-03 | dark/light themes wired through KairosTheme extension; shell P0-08 shipped; 16 tests pass, APK built
 2026-11-16 23:20 | agent-karan | P0-05/P2 | countdown engine + moments domain, repository, editor, Next/Then lists and Now ongoing cards; 29 tests pass
 2026-11-17 00:45 | agent-karan | P1-03/P1-04 | interactive world clock globe with day/night terminator + time-travel planner slider; 49 tests pass
+2026-11-17 00:55 | agent-karan | P1-06/P1-07 | alarm 90-min REM sleep cycles, gradual volume ramp, shake/math/phrase dismissal; 49 tests pass
 ```
 
 ---

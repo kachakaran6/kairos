@@ -82,7 +82,11 @@ void main() {
     final alarm = _alarm(
       repeatDays: <int>{DateTime.tuesday, DateTime.thursday},
       skipNext: true,
-    ).copyWith(wakeWindowMinutes: 30, dismissal: AlarmDismissal.math);
+    ).copyWith(
+      wakeWindowMinutes: 30,
+      volumeRampMinutes: 5,
+      dismissal: AlarmDismissal.shake,
+    );
 
     final decoded = Alarm.fromJson(alarm.toJson());
 
@@ -91,7 +95,8 @@ void main() {
     expect(decoded.timeLabel, '07:30');
     expect(decoded.repeatDays, alarm.repeatDays);
     expect(decoded.wakeWindowMinutes, 30);
-    expect(decoded.dismissal, AlarmDismissal.math);
+    expect(decoded.volumeRampMinutes, 5);
+    expect(decoded.dismissal, AlarmDismissal.shake);
     expect(decoded.skipNext, isTrue);
   });
 }

@@ -13,6 +13,7 @@ class Alarm {
     this.repeatDays = const <int>{},
     this.enabled = true,
     this.wakeWindowMinutes = 0,
+    this.volumeRampMinutes = 0,
     this.dismissal = AlarmDismissal.tap,
     this.skipNext = false,
     required this.createdAtUtc,
@@ -29,6 +30,9 @@ class Alarm {
 
   /// 0, 15 or 30 minutes. The alarm may ring anywhere inside the window.
   final int wakeWindowMinutes;
+
+  /// 0 (immediate), 1, 5, or 10 minutes gradual ramp to full volume.
+  final int volumeRampMinutes;
   final AlarmDismissal dismissal;
 
   /// Skips the next occurrence without deleting the alarm.
@@ -103,6 +107,7 @@ class Alarm {
     Set<int>? repeatDays,
     bool? enabled,
     int? wakeWindowMinutes,
+    int? volumeRampMinutes,
     AlarmDismissal? dismissal,
     bool? skipNext,
   }) {
@@ -114,6 +119,7 @@ class Alarm {
       repeatDays: repeatDays ?? this.repeatDays,
       enabled: enabled ?? this.enabled,
       wakeWindowMinutes: wakeWindowMinutes ?? this.wakeWindowMinutes,
+      volumeRampMinutes: volumeRampMinutes ?? this.volumeRampMinutes,
       dismissal: dismissal ?? this.dismissal,
       skipNext: skipNext ?? this.skipNext,
       createdAtUtc: createdAtUtc,
@@ -128,6 +134,7 @@ class Alarm {
     'repeatDays': repeatDays.toList()..sort(),
     'enabled': enabled,
     'wakeWindowMinutes': wakeWindowMinutes,
+    'volumeRampMinutes': volumeRampMinutes,
     'dismissal': dismissal.name,
     'skipNext': skipNext,
     'createdAtUtc': createdAtUtc.toUtc().toIso8601String(),
@@ -144,6 +151,7 @@ class Alarm {
           .toSet(),
       enabled: json['enabled'] as bool? ?? true,
       wakeWindowMinutes: json['wakeWindowMinutes'] as int? ?? 0,
+      volumeRampMinutes: json['volumeRampMinutes'] as int? ?? 0,
       dismissal: AlarmDismissal.values.firstWhere(
         (value) => value.name == json['dismissal'],
         orElse: () => AlarmDismissal.tap,

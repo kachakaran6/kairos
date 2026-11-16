@@ -29,6 +29,7 @@ class AlarmListNotifier extends AsyncNotifier<List<Alarm>> {
     required int minute,
     Set<int> repeatDays = const <int>{},
     int wakeWindowMinutes = 0,
+    int volumeRampMinutes = 0,
     AlarmDismissal dismissal = AlarmDismissal.tap,
   }) async {
     final now = ref.read(clockProvider).nowUtc();
@@ -39,6 +40,7 @@ class AlarmListNotifier extends AsyncNotifier<List<Alarm>> {
       minute: minute,
       repeatDays: repeatDays,
       wakeWindowMinutes: wakeWindowMinutes,
+      volumeRampMinutes: volumeRampMinutes,
       dismissal: dismissal,
       createdAtUtc: now,
     );

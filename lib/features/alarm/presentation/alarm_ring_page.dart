@@ -15,11 +15,13 @@ class AlarmRingPage extends StatefulWidget {
     super.key,
     required this.label,
     required this.timeLabel,
+    this.volumeRampMinutes = 0,
     this.dismissal = AlarmDismissal.tap,
   });
 
   final String label;
   final String timeLabel;
+  final int volumeRampMinutes;
   final AlarmDismissal dismissal;
 
   @override
@@ -75,23 +77,8 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
   Future<bool> _shakeInstructions() async {
     final answer = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Shake the phone'),
-        content: const Text(
-          'Shake the phone to dismiss. If shaking is not possible, tap the '
-          'fallback below.',
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text("I'm awake"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Keep ringing'),
-          ),
-        ],
-      ),
+      barrierDismissible: false,
+      builder: (_) => const _ShakeDismissDialog(),
     );
     return answer ?? false;
   }
@@ -129,6 +116,15 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
                   color: kairos.colours.textPrimary,
                 ),
               ),
+              if (widget.volumeRampMinutes > 0) ...<Widget>[
+                const SizedBox(height: Space.xs),
+                Text(
+                  'Volume ramping up over ${widget.volumeRampMinutes}m',
+                  style: kairos.typeScale.caption.copyWith(
+                    color: kairos.colours.textSecondary,
+                  ),
+                ),
+              ],
               const Spacer(),
               SizedBox(
                 width: double.infinity,
@@ -267,6 +263,84 @@ class _PhraseDismissDialogState extends State<_PhraseDismissDialog> {
           child: const Text('Keep ringing'),
         ),
         TextButton(onPressed: _check, child: const Text('Dismiss')),
+      ],
+    );
+  }
+}
+
+class _ShakeDismissDialog extends StatefulWidget {
+  const _ShakeDismissDialog();
+
+  @override
+  State<_ShakeDismissDialog> createState() => _ShakeDismissDialogState();
+}
+
+class _ShakeDismissDialogState extends State<_ShakeDismissDialog> {
+  static const int _targetShakes = 10;
+  int _shakes = 0;
+
+  void _onShake() {
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _shakes++;
+      if (_shakes >= _targetShakes) {
+        Navigator.of(context).pop(true);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final kairos = KairosTheme.of(context);
+    final progress = _shakes / _targetShakes;
+
+    return AlertDialog(
+      title: const Text('Shake to dismiss'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const Text(
+            'Shake the device or tap the button to wake up your body and mind.',
+          ),
+          const SizedBox(height: Space.lg),
+          Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              SizedBox(
+                width: 80,
+                height: 80,
+                child: CircularProgressIndicator(
+                  value: progress,
+                  strokeWidth: 6,
+                  color: kairos.colours.accent,
+                  backgroundColor: kairos.colours.surfaceElevated,
+                ),
+              ),
+              Text(
+                '$_shakes / $_targetShakes',
+                style: kairos.typeScale.body.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Space.md),
+          ElevatedButton.icon(
+            onPressed: _onShake,
+            icon: const Icon(Icons.vibration),
+            label: const Text('Simulate Shake'),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Keep ringing'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text("I'm awake (override)"),
+        ),
       ],
     );
   }

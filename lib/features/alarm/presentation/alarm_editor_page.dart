@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design/radius_tokens.dart';
@@ -23,6 +24,7 @@ class _AlarmEditorPageState extends ConsumerState<AlarmEditorPage> {
   late final TextEditingController _label;
   late Set<int> _repeatDays;
   late int _wakeWindow;
+  late int _volumeRamp;
   late AlarmDismissal _dismissal;
   late bool _skipNext;
 
@@ -38,6 +40,7 @@ class _AlarmEditorPageState extends ConsumerState<AlarmEditorPage> {
     _label = TextEditingController(text: alarm?.label ?? '');
     _repeatDays = Set<int>.of(alarm?.repeatDays ?? const <int>{});
     _wakeWindow = alarm?.wakeWindowMinutes ?? 0;
+    _volumeRamp = alarm?.volumeRampMinutes ?? 0;
     _dismissal = alarm?.dismissal ?? AlarmDismissal.tap;
     _skipNext = alarm?.skipNext ?? false;
   }
@@ -70,6 +73,7 @@ class _AlarmEditorPageState extends ConsumerState<AlarmEditorPage> {
           minute: _minute,
           repeatDays: _repeatDays,
           wakeWindowMinutes: _wakeWindow,
+          volumeRampMinutes: _volumeRamp,
           dismissal: _dismissal,
           skipNext: _skipNext,
         ),
@@ -81,6 +85,7 @@ class _AlarmEditorPageState extends ConsumerState<AlarmEditorPage> {
         minute: _minute,
         repeatDays: _repeatDays,
         wakeWindowMinutes: _wakeWindow,
+        volumeRampMinutes: _volumeRamp,
         dismissal: _dismissal,
       );
     }
@@ -220,6 +225,74 @@ class _AlarmEditorPageState extends ConsumerState<AlarmEditorPage> {
               ),
             ),
             const SizedBox(height: Space.lg),
+            Text('Gradual volume ramp', style: kairos.typeScale.section),
+            const SizedBox(height: Space.xs),
+            SegmentedButton<int>(
+              segments: const <ButtonSegment<int>>[
+                ButtonSegment(value: 0, label: Text('Instant')),
+                ButtonSegment(value: 1, label: Text('1 min')),
+                ButtonSegment(value: 5, label: Text('5 min')),
+                ButtonSegment(value: 10, label: Text('10 min')),
+              ],
+              selected: <int>{_volumeRamp},
+              onSelectionChanged: (value) =>
+                  setState(() => _volumeRamp = value.first),
+            ),
+            const SizedBox(height: Space.xxs),
+            Text(
+              'Gently ascends from silence to full ringtone volume over the duration.',
+              style: kairos.typeScale.caption.copyWith(
+                color: kairos.colours.textSecondary,
+              ),
+            ),
+            const SizedBox(height: Space.lg),
+            Container(
+              padding: const EdgeInsets.all(Space.md),
+              decoration: BoxDecoration(
+                color: kairos.colours.surface,
+                borderRadius: RadiusTokens.mdRadius,
+                border: Border.all(color: kairos.colours.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.bedtime_outlined,
+                        size: 16,
+                        color: kairos.colours.accent,
+                      ),
+                      const SizedBox(width: Space.xs),
+                      Text(
+                        '90-Minute Sleep Cycles',
+                        style: kairos.typeScale.caption.copyWith(
+                          color: kairos.colours.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: Space.xxs),
+                  Text(
+                    'Waking at the end of a cycle avoids sleep inertia. Suggested wake times from now:',
+                    style: kairos.typeScale.caption.copyWith(
+                      color: kairos.colours.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: Space.sm),
+                  Wrap(
+                    spacing: Space.xs,
+                    runSpacing: Space.xs,
+                    children: <Widget>[
+                      for (final cycle in const <int>[3, 4, 5, 6])
+                        _buildCycleChip(context, cycle),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: Space.lg),
             DropdownButtonFormField<AlarmDismissal>(
               initialValue: _dismissal,
               decoration: const InputDecoration(labelText: 'Dismissal'),
@@ -264,6 +337,7 @@ class _AlarmEditorPageState extends ConsumerState<AlarmEditorPage> {
                         ? 'Alarm'
                         : _label.text.trim(),
                     timeLabel: timeLabel,
+                    volumeRampMinutes: _volumeRamp,
                     dismissal: _dismissal,
                   ),
                 ),
@@ -302,5 +376,35 @@ class _AlarmEditorPageState extends ConsumerState<AlarmEditorPage> {
       DateTime.sunday: 'S',
     };
     return labels[day] ?? '?';
+  }
+
+  Widget _buildCycleChip(BuildContext context, int cycles) {
+    final kairos = KairosTheme.of(context);
+    final now = DateTime.now();
+    final wakeTime = now.add(Duration(minutes: cycles * 90));
+    final wakeHour = wakeTime.hour.toString().padLeft(2, '0');
+    final wakeMin = wakeTime.minute.toString().padLeft(2, '0');
+    final durationHours = (cycles * 1.5)
+        .toStringAsFixed(1)
+        .replaceAll('.0', '');
+
+    return ActionChip(
+      backgroundColor: kairos.colours.surface,
+      side: BorderSide(color: kairos.colours.border),
+      label: Text(
+        '$cycles cycles ($durationHours h) → $wakeHour:$wakeMin',
+        style: kairos.typeScale.caption.copyWith(
+          color: kairos.colours.textPrimary,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      onPressed: () {
+        HapticFeedback.selectionClick();
+        setState(() {
+          _hour = wakeTime.hour;
+          _minute = wakeTime.minute;
+        });
+      },
+    );
   }
 }
