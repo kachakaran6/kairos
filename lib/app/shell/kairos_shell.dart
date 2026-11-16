@@ -7,6 +7,7 @@ import '../../core/design/radius_tokens.dart';
 import '../../core/design/spacing_tokens.dart';
 import '../../core/theme/theme_extension.dart';
 import '../../core/time/clock_provider.dart';
+import '../../features/alarm/presentation/alarm_controller.dart';
 import '../../features/alarm/presentation/alarm_page.dart';
 import '../../features/focus/presentation/focus_page.dart';
 import '../../features/moments/domain/moment_phase.dart';
@@ -83,21 +84,27 @@ class _NowPage extends ConsumerWidget {
           children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _LiveClockBlock(clock: ref.read(clockProvider)),
-                IconButton(
-                  icon: Icon(Icons.settings_outlined, color: colours.textTertiary),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const SettingsPage(),
-                      ),
-                    );
-                  },
+                Expanded(child: _LiveClockBlock(clock: ref.read(clockProvider))),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: IconButton(
+                    icon: Icon(Icons.settings_outlined, color: colours.textTertiary, size: 24),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const SettingsPage(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: Space.xxl),
+            const SizedBox(height: Space.lg),
+            Divider(color: colours.border, height: 1, thickness: 1),
+            const SizedBox(height: Space.lg),
             Text(
               'INSTRUMENTS',
               style: kairos.typeScale.section.copyWith(
@@ -236,56 +243,97 @@ class _LiveClockBlockState extends State<_LiveClockBlock> {
         const SizedBox(height: Space.xs),
         Text(
           date,
-          style: kairos.typeScale.body.copyWith(color: colours.textTertiary),
+          style: kairos.typeScale.body.copyWith(
+            color: colours.textTertiary,
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+          ),
         ),
-        const SizedBox(height: Space.lg),
-        Divider(color: colours.border, height: 1, thickness: 1),
       ],
     );
   }
 }
 
-class _InstrumentGrid extends StatelessWidget {
+class _InstrumentGrid extends ConsumerWidget {
   const _InstrumentGrid({required this.instruments});
 
   final List<_Instrument> instruments;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final alarms = ref.watch(alarmListProvider).value ?? const [];
+    final activeAlarm = alarms.where((a) => a.enabled).firstOrNull;
+    final alarmSub = activeAlarm != null
+        ? '${activeAlarm.hour.toString().padLeft(2, '0')}:${activeAlarm.minute.toString().padLeft(2, '0')}'
+        : 'No alarm';
+
     return Column(
       children: <Widget>[
         Row(
           children: <Widget>[
-            Expanded(child: _InstrumentTile(instrument: instruments[0])),
+            Expanded(
+              child: _InstrumentTile(
+                instrument: instruments[0],
+                microValue: '8 cities',
+              ),
+            ),
             const SizedBox(width: Space.sm),
-            Expanded(child: _InstrumentTile(instrument: instruments[1])),
+            Expanded(
+              child: _InstrumentTile(
+                instrument: instruments[1],
+                microValue: alarmSub,
+                isLive: activeAlarm != null,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: Space.sm),
         Row(
           children: <Widget>[
-            Expanded(child: _InstrumentTile(instrument: instruments[2])),
+            Expanded(
+              child: _InstrumentTile(
+                instrument: instruments[2],
+                microValue: 'Presets ready',
+              ),
+            ),
             const SizedBox(width: Space.sm),
-            Expanded(child: _InstrumentTile(instrument: instruments[3])),
+            Expanded(
+              child: _InstrumentTile(
+                instrument: instruments[3],
+                microValue: '00:00.00',
+              ),
+            ),
           ],
         ),
         const SizedBox(height: Space.sm),
-        _InstrumentTile(instrument: instruments[4], span: true),
+        _InstrumentTile(
+          instrument: instruments[4],
+          span: true,
+          microValue: '25 min focus · Ready',
+        ),
       ],
     );
   }
 }
 
 class _InstrumentTile extends StatelessWidget {
-  const _InstrumentTile({required this.instrument, this.span = false});
+  const _InstrumentTile({
+    required this.instrument,
+    required this.microValue,
+    this.span = false,
+    this.isLive = false,
+  });
 
   final _Instrument instrument;
+  final String microValue;
   final bool span;
+  final bool isLive;
 
   @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
+
     return Material(
       color: colours.surface,
       borderRadius: RadiusTokens.lgRadius,
@@ -296,33 +344,66 @@ class _InstrumentTile extends StatelessWidget {
         ).push(MaterialPageRoute<void>(builder: (_) => instrument.page)),
         child: Container(
           height: 96,
-          padding: const EdgeInsets.all(Space.sm),
+          width: span ? double.infinity : null,
+          padding: const EdgeInsets.all(Space.md),
           decoration: BoxDecoration(
             borderRadius: RadiusTokens.lgRadius,
-            border: Border.all(color: colours.border),
+            border: Border.all(
+              color: isLive ? colours.accent.withValues(alpha: 0.4) : colours.border,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Icon(
-                instrument.icon,
-                size: 20,
-                color: colours.accent.withValues(alpha: 0.8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(
+                    instrument.icon,
+                    size: 22,
+                    color: isLive ? colours.accent : colours.accent.withValues(alpha: 0.8),
+                  ),
+                  if (span)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: colours.surfaceElevated,
+                        borderRadius: BorderRadius.circular(RadiusTokens.sm),
+                      ),
+                      child: Text(
+                        'FOCUS MODE',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                          color: colours.textTertiary,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              const SizedBox(height: Space.xxs),
-              Text(
-                instrument.label,
-                style: kairos.typeScale.section.copyWith(
-                  fontSize: 14,
-                  color: colours.textPrimary,
-                ),
-              ),
-              const SizedBox(height: Space.xxs),
-              Text(
-                'Open',
-                style: kairos.typeScale.caption.copyWith(
-                  color: colours.textTertiary,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    instrument.label,
+                    style: kairos.typeScale.section.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: colours.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    microValue,
+                    style: kairos.typeScale.caption.copyWith(
+                      fontSize: 12,
+                      fontWeight: isLive ? FontWeight.w600 : FontWeight.w500,
+                      color: isLive ? colours.accent : colours.textTertiary,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
