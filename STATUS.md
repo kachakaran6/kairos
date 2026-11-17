@@ -163,6 +163,9 @@ Append-only. Format and rules in `AGENTS.md` §9.
 | D-008 | 2026-11-17 | Added google_fonts and lucide_icons for typography and iconography | Provides distinctive grotesque numerals, editorial serif headers, and consistent 1.75 stroke iconography per ADA guidelines | +600KB binary, cached fonts | Yes |
 | D-009 | 2026-11-17 | Android home screen widget suite uses native RemoteViews + TextClock and offscreen Flutter artwork | Zero battery consumption / no CPU wake locks for live ticking digits; rich progress arcs & streak heatmaps rendered via home_widget offscreen | Native Kotlin layouts for 6 families | No |
 | D-010 | 2026-11-17 | Interactive Widget Studio with 6 curated Looks (Terracotta Paper, Midnight Ink, Sakura, Forest Quiet, Mono Graphite, Sunset Glass) | Empowers users to preview and tailor widgets before pinning to home screen with custom opacity and squircle radii | Small stateful configurator in Settings | Yes |
+| D-011 | 2026-11-18 | Native Google Play In-App Updates and Reviews via PlayEcosystemManager and official Play Core ktx libraries | Direct usage of AppUpdateManager and ReviewManager guarantees 100% compliance with Google Play Store native update and review policies with lifecycle-safe recovery | No third-party wrapper overhead, clean MethodChannel | No |
+| D-012 | 2026-11-18 | Samyukt GitHub JSON registry as single source of truth for mobile catalog with strict apps[] and status filtering | Excludes all websites, drafts, and in-progress items; caches locally in SharedPreferences for seamless offline resilience | Lightweight, zero external catalog dependencies | Yes |
+| D-013 | 2026-11-18 | Android Adaptive Icons + Round + Legacy MIPMAP icon suite generated from D:\kairos\assets\kairos-icon.png | Adapts seamlessly to all OEM icon shapes (Circle on Pixel, Squircle on Samsung, Square on OnePlus) with zero black corner clipping, plus Material You monochrome support | Generated across mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi | Yes |
 
 ---
 
@@ -190,6 +193,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-17 23:20 | agent-karan | P3-18 | FontLoader TrueType typography (Arial, Georgia) and Lucide vector icons registered; Ahem blocks eliminated; 32 authentic device screenshots updated across gallery and repo; package migrated to com.samyukt.kairos; release workflow configured; all gates green
 2026-11-17 23:22 | agent-karan | P3-19 | removed redundant flutter-ci.yml and dependabot.yml; retained solely the APK release workflow (.github/workflows/release.yml)
 2026-11-17 23:44 | agent-karan | P2-12/P4-03 | Android home screen widget suite (Clock, World Clock, Next, Then, Interactive, Combo) + in-app Widget Studio with live preview; flutter build apk green, 88 tests pass
+2026-11-18 00:20 | agent-karan | P4-08 | Samyukt Android Ecosystem Standard: Google Play in-app updates & reviews, Our Apps GitHub registry catalog, Rate Now, native share, version info, attribution, and adaptive/round/legacy mobile icon suite; all gates green, 94 tests pass
 ```
 
 ---

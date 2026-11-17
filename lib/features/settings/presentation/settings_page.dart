@@ -4,10 +4,15 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
+import '../../../core/ecosystem/app_version_service.dart';
+import '../../../core/ecosystem/play_review_service.dart';
+import '../../../core/ecosystem/play_update_service.dart';
+import '../../../core/ecosystem/samyukt_share_service.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/widgets/kairos_scaffold.dart';
 import '../../../core/widgets/kairos_segmented_control.dart';
 import '../../../core/widgets/surface_card.dart';
+import '../../ecosystem/presentation/our_apps_page.dart';
 import '../../widgets/presentation/widget_studio_page.dart';
 import '../domain/user_settings.dart';
 import 'settings_controller.dart';
@@ -396,6 +401,89 @@ class SettingsPage extends ConsumerWidget {
 
           const SizedBox(height: Space.xl),
 
+          // Samyukt Ecosystem
+          _SectionHeader(title: 'SAMYUKT ECOSYSTEM'),
+          SurfaceCard(
+            padding: const EdgeInsets.symmetric(vertical: Space.xs),
+            child: Column(
+              children: [
+                _ActionTile(
+                  icon: LucideIcons.layoutGrid,
+                  title: 'Our Apps',
+                  subtitle: 'Explore mobile applications by Samyukt',
+                  trailing: Icon(
+                    LucideIcons.chevronRight,
+                    size: 18,
+                    color: colours.textTertiary,
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const OurAppsPage(),
+                      ),
+                    );
+                  },
+                ),
+                Divider(color: colours.border, height: 1),
+                _ActionTile(
+                  icon: LucideIcons.downloadCloud,
+                  title: 'Check for Updates',
+                  subtitle: 'Google Play official update service',
+                  onTap: () async {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                          'Checking Google Play for updates...',
+                        ),
+                        backgroundColor: colours.surface,
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                    final hasUpdate = await ref
+                        .read(playUpdateServiceProvider)
+                        .checkAndPromptUpdate(isAutomatic: false);
+                    if (!hasUpdate && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Kairos is up to date.'),
+                          backgroundColor: colours.surface,
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                Divider(color: colours.border, height: 1),
+                _ActionTile(
+                  icon: LucideIcons.star,
+                  title: 'Rate Kairos',
+                  subtitle: 'Review on Google Play Store',
+                  trailing: Icon(
+                    LucideIcons.externalLink,
+                    size: 16,
+                    color: colours.textTertiary,
+                  ),
+                  onTap: () => ref.read(playReviewServiceProvider).rateNow(),
+                ),
+                Divider(color: colours.border, height: 1),
+                _ActionTile(
+                  icon: LucideIcons.share2,
+                  title: 'Share Kairos',
+                  subtitle: 'Share with friends and colleagues',
+                  trailing: Icon(
+                    LucideIcons.arrowUpRight,
+                    size: 16,
+                    color: colours.textTertiary,
+                  ),
+                  onTap: () =>
+                      ref.read(samyuktShareServiceProvider).shareApplication(),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: Space.xl),
+
           // About
           _SectionHeader(title: 'ABOUT KAIROS'),
           SurfaceCard(
@@ -405,38 +493,50 @@ class SettingsPage extends ConsumerWidget {
                 Row(
                   children: [
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 44,
+                      height: 44,
                       decoration: BoxDecoration(
                         color: colours.accent,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Center(
                         child: Icon(
                           LucideIcons.hourglass,
                           color: Colors.white,
-                          size: 20,
+                          size: 22,
                         ),
                       ),
                     ),
                     const SizedBox(width: Space.md),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Kairos Chronometer',
-                          style: kairos.typeScale.body.copyWith(
-                            color: colours.textPrimary,
-                            fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Kairos Chronometer',
+                            style: kairos.typeScale.body.copyWith(
+                              color: colours.textPrimary,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Version 1.0.0 (Build 2026.11)',
-                          style: kairos.typeScale.caption.copyWith(
-                            color: colours.textSecondary,
+                          FutureBuilder<AppVersionMetadata>(
+                            future: ref
+                                .read(appVersionServiceProvider)
+                                .getVersionMetadata(),
+                            builder: (context, snapshot) {
+                              final versionStr =
+                                  snapshot.data?.formattedVersion ??
+                                  'Version 1.0.0 (Build 1)';
+                              return Text(
+                                versionStr,
+                                style: kairos.typeScale.caption.copyWith(
+                                  color: colours.textSecondary,
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -452,8 +552,114 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
 
-          const SizedBox(height: Space.xxl),
+          const SizedBox(height: Space.xl),
+
+          // Samyukt Attribution Footer
+          Center(
+            child: GestureDetector(
+              onTap: () => ref
+                  .read(playServicesBridgeProvider)
+                  .openUrl('https://samyukt.pro'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: Space.md),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Made with care by ',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        color: colours.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      'Samyukt',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: colours.accent,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: Space.lg),
         ],
+      ),
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  const _ActionTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    this.trailing,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Widget? trailing;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final kairos = KairosTheme.of(context);
+    final colours = kairos.colours;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(RadiusTokens.card),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Space.lg,
+          vertical: Space.md,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colours.accentMuted,
+              ),
+              child: Icon(icon, size: 18, color: colours.accent),
+            ),
+            const SizedBox(width: Space.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: kairos.typeScale.body.copyWith(
+                      color: colours.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: kairos.typeScale.caption.copyWith(
+                      color: colours.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (trailing != null) trailing!,
+          ],
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:home_widget/home_widget.dart';
 
 import 'app/shell/kairos_shell.dart';
 import 'app/theme/kairos_theme_data.dart';
+import 'core/ecosystem/play_update_service.dart';
 import 'features/alarm/presentation/alarm_page.dart';
 import 'features/alarm/presentation/alarm_watcher.dart';
 import 'features/focus/presentation/focus_page.dart';
@@ -38,6 +39,11 @@ class _KairosAppContentState extends ConsumerState<_KairosAppContent> {
   void initState() {
     super.initState();
     _initHomeWidgetListener();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(playUpdateServiceProvider)
+          .checkAndPromptUpdate(isAutomatic: true);
+    });
   }
 
   void _initHomeWidgetListener() {
