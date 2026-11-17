@@ -250,10 +250,20 @@ class _FocusPageState extends State<FocusPage>
                           ),
                         ),
                         const SizedBox(height: Space.xs),
-                        Text(
-                          formatDuration(Duration(seconds: _remainingSeconds)),
-                          style: kairos.typeScale.display.copyWith(
-                            color: colours.textPrimary,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Space.md,
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              formatDuration(
+                                Duration(seconds: _remainingSeconds),
+                              ),
+                              style: kairos.typeScale.display.copyWith(
+                                color: colours.textPrimary,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(height: Space.xs),

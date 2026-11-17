@@ -194,6 +194,9 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
                             _runCelebrationSequence();
                           },
                           style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Space.sm,
+                            ),
                             minimumSize: const Size.fromHeight(
                               Space.touchTargetAndroid,
                             ),
@@ -207,7 +210,6 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
                       ),
                       const SizedBox(width: Space.sm),
                       Expanded(
-                        flex: 2,
                         child: ElevatedButton(
                           onPressed: () => Navigator.of(context).pop(),
                           style: ElevatedButton.styleFrom(

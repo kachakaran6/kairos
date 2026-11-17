@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos/app/shell/kairos_shell.dart';
@@ -131,30 +130,39 @@ void main() {
     // Load MaterialIcons
     final iconFile = File('$fontDir\\materialicons-regular.otf');
     if (iconFile.existsSync()) {
-      final iconLoader = FontLoader('MaterialIcons');
-      iconLoader.addFont(
-        Future.value(ByteData.view(iconFile.readAsBytesSync().buffer)),
-      );
-      await iconLoader.load();
+      final bytes = iconFile.readAsBytesSync();
+      await ui.loadFontFromList(bytes, fontFamily: 'MaterialIcons');
     }
 
-    // Load Roboto regular, bold, medium, light
-    final robotoFiles = [
-      'roboto-regular.ttf',
-      'roboto-bold.ttf',
-      'roboto-medium.ttf',
-      'roboto-light.ttf',
-    ];
-    final robotoLoader = FontLoader('Roboto');
-    for (final file in robotoFiles) {
-      final f = File('$fontDir\\$file');
-      if (f.existsSync()) {
-        robotoLoader.addFont(
-          Future.value(ByteData.view(f.readAsBytesSync().buffer)),
-        );
-      }
+    // Load Roboto regular, bold, medium, light, and also register as Ahem fallback
+    final robotoRegular = File('$fontDir\\roboto-regular.ttf');
+    if (robotoRegular.existsSync()) {
+      final bytes = robotoRegular.readAsBytesSync();
+      await ui.loadFontFromList(bytes, fontFamily: 'Roboto');
+      await ui.loadFontFromList(bytes, fontFamily: 'Ahem');
+      await ui.loadFontFromList(
+        bytes,
+        fontFamily: 'packages/flutter_test/Ahem',
+      );
     }
-    await robotoLoader.load();
+
+    final robotoBold = File('$fontDir\\roboto-bold.ttf');
+    if (robotoBold.existsSync()) {
+      final bytes = robotoBold.readAsBytesSync();
+      await ui.loadFontFromList(bytes, fontFamily: 'Roboto');
+    }
+
+    final robotoMedium = File('$fontDir\\roboto-medium.ttf');
+    if (robotoMedium.existsSync()) {
+      final bytes = robotoMedium.readAsBytesSync();
+      await ui.loadFontFromList(bytes, fontFamily: 'Roboto');
+    }
+
+    final robotoLight = File('$fontDir\\roboto-light.ttf');
+    if (robotoLight.existsSync()) {
+      final bytes = robotoLight.readAsBytesSync();
+      await ui.loadFontFromList(bytes, fontFamily: 'Roboto');
+    }
   }
 
   setUpAll(() async {
@@ -202,7 +210,7 @@ void main() {
     await tester.runAsync(() async {
       final boundary =
           key.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      final image = await boundary.toImage(pixelRatio: 1.0);
+      final image = await boundary.toImage(pixelRatio: 2.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final bytes = byteData!.buffer.asUint8List();
 
