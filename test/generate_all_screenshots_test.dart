@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos/app/shell/kairos_shell.dart';
@@ -124,10 +125,43 @@ void main() {
     ),
   ];
 
-  setUpAll(() {
+  Future<void> loadRealFonts() async {
+    const fontDir = r'C:\flutter\bin\cache\artifacts\material_fonts';
+
+    // Load MaterialIcons
+    final iconFile = File('$fontDir\\materialicons-regular.otf');
+    if (iconFile.existsSync()) {
+      final iconLoader = FontLoader('MaterialIcons');
+      iconLoader.addFont(
+        Future.value(ByteData.view(iconFile.readAsBytesSync().buffer)),
+      );
+      await iconLoader.load();
+    }
+
+    // Load Roboto regular, bold, medium, light
+    final robotoFiles = [
+      'roboto-regular.ttf',
+      'roboto-bold.ttf',
+      'roboto-medium.ttf',
+      'roboto-light.ttf',
+    ];
+    final robotoLoader = FontLoader('Roboto');
+    for (final file in robotoFiles) {
+      final f = File('$fontDir\\$file');
+      if (f.existsSync()) {
+        robotoLoader.addFont(
+          Future.value(ByteData.view(f.readAsBytesSync().buffer)),
+        );
+      }
+    }
+    await robotoLoader.load();
+  }
+
+  setUpAll(() async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
     Directory(repoDir).createSync(recursive: true);
     Directory(artifactDir).createSync(recursive: true);
+    await loadRealFonts();
   });
 
   Future<void> capture(
@@ -155,7 +189,9 @@ void main() {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: isDark ? KairosThemeData.dark() : KairosThemeData.light(),
+        theme: isDark
+            ? KairosThemeData.dark(fontFamily: 'Roboto')
+            : KairosThemeData.light(fontFamily: 'Roboto'),
         home: RepaintBoundary(key: key, child: child),
       ),
     );

@@ -61,6 +61,17 @@ class KairosTypeScale {
     ),
   );
 
+  KairosTypeScale withFontFamily(String family) {
+    return KairosTypeScale(
+      display: display.copyWith(fontFamily: family),
+      title: title.copyWith(fontFamily: family),
+      section: section.copyWith(fontFamily: family),
+      body: body.copyWith(fontFamily: family),
+      caption: caption.copyWith(fontFamily: family),
+      micro: micro.copyWith(fontFamily: family),
+    );
+  }
+
   /// Converts the scale to a Material [TextTheme] without inventing sizes.
   TextTheme toTextTheme(Color primary, Color secondary, Color tertiary) {
     return TextTheme(
