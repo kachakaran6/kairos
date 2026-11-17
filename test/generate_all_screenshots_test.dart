@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -125,7 +126,8 @@ void main() {
   ];
 
   Future<void> loadRealFonts() async {
-    final pubCache = Platform.environment['PUB_CACHE'] ??
+    final pubCache =
+        Platform.environment['PUB_CACHE'] ??
         (Platform.environment['LOCALAPPDATA'] != null
             ? '${Platform.environment['LOCALAPPDATA']}\\Pub\\Cache'
             : '${Platform.environment['HOME']}/.pub-cache');
@@ -136,6 +138,9 @@ void main() {
       ),
       File(
         '$pubCache\\hosted\\pub.dev\\lucide_icons_flutter-4.0.3\\assets\\lucide.ttf',
+      ),
+      File(
+        r'C:\Users\karan\AppData\Local\Pub\Cache\hosted\pub.dev\lucide_icons_flutter-4.0.3\assets\lucide.ttf',
       ),
     ];
 
@@ -152,85 +157,59 @@ void main() {
     final robotoFile = File('$fontDir\\roboto-regular.ttf');
     final georgiaFile = File(r'C:\Windows\Fonts\georgia.ttf');
 
-    // 1. Material Icons
+    // 1. Material Icons via FontLoader
     final iconFile = File('$fontDir\\materialicons-regular.otf');
     if (iconFile.existsSync()) {
       final bytes = iconFile.readAsBytesSync();
-      await ui.loadFontFromList(bytes, fontFamily: 'MaterialIcons');
-      await ui.loadFontFromList(
-        bytes,
-        fontFamily: 'packages/flutter/MaterialIcons',
-      );
+      final loader1 = FontLoader('MaterialIcons');
+      loader1.addFont(Future.value(ByteData.view(bytes.buffer)));
+      await loader1.load();
+
+      final loader2 = FontLoader('packages/flutter/MaterialIcons');
+      loader2.addFont(Future.value(ByteData.view(bytes.buffer)));
+      await loader2.load();
     }
 
-    // 2. Lucide Icons
+    // 2. Lucide Icons via FontLoader
     if (lucideFile != null && lucideFile.existsSync()) {
       final bytes = lucideFile.readAsBytesSync();
-      await ui.loadFontFromList(bytes, fontFamily: 'Lucide');
-      await ui.loadFontFromList(
-        bytes,
-        fontFamily: 'packages/lucide_icons_flutter/Lucide',
-      );
+      final loader1 = FontLoader('Lucide');
+      loader1.addFont(Future.value(ByteData.view(bytes.buffer)));
+      await loader1.load();
+
+      final loader2 = FontLoader('packages/lucide_icons_flutter/Lucide');
+      loader2.addFont(Future.value(ByteData.view(bytes.buffer)));
+      await loader2.load();
     }
 
-    // 3. Sans / Grotesque
+    // 3. Sans / Grotesque via FontLoader
     final sansFile = arialFile.existsSync() ? arialFile : robotoFile;
     if (sansFile.existsSync()) {
       final sansBytes = sansFile.readAsBytesSync();
       final sansFamilies = [
         'Arial',
         'Roboto',
-        'Ahem',
-        'packages/flutter_test/Ahem',
-        'packages/flutter_test/fonts/Ahem',
         'BricolageGrotesque',
-        'BricolageGrotesque_200',
-        'BricolageGrotesque_300',
-        'BricolageGrotesque_regular',
-        'BricolageGrotesque_500',
-        'BricolageGrotesque_600',
-        'BricolageGrotesque_700',
-        'BricolageGrotesque-ExtraLight',
-        'BricolageGrotesque-Light',
-        'BricolageGrotesque-Regular',
-        'BricolageGrotesque-Medium',
-        'BricolageGrotesque-SemiBold',
-        'BricolageGrotesque-Bold',
+        'Bricolage Grotesque',
         'Inter',
-        'Inter_regular',
-        'Inter_300',
-        'Inter_400',
-        'Inter_500',
-        'Inter_600',
-        'Inter_700',
-        'Inter-Regular',
-        'Inter-Medium',
-        'Inter-SemiBold',
-        'Inter-Bold',
+        'sans-serif',
       ];
       for (final fam in sansFamilies) {
-        await ui.loadFontFromList(sansBytes, fontFamily: fam);
+        final loader = FontLoader(fam);
+        loader.addFont(Future.value(ByteData.view(sansBytes.buffer)));
+        await loader.load();
       }
     }
 
-    // 4. Serif
+    // 4. Serif via FontLoader
     final serifFile = georgiaFile.existsSync() ? georgiaFile : sansFile;
     if (serifFile.existsSync()) {
       final serifBytes = serifFile.readAsBytesSync();
-      final serifFamilies = [
-        'Georgia',
-        'Fraunces',
-        'Fraunces_regular',
-        'Fraunces_italic',
-        'Fraunces_400',
-        'Fraunces_600',
-        'Fraunces-Regular',
-        'Fraunces-Medium',
-        'Fraunces-SemiBold',
-        'Fraunces-Italic',
-      ];
+      final serifFamilies = ['Georgia', 'Fraunces', 'serif'];
       for (final fam in serifFamilies) {
-        await ui.loadFontFromList(serifBytes, fontFamily: fam);
+        final loader = FontLoader(fam);
+        loader.addFont(Future.value(ByteData.view(serifBytes.buffer)));
+        await loader.load();
       }
     }
   }
@@ -295,6 +274,10 @@ void main() {
       File('$repoDir/$name.png').writeAsBytesSync(bytes);
       if (artifactDir != null) {
         File('$artifactDir/$name.png').writeAsBytesSync(bytes);
+        Directory('$artifactDir/screenshots_v2').createSync(recursive: true);
+        File('$artifactDir/screenshots_v2/$name.png').writeAsBytesSync(bytes);
+        Directory('$artifactDir/screenshots').createSync(recursive: true);
+        File('$artifactDir/screenshots/$name.png').writeAsBytesSync(bytes);
       }
     });
   }
