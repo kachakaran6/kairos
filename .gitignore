@@ -27,6 +27,8 @@ migrate_working_dir/
 *.keystore
 *.jks
 *.p12
+key.properties
+**/key.properties
 
 # IDE & Editor Specific
 *.iml
@@ -47,6 +49,7 @@ migrate_working_dir/
 /coverage/
 
 # Android build outputs & local config
+/android/build/
 /android/local.properties
 /android/.gradle/
 /android/app/debug

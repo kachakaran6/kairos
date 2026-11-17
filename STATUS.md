@@ -166,6 +166,7 @@ Append-only. Format and rules in `AGENTS.md` §9.
 | D-011 | 2026-11-18 | Native Google Play In-App Updates and Reviews via PlayEcosystemManager and official Play Core ktx libraries | Direct usage of AppUpdateManager and ReviewManager guarantees 100% compliance with Google Play Store native update and review policies with lifecycle-safe recovery | No third-party wrapper overhead, clean MethodChannel | No |
 | D-012 | 2026-11-18 | Samyukt GitHub JSON registry as single source of truth for mobile catalog with strict apps[] and status filtering | Excludes all websites, drafts, and in-progress items; caches locally in SharedPreferences for seamless offline resilience | Lightweight, zero external catalog dependencies | Yes |
 | D-013 | 2026-11-18 | Android Adaptive Icons + Round + Legacy MIPMAP icon suite generated from D:\kairos\assets\kairos-icon.png | Adapts seamlessly to all OEM icon shapes (Circle on Pixel, Squircle on Samsung, Square on OnePlus) with zero black corner clipping, plus Material You monochrome support | Generated across mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi | Yes |
+| D-014 | 2026-11-18 | Production upload keystore with 2048-bit RSA valid until 2054, automated Gradle signing via key.properties | Signed official release AppBundle (.aab) and universal APK (.apk) verified via jarsigner; credentials securely backed up | JKS ignored in git | No |
 
 ---
 
@@ -194,6 +195,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-17 23:22 | agent-karan | P3-19 | removed redundant flutter-ci.yml and dependabot.yml; retained solely the APK release workflow (.github/workflows/release.yml)
 2026-11-17 23:44 | agent-karan | P2-12/P4-03 | Android home screen widget suite (Clock, World Clock, Next, Then, Interactive, Combo) + in-app Widget Studio with live preview; flutter build apk green, 88 tests pass
 2026-11-18 00:20 | agent-karan | P4-08 | Samyukt Android Ecosystem Standard: Google Play in-app updates & reviews, Our Apps GitHub registry catalog, Rate Now, native share, version info, attribution, and adaptive/round/legacy mobile icon suite; all gates green, 94 tests pass
+2026-11-18 00:33 | agent-karan | P4-09 | Google Play release upload keystore generated (valid until 2054) + signing automation; release .aab (54.3MB) and release .apk (55.0MB) built & verified; all gates green
 ```
 
 ---

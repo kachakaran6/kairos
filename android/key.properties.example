@@ -1,0 +1,6 @@
+# Example key.properties for Kairos Android release signing
+# Store your real file locally at android/key.properties (which is git-ignored)
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=upload
+storeFile=upload-keystore.jks
