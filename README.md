@@ -9,6 +9,7 @@ An Apple-grade personal time and moments application built with Flutter. Kairos 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.44.8-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-%3E%3D3.4-0175C2?logo=dart)](https://dart.dev)
+[![Package](https://img.shields.io/badge/Package-com.samyukt.kairos-E8895A.svg)](#package-identity)
 [![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-lightgrey.svg)](#platform-support)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline%20%7C%20Zero%20Ads-success.svg)](#privacy--architecture)
 
@@ -29,48 +30,93 @@ Kairos unites **five dedicated time instruments** with a **living three-tense ti
 * **Next (Upcoming):** Look forward to what matters. Countdowns to flights, milestones, launches, and celebrations with continuous progress indicators.
 * **Now (Present):** A real-time instrument dashboard featuring an oversized digital clock, active moments, and instant access to your daily tools.
 * **Then (Memories):** Remember what has already happened. Milestones count up from the moment they pass, building a lasting personal record.
-* **Instrument-Grade Quality:** Every instrument is crafted with the depth of a standalone app, following a "Warm Precision" design language inspired by luxury horology and calm editorial layouts.
+* **Warm Precision:** Crafted with the depth of a luxury timepiece and the quiet calm of an editorial magazine, using tabular grotesque numerals and warm squircle surfaces.
 
 ---
 
-## Visual Showcase
+## Visual Showcase — Light & Dark Modes
 
-| Now (Dashboard) | Next (Countdowns) | Then (Timeline) | World Clock |
-|:---:|:---:|:---:|:---:|
-| <img src="screenshots/01_now_tab_dark.png" width="200" /> | <img src="screenshots/03_next_populated_dark.png" width="200" /> | <img src="screenshots/05_then_populated_dark.png" width="200" /> | <img src="screenshots/06_world_clock_dark.png" width="200" /> |
+Kairos treats **Light Mode** (warm ivory and paper) and **Dark Mode** (deep charcoal and obsidian) as first-class parallel palettes meeting WCAG AA contrast standards.
 
-| Alarm & Sleep Cycles | Timer (Progress Ring) | Stopwatch (Analog Dial) | Focus & Soundscapes |
-|:---:|:---:|:---:|:---:|
-| <img src="screenshots/08_alarm_editor_dark.png" width="200" /> | <img src="screenshots/10_timer_dark.png" width="200" /> | <img src="screenshots/11_stopwatch_dark.png" width="200" /> | <img src="screenshots/12_focus_dark.png" width="200" /> |
+### 1. The Three Tenses (Now, Next, Then)
 
-*Explore all 32 light and dark mode screen captures in the [`screenshots/`](screenshots/) directory or launch the [Interactive Gallery](screenshots/index.html).*
+| Screen | Light Mode (Warm Paper) | Dark Mode (Obsidian Glass) |
+|---|:---:|:---:|
+| **Now Tab**<br><sub>Live 10:30.00 clock, active moments, and bento instrument tiles</sub> | <img src="screenshots/01_now_tab_light.png" width="280" /> | <img src="screenshots/01_now_tab_dark.png" width="280" /> |
+| **Next Tab**<br><sub>Upcoming countdowns, category badges, and progress arcs</sub> | <img src="screenshots/03_next_populated_light.png" width="280" /> | <img src="screenshots/03_next_populated_dark.png" width="280" /> |
+| **Then Tab**<br><sub>Historical milestones and elapsed count-up timeline</sub> | <img src="screenshots/05_then_populated_light.png" width="280" /> | <img src="screenshots/05_then_populated_dark.png" width="280" /> |
+| **Next Tab (Empty)**<br><sub>Calm editorial invitation and clear creation CTA</sub> | <img src="screenshots/02_next_empty_light.png" width="280" /> | <img src="screenshots/02_next_empty_dark.png" width="280" /> |
 
 ---
 
-## Features
+### 2. The Five Precision Instruments
 
-### 1. Three-Tense Moments Engine
-* **Countdowns & Count-Ups:** Seamless transition from countdown (*Next*) to zero-moment celebration (*Now*) to count-up memory (*Then*).
-* **The Zero Moment:** Full-screen celebratory animation featuring radial light bloom, golden particle burst, editorial typography, and haptic feedback.
-* **Categories & Priorities:** Tag moments as Travel, Birthday, Work, Exam, Health, Festival, Memorial, or Custom, with priority pinning.
-* **Regional Calendars:** Built-in Vikram Samvat, Islamic Hijri, and lunar phase calculations.
+| Instrument | Light Mode | Dark Mode |
+|---|:---:|:---:|
+| **World Clock**<br><sub>3D solar terminator globe & time-travel slider</sub> | <img src="screenshots/06_world_clock_light.png" width="280" /> | <img src="screenshots/06_world_clock_dark.png" width="280" /> |
+| **Alarm Editor**<br><sub>06:30 hero card, 90-min REM sleep cycles, & puzzles</sub> | <img src="screenshots/08_alarm_editor_light.png" width="280" /> | <img src="screenshots/08_alarm_editor_dark.png" width="280" /> |
+| **Timer**<br><sub>290pt progress ring and rapid interval presets</sub> | <img src="screenshots/10_timer_light.png" width="280" /> | <img src="screenshots/10_timer_dark.png" width="280" /> |
+| **Stopwatch**<br><sub>Analog sweeping dial and precision lap highlights</sub> | <img src="screenshots/11_stopwatch_light.png" width="280" /> | <img src="screenshots/11_stopwatch_dark.png" width="280" /> |
+| **Focus Sessions**<br><sub>Ambient soundscapes & weekly activity heatmap</sub> | <img src="screenshots/12_focus_light.png" width="280" /> | <img src="screenshots/12_focus_dark.png" width="280" /> |
 
-### 2. Five Precision Instruments
-* **World Clock:** Interactive 3D orthographic globe with a day/night solar terminator curve, sun position indicator, and time-travel planner slider.
-* **Alarms:** 90-minute REM sleep cycle calculator, gradual volume ramping, wake windows, and wake-up challenges (Shake, Math, Phrase).
-* **Timer:** 290pt progress track, rapid interval presets (1m, 5m, 15m, 25m), and pause/resume controls.
-* **Stopwatch:** Dual analog dial with sweeping seconds hand, tabular centisecond precision, and lap highlight cards.
-* **Focus Sessions:** 25-minute Pomodoro timer, 5 ambient soundscapes (Rain, White Noise, Forest, Cafe), auto-DND integration, and a 7-day activity heatmap.
+---
 
-### 3. "Warm Precision" Design System
-* **Typography:** Tabular display numerals ensuring clock digits never reflow or jitter mid-tick, paired with editorial serif headlines and geometric body copy.
-* **Continuous Squircles:** Smooth continuous curvature across cards (28pt), form inputs (20pt), and pill buttons.
-* **5 Accent Palettes:** Warm Terracotta, Ocean Blue, Forest Green, Lavender, and Graphite, fully adaptable across first-class Light and Dark themes meeting WCAG AA contrast.
+### 3. Moments & Personalization
 
-### 4. Privacy & Architecture
-* **100% Offline & Local-First:** Every feature works without internet connectivity.
-* **Zero Accounts & Zero Tracking:** No login required. No third-party tracking or advertising SDKs.
-* **No Marketing Notifications:** Only functional alarms and user-configured moment alerts.
+| Screen | Light Mode | Dark Mode |
+|---|:---:|:---:|
+| **Moment Detail**<br><sub>Giant tabular numerals & editorial event header</sub> | <img src="screenshots/14_moment_detail_light.png" width="280" /> | <img src="screenshots/14_moment_detail_dark.png" width="280" /> |
+| **The Zero Moment**<br><sub>Radial light bloom, confetti particles, & haptics</sub> | <img src="screenshots/15_zero_moment_light.png" width="280" /> | <img src="screenshots/15_zero_moment_dark.png" width="280" /> |
+| **Settings Center**<br><sub>5 accent swatches, theme mode, & privacy controls</sub> | <img src="screenshots/16_settings_light.png" width="280" /> | <img src="screenshots/16_settings_dark.png" width="280" /> |
+
+*Browse all 32 unmasked screen captures in the [`screenshots/`](screenshots/) directory or view the [Interactive HTML Gallery](screenshots/index.html).*
+
+---
+
+## Package Identity
+
+| Platform | Identifier |
+|---|---|
+| **Android Package / Application ID** | `com.samyukt.kairos` |
+| **iOS Bundle Identifier** | `com.samyukt.kairos` |
+| **Minimum Android SDK** | API 24 (Android 7.0) |
+| **Minimum iOS Version** | iOS 17.0 |
+
+---
+
+## Release & APK Distribution
+
+Kairos includes a complete release system for automated GitHub Releases and local compilation.
+
+### Automated GitHub Release System
+Releases are built automatically via GitHub Actions ([`.github/workflows/release.yml`](.github/workflows/release.yml)):
+```bash
+# Push a semantic version tag to trigger the release workflow
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
+```
+This automatically compiles:
+* `kairos-universal-release.apk` (All-in-one APK for direct installation / sideloading)
+* `kairos-arm64-v8a-release.apk` (Optimized for modern 64-bit Android devices)
+* `kairos-armeabi-v7a-release.apk` (Optimized for 32-bit Android devices)
+* `kairos-x86_64-release.apk` (Tablets and emulators)
+* `kairos-release.aab` (Google Play App Bundle)
+* `SHA256SUMS.txt` (Cryptographic verification checksums)
+
+### Building Release APK Locally
+```bash
+# Build universal release APK
+flutter build apk --release
+
+# Build architecture-split APKs (smallest size)
+flutter build apk --release --split-per-abi
+
+# Build Play Store App Bundle (AAB)
+flutter build appbundle --release
+```
+*Outputs are saved to `build/app/outputs/flutter-apk/app-release.apk`.*
+
+*For detailed instructions on keystore signing and release management, see [RELEASE.md](RELEASE.md).*
 
 ---
 
@@ -90,7 +136,7 @@ Kairos unites **five dedicated time instruments** with a **living three-tense ti
 ### Prerequisites
 * [Flutter SDK](https://docs.flutter.dev/get-started/install) (`>= 3.44.8` on stable channel)
 * Android Studio / Xcode / VS Code with Dart & Flutter extensions
-* Android SDK (API 26+) or iOS Simulator (iOS 17+)
+* Android SDK (API 24+) or iOS Simulator (iOS 17+)
 
 ### Installation
 
@@ -110,7 +156,7 @@ Kairos unites **five dedicated time instruments** with a **living three-tense ti
    # Formatting check
    dart format --set-exit-if-changed .
 
-   # Static analysis
+   # Static code analysis
    flutter analyze --fatal-infos
 
    # Unit and widget test suite
@@ -133,8 +179,8 @@ Kairos unites **five dedicated time instruments** with a **living three-tense ti
 
 ```
 kairos/
-├── android/               # Native Android host & Glance widget targets
-├── ios/                   # Native iOS host & WidgetKit extension targets
+├── android/               # Native Android host & Glance widget targets (com.samyukt.kairos)
+├── ios/                   # Native iOS host & WidgetKit extension targets (com.samyukt.kairos)
 ├── lib/
 │   ├── app/               # App bootstrap, router, shell, and theme data
 │   │   ├── shell/         # Three-tab floating pill navigation & shell scaffold
@@ -157,33 +203,6 @@ kairos/
 ├── test/                  # Unit, widget, and automated screen verification tests
 └── tool/                  # Continuous quality gate scripts (tokens & strings check)
 ```
-
----
-
-## Roadmap
-
-### Completed (v1.0)
-- [x] Three-tense timeline engine (Next, Now, Then).
-- [x] Complete Moments CRUD with pinned priorities and categories.
-- [x] The Zero Moment celebration sequence (radial bloom, confetti, haptics).
-- [x] World Clock with 3D solar day/night terminator and time-travel slider.
-- [x] Alarms with 90-minute sleep cycle calculator and puzzle dismissals.
-- [x] Timer with 290pt progress ring and rapid interval presets.
-- [x] Stopwatch with analog sweeping dial and lap timing.
-- [x] Focus timer with ambient soundscapes and weekly activity heatmap.
-- [x] Settings center with 5 accent palettes and dark/light theme switching.
-- [x] Regional calendar calculations (Vikram Samvat, Hijri, lunar phases).
-- [x] Shared AppGroup / SharedPreferences native widget data bridge.
-
-### In Progress
-- [ ] Relational Drift (SQLite) persistence schema with database migrations.
-- [ ] Concurrent multi-stage timer recipes.
-
-### Planned
-- [ ] Native iOS Lock Screen & Home Screen widgets (SwiftUI / WidgetKit).
-- [ ] Native Android widgets (Jetpack Glance).
-- [ ] Apple Watch & Wear OS companion applications.
-- [ ] Opt-in encrypted peer-to-peer cloud sync.
 
 ---
 

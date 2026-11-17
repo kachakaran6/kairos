@@ -1,4 +1,4 @@
-package com.kairos.kairos
+package com.samyukt.kairos
 
 import io.flutter.embedding.android.FlutterActivity
 
