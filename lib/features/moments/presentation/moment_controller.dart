@@ -25,6 +25,13 @@ class MomentListNotifier extends AsyncNotifier<List<Moment>> {
     return _sorted(moments);
   }
 
+  Future<List<Moment>> _getLatest() async {
+    if (state.hasValue && state.value != null) {
+      return state.value!;
+    }
+    return await _repository.load();
+  }
+
   Future<void> add({
     required String title,
     String? subtitle,
@@ -48,26 +55,29 @@ class MomentListNotifier extends AsyncNotifier<List<Moment>> {
       notes: _emptyToNull(notes),
       createdAtUtc: now,
     );
-    await _commit(<Moment>[...?_value, moment]);
+    final current = await _getLatest();
+    await _commit(<Moment>[...current, moment]);
   }
 
   Future<void> replace(Moment moment) async {
-    final current = _value;
-    if (current == null) return;
+    final current = await _getLatest();
+    final exists = current.any((item) => item.id == moment.id);
+    if (!exists) {
+      await _commit(<Moment>[...current, moment]);
+      return;
+    }
     await _commit(
       current.map((item) => item.id == moment.id ? moment : item).toList(),
     );
   }
 
   Future<void> remove(String id) async {
-    final current = _value;
-    if (current == null) return;
+    final current = await _getLatest();
     await _commit(current.where((item) => item.id != id).toList());
   }
 
   Future<void> togglePinned(String id) async {
-    final current = _value;
-    if (current == null) return;
+    final current = await _getLatest();
     await _commit(
       current
           .map(
@@ -78,14 +88,12 @@ class MomentListNotifier extends AsyncNotifier<List<Moment>> {
     );
   }
 
-  List<Moment>? get _value => state.value;
-
   Future<void> _commit(List<Moment> moments) async {
     final sorted = _sorted(moments);
     state = AsyncData(sorted);
     await _repository.saveAll(sorted);
     try {
-      ref.read(widgetSyncServiceProvider).syncAllWidgets();
+      await ref.read(widgetSyncServiceProvider).syncAllWidgets();
     } catch (_) {
       // Safe fallback in test harnesses without home_widget platform channel
     }

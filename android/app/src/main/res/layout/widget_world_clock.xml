@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:timeZone="Europe/London"
                 android:format12Hour="hh:mm"
-                android:format24Hour="kk:mm"
+                android:format24Hour="HH:mm"
                 android:textSize="22sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="#F4EFE8" />
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:timeZone="America/New_York"
                 android:format12Hour="hh:mm"
-                android:format24Hour="kk:mm"
+                android:format24Hour="HH:mm"
                 android:textSize="22sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="#F4EFE8" />
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:timeZone="Asia/Tokyo"
                 android:format12Hour="hh:mm"
-                android:format24Hour="kk:mm"
+                android:format24Hour="HH:mm"
                 android:textSize="22sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="#F4EFE8" />
@@ -150,7 +150,7 @@
                 android:layout_height="wrap_content"
                 android:timeZone="Asia/Kolkata"
                 android:format12Hour="hh:mm"
-                android:format24Hour="kk:mm"
+                android:format24Hour="HH:mm"
                 android:textSize="22sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="#F4EFE8" />

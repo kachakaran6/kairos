@@ -42,6 +42,7 @@ class _OurAppsPageState extends ConsumerState<OurAppsPage> {
     return KairosScaffold(
       title: 'Our Apps',
       showBackButton: true,
+      padding: EdgeInsets.zero,
       actions: [
         IconButton(
           tooltip: 'Refresh catalog',

@@ -18,6 +18,7 @@ import '../../features/moments/domain/moment_phase.dart';
 import '../../features/moments/presentation/moment_controller.dart';
 import '../../features/moments/presentation/moment_detail_page.dart';
 import '../../features/moments/presentation/moment_list_tab.dart';
+import '../../features/settings/presentation/settings_controller.dart';
 import '../../features/settings/presentation/settings_page.dart';
 import '../../features/stopwatch/presentation/stopwatch_page.dart';
 import '../../features/timer/presentation/timer_page.dart';
@@ -185,26 +186,26 @@ class _NowPage extends ConsumerWidget {
   }
 }
 
-class _LiveClockBlock extends StatefulWidget {
+class _LiveClockBlock extends ConsumerStatefulWidget {
   const _LiveClockBlock({required this.clock});
 
   final dynamic clock;
 
   @override
-  State<_LiveClockBlock> createState() => _LiveClockBlockState();
+  ConsumerState<_LiveClockBlock> createState() => _LiveClockBlockState();
 }
 
-class _LiveClockBlockState extends State<_LiveClockBlock> {
-  late DateTime _now;
+class _LiveClockBlockState extends ConsumerState<_LiveClockBlock> {
+  late DateTime _nowUtc;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _now = (widget.clock as dynamic).nowUtc() as DateTime;
+    _nowUtc = (widget.clock as dynamic).nowUtc() as DateTime;
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
-      setState(() => _now = (widget.clock as dynamic).nowUtc() as DateTime);
+      setState(() => _nowUtc = (widget.clock as dynamic).nowUtc() as DateTime);
     });
   }
 
@@ -218,9 +219,28 @@ class _LiveClockBlockState extends State<_LiveClockBlock> {
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
-    final time =
-        '${_now.hour.toString().padLeft(2, '0')}:${_now.minute.toString().padLeft(2, '0')}';
-    final seconds = _now.second.toString().padLeft(2, '0');
+    final settings = ref.watch(settingsProvider);
+
+    // Convert to local time at render boundary as mandated by AGENTS.md §2
+    final local = _nowUtc.toLocal();
+    final use24h = settings.use24HourFormat;
+
+    final String hourStr;
+    final String periodStr;
+    if (use24h) {
+      hourStr = local.hour.toString().padLeft(2, '0');
+      periodStr = '';
+    } else {
+      final h = local.hour == 0
+          ? 12
+          : (local.hour > 12 ? local.hour - 12 : local.hour);
+      hourStr = h.toString();
+      periodStr = local.hour >= 12 ? ' PM' : ' AM';
+    }
+    final minuteStr = local.minute.toString().padLeft(2, '0');
+    final time = '$hourStr:$minuteStr';
+    final seconds = local.second.toString().padLeft(2, '0');
+
     final months = const <String>[
       'January',
       'February',
@@ -245,7 +265,7 @@ class _LiveClockBlockState extends State<_LiveClockBlock> {
       'Sunday',
     ];
     final date =
-        '${weekdays[_now.weekday - 1]}, ${_now.day} ${months[_now.month - 1]}';
+        '${weekdays[local.weekday - 1]}, ${local.day} ${months[local.month - 1]}';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,18 +289,31 @@ class _LiveClockBlockState extends State<_LiveClockBlock> {
                   ],
                 ),
               ),
-              const SizedBox(width: Space.xs),
-              Text(
-                seconds,
-                style: kairos.typeScale.title.copyWith(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w300,
-                  color: colours.accent,
-                  fontFeatures: const <FontFeature>[
-                    FontFeature.tabularFigures(),
-                  ],
+              if (settings.showSeconds) ...<Widget>[
+                const SizedBox(width: Space.xs),
+                Text(
+                  seconds,
+                  style: kairos.typeScale.title.copyWith(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w300,
+                    color: colours.accent,
+                    fontFeatures: const <FontFeature>[
+                      FontFeature.tabularFigures(),
+                    ],
+                  ),
                 ),
-              ),
+              ],
+              if (periodStr.isNotEmpty) ...<Widget>[
+                const SizedBox(width: Space.xs),
+                Text(
+                  periodStr,
+                  style: kairos.typeScale.title.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w400,
+                    color: colours.textSecondary,
+                  ),
+                ),
+              ],
             ],
           ),
         ),

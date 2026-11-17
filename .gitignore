@@ -57,6 +57,8 @@ key.properties
 /android/app/release
 *.apk
 *.aab
+android/fastlane/api-key.json
+**/api-key.json
 
 # iOS Flutter build outputs
 **/ios/Pods/
@@ -73,3 +75,8 @@ key.properties
 # Symbolication & Obfuscation
 app.*.symbols
 app.*.map.json
+
+# Fastlane & Google Play API
+**/fastlane/api-key.json
+**/fastlane/report.xml
+

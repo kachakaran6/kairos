@@ -129,9 +129,10 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
 
     return KairosScaffold(
       title: 'Widget Studio',
+      padding: EdgeInsets.zero,
       body: ListView(
         padding: const EdgeInsets.symmetric(
-          horizontal: Space.phoneMargin,
+          horizontal: Space.md,
           vertical: Space.md,
         ),
         children: <Widget>[

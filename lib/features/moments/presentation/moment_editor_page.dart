@@ -36,7 +36,7 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
   bool _saving = false;
   String? _error;
 
-  bool get _editing => widget.moment != null;
+  bool get _editing => widget.moment != null && widget.moment!.id.isNotEmpty;
 
   @override
   void initState() {
@@ -180,8 +180,13 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
     final timeStr =
         '${_date.hour.toString().padLeft(2, '0')}:${_date.minute.toString().padLeft(2, '0')}';
 
+    final isPast =
+        _direction == MomentDirection.up || _date.isBefore(DateTime.now());
+
     return KairosScaffold(
-      title: _editing ? 'Edit Moment' : 'New Moment',
+      title: _editing
+          ? 'Edit Moment'
+          : (isPast ? 'New Past Date' : 'New Moment'),
       showBackButton: true,
       body: Column(
         children: <Widget>[

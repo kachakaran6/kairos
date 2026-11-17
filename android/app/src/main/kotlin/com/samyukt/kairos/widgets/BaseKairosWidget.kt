@@ -23,8 +23,12 @@ abstract class BaseKairosWidget : HomeWidgetProvider() {
         widgetData: android.content.SharedPreferences
     ) {
         for (appWidgetId in appWidgetIds) {
-            val views = buildRemoteViews(context, widgetData, appWidgetId)
-            appWidgetManager.updateAppWidget(appWidgetId, views)
+            try {
+                val views = buildRemoteViews(context, widgetData, appWidgetId)
+                appWidgetManager.updateAppWidget(appWidgetId, views)
+            } catch (e: Exception) {
+                android.util.Log.e("BaseKairosWidget", "Error updating widget $appWidgetId", e)
+            }
         }
     }
 

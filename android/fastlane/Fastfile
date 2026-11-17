@@ -1,0 +1,151 @@
+ENV["FASTLANE_SKIP_UPDATE_CHECK"] = "1"
+ENV["FASTLANE_HIDE_CHANGELOG"] = "1"
+ENV["FASTLANE_OPT_OUT_USAGE"] = "1"
+
+default_platform(:android)
+
+def get_target_build_number(options = {})
+  pubspec_path = File.expand_path("../../pubspec.yaml", __dir__)
+  current_version = "1.0.0"
+  current_build = 1
+
+  if File.exist?(pubspec_path)
+    content = File.read(pubspec_path)
+    if (match = content.match(/^version:\s*([^\s+]+)\+(\d+)/))
+      current_version = match[1]
+      current_build = match[2].to_i
+    end
+  end
+
+  default_next = current_build + 1
+
+  if options[:build_number] || options[:version_code]
+    target_build = (options[:build_number] || options[:version_code]).to_i
+  elsif UI.interactive?
+    UI.important("--------------------------------------------------")
+    UI.important("📦 Current pubspec.yaml version : #{current_version}+#{current_build}")
+    UI.important("🔢 Next default Build Number   : #{default_next}")
+    UI.important("--------------------------------------------------")
+
+    user_input = UI.input("Enter build number (Press ENTER to use default #{default_next}): ")
+    target_build = user_input.strip.empty? ? default_next : user_input.strip.to_i
+  else
+    target_build = default_next
+  end
+
+  # Update pubspec.yaml in-place
+  if File.exist?(pubspec_path)
+    new_content = File.read(pubspec_path).sub(/^version:\s*.+$/, "version: #{current_version}+#{target_build}")
+    File.write(pubspec_path, new_content)
+    UI.success("Updated pubspec.yaml to version: #{current_version}+#{target_build}")
+  end
+
+  UI.success("=> Using Build Number: #{target_build}")
+  target_build
+end
+
+def get_full_version_string
+  pubspec_path = File.expand_path("../../pubspec.yaml", __dir__)
+  if File.exist?(pubspec_path)
+    content = File.read(pubspec_path)
+    if (match = content.match(/^version:\s*([^\s]+)/))
+      return match[1]
+    end
+  end
+  "1.0.0+1"
+end
+
+def build_flutter_aab(build_num)
+  root_dir = File.expand_path("../..", __dir__)
+  UI.message("Building Flutter release appbundle from: #{root_dir}")
+  
+  Dir.chdir(root_dir) do
+    sh("flutter build appbundle --release --build-number=#{build_num}")
+  end
+
+  aab_path = File.expand_path("../../build/app/outputs/bundle/release/app-release.aab", __dir__)
+  unless File.exist?(aab_path)
+    UI.user_error!("Could not find built appbundle at: #{aab_path}")
+  end
+  
+  aab_path
+end
+
+def commit_and_tag_release(track_name, build_num)
+  root_dir = File.expand_path("../..", __dir__)
+  version_str = get_full_version_string
+  tag_name = "v#{version_str}"
+
+  UI.message("Creating Git release commit and tag: #{tag_name}")
+  Dir.chdir(root_dir) do
+    sh("git add pubspec.yaml android/fastlane/metadata/android/en-US/changelogs/#{build_num}.txt")
+    sh("git commit -m \"chore(release): bump version to #{version_str} and deploy to #{track_name}\"")
+    sh("git tag -a \"#{tag_name}\" -m \"Release #{version_str} (#{track_name})\"")
+    sh("git push origin --follow-tags")
+  end
+  UI.success("Successfully pushed release commit and tag to remote!")
+rescue => e
+  UI.important("Git commit/tagging skipped: #{e.message}")
+end
+
+platform :android do
+  lane :build do |options|
+    build_num = get_target_build_number(options)
+    build_flutter_aab(build_num)
+  end
+
+  lane :internal do |options|
+    deploy_to_track('internal', options)
+  end
+
+  lane :closed do |options|
+    track_name = options[:track] || 'alpha'
+    deploy_to_track(track_name, options)
+  end
+
+  lane :beta do |options|
+    deploy_to_track('beta', options)
+  end
+
+  lane :production do |options|
+    deploy_to_track('production', options)
+  end
+
+  def deploy_to_track(track_name, options)
+    build_num = get_target_build_number(options)
+    aab_path = build_flutter_aab(build_num)
+    mapping_path = File.expand_path("../../build/app/outputs/mapping/release/mapping.txt", __dir__)
+
+    # Write changelog
+    changelogs_dir = File.expand_path("metadata/android/en-US/changelogs", __dir__)
+    FileUtils.mkdir_p(changelogs_dir)
+    changelog_content = options[:release_notes] || options[:changelog] || [
+      "• Performance enhancements and bug fixes.",
+      "• UI/UX optimizations and stability improvements."
+    ].join("\n")
+    File.write(File.join(changelogs_dir, "#{build_num}.txt"), changelog_content)
+    UI.success("Generated changelog for build #{build_num}")
+
+    upload_params = {
+      track: track_name,
+      aab: aab_path,
+      json_key: File.expand_path("api-key.json", __dir__),
+      skip_upload_apk: true,
+      skip_upload_metadata: false,
+      skip_upload_changelogs: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      timeout: 600,
+      changes_not_sent_for_review: false,
+      rescue_changes_not_sent_for_review: true
+    }
+    upload_params[:mapping] = mapping_path if File.exist?(mapping_path)
+
+    upload_to_play_store(upload_params)
+    UI.success("Successfully uploaded Build #{build_num} to Google Play track [#{track_name}]! 🎉")
+
+    if options[:git] == true || options[:git_tag] == true
+      commit_and_tag_release(track_name, build_num)
+    end
+  end
+end

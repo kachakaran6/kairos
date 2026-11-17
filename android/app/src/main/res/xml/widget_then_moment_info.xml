@@ -10,5 +10,4 @@
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/widget_then_moment"
     android:previewLayout="@layout/widget_then_moment"
-    android:widgetCategory="home_screen"
-    android:widgetFeatures="reconfigurable|configuration_optional" />
+    android:widgetCategory="home_screen" />

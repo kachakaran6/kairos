@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:format12Hour="hh:mm"
-            android:format24Hour="kk:mm"
+            android:format24Hour="HH:mm"
             android:textSize="44sp"
             android:fontFamily="sans-serif-thin"
             android:textColor="#F4EFE8"
@@ -65,7 +65,8 @@
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:background="#1AFFFFFF"
-        android:layout_marginHorizontal="16dp" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
     <!-- Right: Next Moment & Progress Rings -->
     <LinearLayout
