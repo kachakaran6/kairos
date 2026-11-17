@@ -1,2 +1,6 @@
-• Performance enhancements and bug fixes.
-• UI/UX optimizations and stability improvements.
+• Initial release of Kairos: A warm, local-first precision time and moments app.
+• Beautiful Home Screen Widgets: Live Clock, World Clock, Next Countdown, Memories, Instruments & Dashboard.
+• Accurate local time synchronization with customizable 12h/24h format and seconds.
+• Next & Then timelines: track upcoming milestones and memorable past dates.
+• Five built-in instruments: World Clock, Alarms, Timer, Stopwatch, and Focus.
+• Offline-first architecture with full privacy, zero ads, and zero third-party trackers.
