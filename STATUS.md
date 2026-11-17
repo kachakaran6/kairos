@@ -178,6 +178,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-17 01:35 | agent-karan | P3-04 | regional calendar service: Vikram Samvat, Islamic Hijri, and lunar phase engine; 56 tests pass
 2026-11-17 01:50 | agent-karan | P0-04 | master Apple-inspired glassmorphism transformation across shell, moments, settings, and all 5 instruments; 56 tests pass
 2026-11-17 19:45 | agent-karan | P3-15 | automated screenshot capture suite generating all 32 screens across Light & Dark modes; 88 tests pass
+2026-11-17 20:12 | agent-karan | P3-16 | resolved Flutter headless font masking by registering Roboto and MaterialIcons in dart:ui; 32 authentic unmasked screenshots generated; 85 tests pass
 ```
 
 ---
