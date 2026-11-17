@@ -2,17 +2,20 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
+import '../../../core/widgets/pill_button.dart';
+import '../../../core/widgets/surface_card.dart';
 import '../domain/moment.dart';
 
 /// Spec §17: The Zero Moment celebration sequence.
 ///
 /// Triggered when a moment's countdown reaches 00:00:00:00 or previewed
-/// from the moment details. Features radiating ripples, confetti burst particles,
-/// and sequential haptic progression.
+/// from the moment details. Features a warm radial light bloom, golden/terracotta
+/// floating confetti particles, editorial Fraunces typography, and sequential haptics.
 class ZeroMomentPage extends StatefulWidget {
   const ZeroMomentPage({super.key, required this.moment});
 
@@ -25,7 +28,7 @@ class ZeroMomentPage extends StatefulWidget {
 class _ZeroMomentPageState extends State<ZeroMomentPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animController;
-  final List<_Particle> _particles = <_Particle>[];
+  final List<_CelebrationParticle> _particles = <_CelebrationParticle>[];
   final Random _random = Random();
 
   @override
@@ -33,7 +36,7 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
     super.initState();
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3200),
+      duration: const Duration(milliseconds: 3600),
     );
 
     _generateParticles();
@@ -42,13 +45,20 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
 
   void _generateParticles() {
     _particles.clear();
-    for (var i = 0; i < 48; i++) {
+    for (var i = 0; i < 64; i++) {
       final angle = _random.nextDouble() * 2 * pi;
-      final speed = 80.0 + _random.nextDouble() * 220.0;
-      final size = 3.0 + _random.nextDouble() * 5.0;
+      final speed = 60.0 + _random.nextDouble() * 240.0;
+      final size = 3.5 + _random.nextDouble() * 6.0;
       final rotation = _random.nextDouble() * pi;
+      final isAccent = _random.nextBool();
       _particles.add(
-        _Particle(angle: angle, speed: speed, size: size, rotation: rotation),
+        _CelebrationParticle(
+          angle: angle,
+          speed: speed,
+          size: size,
+          rotation: rotation,
+          isAccent: isAccent,
+        ),
       );
     }
   }
@@ -73,12 +83,13 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
   @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
+    final isDark = kairos.colours.isDark;
 
     return Scaffold(
       backgroundColor: kairos.colours.background,
       body: Stack(
         children: <Widget>[
-          // Background particle & ripple canvas
+          // Background ambient light bloom and confetti canvas
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _animController,
@@ -88,6 +99,7 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
                     progress: _animController.value,
                     accentColor: kairos.colours.accent,
                     accentMuted: kairos.colours.accentMuted,
+                    isDark: isDark,
                     particles: _particles,
                   ),
                 );
@@ -100,61 +112,105 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: Space.phoneMargin,
-                vertical: Space.xl,
+                vertical: Space.lg,
               ),
               child: Column(
                 children: <Widget>[
+                  // Top close button
                   Align(
                     alignment: Alignment.topRight,
                     child: IconButton(
-                      icon: const Icon(Icons.close),
+                      icon: Icon(
+                        LucideIcons.x,
+                        color: kairos.colours.textSecondary,
+                        size: 22,
+                      ),
                       tooltip: 'Close',
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),
-                  const Spacer(),
+
+                  const Spacer(flex: 2),
+
+                  // Radiating emblem badge
                   Container(
-                    width: 72,
-                    height: 72,
+                    width: 88,
+                    height: 88,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: kairos.colours.accentMuted,
                       border: Border.all(
-                        color: kairos.colours.accent,
+                        color: kairos.colours.accent.withValues(alpha: 0.4),
                         width: 1.5,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: kairos.colours.accent.withValues(alpha: 0.25),
+                          blurRadius: 36,
+                          spreadRadius: 8,
+                        ),
+                      ],
                     ),
-                    child: Icon(
-                      Icons.auto_awesome,
-                      color: kairos.colours.accent,
-                      size: 36,
+                    child: Center(
+                      child: Icon(
+                        LucideIcons.sparkles,
+                        color: kairos.colours.accent,
+                        size: 38,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: Space.lg),
-                  Text(
-                    'The Zero Moment',
-                    style: kairos.typeScale.caption.copyWith(
-                      color: kairos.colours.accent,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2.0,
+
+                  const SizedBox(height: Space.xl),
+
+                  // Tag label
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Space.md,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: kairos.colours.surface,
+                      borderRadius: RadiusTokens.pillRadius,
+                      border: Border.all(color: kairos.colours.border),
+                    ),
+                    child: Text(
+                      'THE ZERO MOMENT',
+                      style: kairos.typeScale.caption.copyWith(
+                        color: kairos.colours.accent,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 2.2,
+                        fontSize: 11,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: Space.xs),
+
+                  const SizedBox(height: Space.md),
+
+                  // "It is here." in editorial Fraunces serif
                   Text(
                     'It is here.',
                     textAlign: TextAlign.center,
-                    style: kairos.typeScale.display.copyWith(
+                    style: kairos.typeScale.serifDisplay.copyWith(
+                      fontSize: 56,
+                      fontStyle: FontStyle.italic,
+                      letterSpacing: -0.5,
                       color: kairos.colours.textPrimary,
                     ),
                   ),
+
                   const SizedBox(height: Space.sm),
+
+                  // Moment title in refined typography
                   Text(
                     widget.moment.title,
                     textAlign: TextAlign.center,
                     style: kairos.typeScale.title.copyWith(
                       color: kairos.colours.textSecondary,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.2,
                     ),
                   ),
+
                   if (widget.moment.subtitle != null) ...<Widget>[
                     const SizedBox(height: Space.xxs),
                     Text(
@@ -165,63 +221,62 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
                       ),
                     ),
                   ],
-                  const SizedBox(height: Space.lg),
-                  Container(
+
+                  const SizedBox(height: Space.xl),
+
+                  // Transition notice card
+                  SurfaceCard(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: Space.md,
-                      vertical: Space.xs,
+                      horizontal: Space.lg,
+                      vertical: Space.sm,
                     ),
-                    decoration: BoxDecoration(
-                      color: kairos.colours.surfaceElevated,
-                      borderRadius: RadiusTokens.pillRadius,
-                      border: Border.all(color: kairos.colours.border),
-                    ),
-                    child: Text(
-                      'Just transitioned to Then',
-                      style: kairos.typeScale.caption.copyWith(
-                        color: kairos.colours.textPrimary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(
+                          LucideIcons.history,
+                          size: 16,
+                          color: kairos.colours.accent,
+                        ),
+                        const SizedBox(width: Space.sm),
+                        Flexible(
+                          child: Text(
+                            'Now counting forward in Then',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kairos.typeScale.caption.copyWith(
+                              color: kairos.colours.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const Spacer(),
+
+                  const Spacer(flex: 3),
+
+                  // Bottom action buttons
                   Row(
                     children: <Widget>[
                       Expanded(
-                        child: OutlinedButton.icon(
+                        child: PillButton(
+                          label: 'Replay',
+                          icon: const Icon(LucideIcons.rotateCcw, size: 18),
+                          variant: PillButtonVariant.secondary,
                           onPressed: () {
                             _generateParticles();
                             _runCelebrationSequence();
                           },
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: Space.sm,
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: Space.sm),
-                            minimumSize: const Size.fromHeight(
-                              Space.touchTargetAndroid,
-                            ),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: RadiusTokens.mdRadius,
-                            ),
-                          ),
-                          icon: const Icon(Icons.replay),
-                          label: const Text('Replay'),
                         ),
                       ),
-                      const SizedBox(width: Space.sm),
+                      const SizedBox(width: Space.md),
                       Expanded(
-                        child: ElevatedButton(
+                        child: PillButton(
+                          label: 'Continue',
+                          icon: const Icon(LucideIcons.arrowRight, size: 18),
+                          variant: PillButtonVariant.primary,
                           onPressed: () => Navigator.of(context).pop(),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(
-                              Space.touchTargetAndroid,
-                            ),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: RadiusTokens.mdRadius,
-                            ),
-                          ),
-                          child: const Text('Continue'),
                         ),
                       ),
                     ],
@@ -236,18 +291,20 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
   }
 }
 
-class _Particle {
-  const _Particle({
+class _CelebrationParticle {
+  const _CelebrationParticle({
     required this.angle,
     required this.speed,
     required this.size,
     required this.rotation,
+    required this.isAccent,
   });
 
   final double angle;
   final double speed;
   final double size;
   final double rotation;
+  final bool isAccent;
 }
 
 class _CelebrationPainter extends CustomPainter {
@@ -255,65 +312,91 @@ class _CelebrationPainter extends CustomPainter {
     required this.progress,
     required this.accentColor,
     required this.accentMuted,
+    required this.isDark,
     required this.particles,
   });
 
   final double progress;
   final Color accentColor;
   final Color accentMuted;
-  final List<_Particle> particles;
+  final bool isDark;
+  final List<_CelebrationParticle> particles;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height * 0.45);
+    final center = Offset(size.width / 2, size.height * 0.42);
 
-    // 1. Draw expanding radial glow ripples
+    // Expanding soft radial light bloom
+    final bloomOpacity = (1.0 - progress).clamp(0.0, 1.0) * 0.35;
+    final bloomRadius = 80.0 + progress * 260.0;
+    final bloomPaint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          accentColor.withValues(alpha: bloomOpacity),
+          accentColor.withValues(alpha: bloomOpacity * 0.4),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.4, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: bloomRadius));
+
+    canvas.drawCircle(center, bloomRadius, bloomPaint);
+
+    // Radiating subtle rings
     for (var i = 1; i <= 3; i++) {
-      final rippleProgress = ((progress * 1.5) - (i * 0.2)).clamp(0.0, 1.0);
-      if (rippleProgress > 0 && rippleProgress < 1.0) {
-        final radius = rippleProgress * (size.width * 0.65);
-        final opacity = (1.0 - rippleProgress) * 0.45;
-        final ripplePaint = Paint()
-          ..color = accentColor.withValues(alpha: opacity)
+      final ringProgress = (progress * 1.5 - i * 0.18).clamp(0.0, 1.0);
+      if (ringProgress > 0 && ringProgress < 1.0) {
+        final ringRadius = ringProgress * (size.width * 0.7);
+        final ringOpacity = (1.0 - ringProgress) * 0.25;
+        final ringPaint = Paint()
+          ..color = accentColor.withValues(alpha: ringOpacity)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.0;
-        canvas.drawCircle(center, radius, ripplePaint);
+          ..strokeWidth = 1.0;
+        canvas.drawCircle(center, ringRadius, ringPaint);
       }
     }
 
-    // 2. Draw particle burst
-    final particleProgress = (progress * 1.8).clamp(0.0, 1.0);
-    final particleOpacity = (1.0 - progress).clamp(0.0, 1.0);
+    // Particle burst
+    final particleProgress = (progress * 1.4).clamp(0.0, 1.0);
+    final particleOpacity = (1.0 - particleProgress).clamp(0.0, 1.0);
 
     for (final p in particles) {
-      final dist = p.speed * particleProgress;
-      final px = center.dx + cos(p.angle) * dist;
-      final py =
-          center.dy +
-          sin(p.angle) * dist +
-          (particleProgress * 40.0); // subtle gravity
+      final distance = p.speed * particleProgress;
+      // Gentle gravity arc
+      final dx = center.dx + cos(p.angle) * distance;
+      final dy =
+          center.dy + sin(p.angle) * distance + (particleProgress * 35.0);
 
-      final pPaint = Paint()
-        ..color = accentColor.withValues(alpha: particleOpacity)
+      final color = p.isAccent
+          ? accentColor.withValues(alpha: particleOpacity * 0.9)
+          : (isDark
+                ? Colors.white.withValues(alpha: particleOpacity * 0.8)
+                : const Color(
+                    0xFFD4AF37,
+                  ).withValues(alpha: particleOpacity * 0.85));
+
+      final paint = Paint()
+        ..color = color
         ..style = PaintingStyle.fill;
 
       canvas.save();
-      canvas.translate(px, py);
-      canvas.rotate(p.rotation + (progress * 3));
-      canvas.drawRect(
-        Rect.fromCenter(
-          center: Offset.zero,
-          width: p.size,
-          height: p.size * 1.4,
+      canvas.translate(dx, dy);
+      canvas.rotate(p.rotation + particleProgress * pi);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromCenter(
+            center: Offset.zero,
+            width: p.size * 1.4,
+            height: p.size * 0.8,
+          ),
+          const Radius.circular(2.0),
         ),
-        pPaint,
+        paint,
       );
       canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(covariant _CelebrationPainter oldDelegate) {
-    return oldDelegate.progress != progress;
-  }
+  bool shouldRepaint(_CelebrationPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }

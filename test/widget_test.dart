@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos/app/theme/kairos_theme_data.dart';
+import 'package:kairos/core/design/colour_tokens.dart';
 import 'package:kairos/core/theme/theme_extension.dart';
 import 'package:kairos/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,7 +41,7 @@ void main() {
     final kairos = KairosTheme.of(context);
 
     expect(Theme.of(context).brightness, Brightness.dark);
-    expect(kairos.colours.background, const Color(0xFF0C0C0F));
+    expect(kairos.colours.background, KairosColourTokens.dark.background);
   });
 
   test('both themes build without throwing', () {

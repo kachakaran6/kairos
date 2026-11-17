@@ -26,17 +26,18 @@ void main() {
     // Initial pump
     await tester.pump();
 
-    expect(find.text('The Zero Moment'), findsOneWidget);
+    expect(find.text('THE ZERO MOMENT'), findsOneWidget);
     expect(find.text('It is here.'), findsOneWidget);
     expect(find.text('Graduation Ceremony'), findsOneWidget);
     expect(find.text('Class of 2026'), findsOneWidget);
-    expect(find.text('Just transitioned to Then'), findsOneWidget);
+    expect(find.text('Now counting forward in Then'), findsOneWidget);
     expect(find.text('Replay'), findsOneWidget);
     expect(find.text('Continue'), findsOneWidget);
 
     // Tap Replay
     await tester.tap(find.text('Replay'));
     await tester.pump();
-    expect(find.text('The Zero Moment'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('THE ZERO MOMENT'), findsOneWidget);
   });
 }

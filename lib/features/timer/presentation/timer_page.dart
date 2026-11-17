@@ -1,16 +1,18 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/time/time_service.dart';
-import '../../../core/widgets/glass/glass.dart';
+import '../../../core/widgets/kairos_chips.dart';
+import '../../../core/widgets/kairos_scaffold.dart';
+import '../../../core/widgets/pill_button.dart';
 
-/// Countdown timer with presets. Runs while the screen is open; persistence and
-/// background alarms land with the timer data layer (P1-09).
+/// Countdown timer with presets and luxury circular progress ring.
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key, this.initialMinutes = 5});
 
@@ -95,159 +97,199 @@ class _TimerPageState extends State<TimerPage> {
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
+    final progress = _totalSeconds > 0
+        ? (_remainingSeconds / _totalSeconds).clamp(0.0, 1.0)
+        : 0.0;
 
-    return AtmosphericBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(
-            'Timer',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: colours.textPrimary,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: 20,
-              color: colours.textPrimary,
-            ),
-            onPressed: () => Navigator.of(context).maybePop(),
-          ),
-        ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Space.phoneMargin,
-              vertical: Space.lg,
-            ),
-            child: Column(
-              children: <Widget>[
-                const Spacer(),
-                GlassContainer(
-                  intensity: GlassIntensity.primary,
-                  borderRadius: BorderRadius.circular(RadiusTokens.xxl),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Space.xxl,
-                    vertical: Space.xxl,
-                  ),
+    return KairosScaffold(
+      title: 'Timer',
+      showBackButton: true,
+      body: Column(
+        children: <Widget>[
+          const Spacer(),
+
+          // Hero circular timer ring
+          Center(
+            child: SizedBox(
+              width: 270,
+              height: 270,
+              child: CustomPaint(
+                painter: _TimerRingPainter(
+                  progress: progress,
+                  accent: colours.accent,
+                  border: colours.border,
+                  isDark: colours.isDark,
+                ),
+                child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          formatDuration(Duration(seconds: _remainingSeconds)),
-                          style: kairos.typeScale.display.copyWith(
-                            color: colours.textPrimary,
-                            fontSize: 54,
-                            fontWeight: FontWeight.w300,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            formatDuration(
+                              Duration(seconds: _remainingSeconds),
+                            ),
+                            style: kairos.typeScale.display.copyWith(
+                              fontSize: 56,
+                              fontWeight: FontWeight.w200,
+                              color: colours.textPrimary,
+                              fontFeatures: const <FontFeature>[
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: Space.xs),
+                      const SizedBox(height: 4),
                       Text(
-                        _running ? 'Running' : 'Paused',
+                        _running ? 'Counting' : 'Paused',
                         style: kairos.typeScale.caption.copyWith(
-                          color: _running
-                              ? colours.accent
-                              : colours.textSecondary,
-                          fontWeight: FontWeight.w600,
+                          color: colours.textTertiary,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const Spacer(),
-                Wrap(
-                  spacing: Space.sm,
-                  runSpacing: Space.sm,
-                  alignment: WrapAlignment.center,
-                  children: <Widget>[
-                    for (final preset in _presets)
-                      ChoiceChip(
-                        label: Text('$preset min'),
-                        selected: _totalSeconds == preset * 60,
-                        selectedColor: colours.accent.withValues(alpha: 0.22),
-                        backgroundColor: colours.surface.withValues(alpha: 0.3),
-                        labelStyle: TextStyle(
-                          fontSize: 13,
-                          fontWeight: _totalSeconds == preset * 60
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          color: _totalSeconds == preset * 60
-                              ? colours.accent
-                              : colours.textSecondary,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            RadiusTokens.pill,
-                          ),
-                          side: BorderSide(
-                            color: _totalSeconds == preset * 60
-                                ? colours.accent
-                                : colours.border.withValues(alpha: 0.4),
-                          ),
-                        ),
-                        onSelected: (_) => _selectPreset(preset),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: Space.lg),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: GlassButton(
-                        onPressed: _reset,
-                        intensity: GlassIntensity.subtle,
-                        child: Text(
-                          'Reset',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: colours.textPrimary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: Space.md),
-                    Expanded(
-                      flex: 2,
-                      child: GlassButton(
-                        onPressed: _toggle,
-                        intensity: GlassIntensity.primary,
-                        child: Text(
-                          _running ? 'Pause' : 'Start',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: colours.accent,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: Space.sm),
-                TextButton(
-                  onPressed: _addMinute,
-                  child: Text(
-                    '+1 minute',
-                    style: TextStyle(
-                      color: colours.textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+
+          const SizedBox(height: Space.xl),
+
+          // Preset Chips
+          Wrap(
+            spacing: Space.sm,
+            runSpacing: Space.sm,
+            alignment: WrapAlignment.center,
+            children: <Widget>[
+              for (final preset in _presets)
+                KairosChoiceChip(
+                  label: '$preset min',
+                  selected: _totalSeconds == preset * 60,
+                  onSelected: (_) => _selectPreset(preset),
+                ),
+            ],
+          ),
+
+          const Spacer(),
+
+          // Primary Controls: Start/Pause & Reset
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: PillButton(
+                  onPressed: _reset,
+                  label: 'Reset',
+                  variant: PillButtonVariant.secondary,
+                ),
+              ),
+              const SizedBox(width: Space.md),
+              Expanded(
+                flex: 2,
+                child: PillButton(
+                  onPressed: _toggle,
+                  label: _running ? 'Pause' : 'Start',
+                  icon: Icon(
+                    _running ? LucideIcons.pause : LucideIcons.play,
+                    size: 18,
+                  ),
+                  variant: PillButtonVariant.primary,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: Space.sm),
+
+          // +1 minute helper button
+          GestureDetector(
+            onTap: _addMinute,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                '+1 minute',
+                style: kairos.typeScale.caption.copyWith(
+                  color: colours.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: Space.lg),
+        ],
       ),
     );
   }
+}
+
+class _TimerRingPainter extends CustomPainter {
+  const _TimerRingPainter({
+    required this.progress,
+    required this.accent,
+    required this.border,
+    required this.isDark,
+  });
+
+  final double progress;
+  final Color accent;
+  final Color border;
+  final bool isDark;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 12;
+
+    // Background track ring
+    final trackPaint = Paint()
+      ..color = border
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 7.0;
+    canvas.drawCircle(center, radius, trackPaint);
+
+    if (progress <= 0) return;
+
+    // Soft accent glow behind the active arc
+    final glowPaint = Paint()
+      ..color = accent.withValues(alpha: isDark ? 0.25 : 0.15)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 14.0
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      math.pi * 2 * progress,
+      false,
+      glowPaint,
+    );
+
+    // Sharp active foreground arc
+    final arcPaint = Paint()
+      ..color = accent
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 7.0;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      math.pi * 2 * progress,
+      false,
+      arcPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _TimerRingPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.accent != accent ||
+      oldDelegate.border != border ||
+      oldDelegate.isDark != isDark;
 }

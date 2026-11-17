@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kairos/app/shell/kairos_shell.dart';
 import 'package:kairos/app/theme/kairos_theme_data.dart';
 import 'package:kairos/core/time/clock_provider.dart';
@@ -31,7 +32,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   const artifactDir =
       r'C:\Users\karan\.gemini\antigravity\brain\bde0f4dc-cf1e-4dbc-815a-3992ba7c9ac2\screenshots';
+  const artifactDirV2 =
+      r'C:\Users\karan\.gemini\antigravity\brain\bde0f4dc-cf1e-4dbc-815a-3992ba7c9ac2\screenshots_v2';
   const repoDir = 'screenshots';
+  const repoDirV2 = 'screenshots_v2';
 
   final fixedNow = DateTime.utc(2026, 11, 17, 10, 30);
   final fixedClock = FixedClock(fixedNow);
@@ -126,49 +130,103 @@ void main() {
 
   Future<void> loadRealFonts() async {
     const fontDir = r'C:\flutter\bin\cache\artifacts\material_fonts';
+    final arialFile = File(r'C:\Windows\Fonts\arial.ttf');
+    final robotoFile = File('$fontDir\\roboto-regular.ttf');
+    final georgiaFile = File(r'C:\Windows\Fonts\georgia.ttf');
+    final lucideFile = File(
+      r'C:\Users\karan\AppData\Local\Pub\Cache\hosted\pub.dev\lucide_icons_flutter-4.0.3\assets\lucide.ttf',
+    );
 
-    // Load MaterialIcons
+    // 1. Material Icons
     final iconFile = File('$fontDir\\materialicons-regular.otf');
     if (iconFile.existsSync()) {
       final bytes = iconFile.readAsBytesSync();
       await ui.loadFontFromList(bytes, fontFamily: 'MaterialIcons');
-    }
-
-    // Load Roboto regular, bold, medium, light, and also register as Ahem fallback
-    final robotoRegular = File('$fontDir\\roboto-regular.ttf');
-    if (robotoRegular.existsSync()) {
-      final bytes = robotoRegular.readAsBytesSync();
-      await ui.loadFontFromList(bytes, fontFamily: 'Roboto');
-      await ui.loadFontFromList(bytes, fontFamily: 'Ahem');
       await ui.loadFontFromList(
         bytes,
-        fontFamily: 'packages/flutter_test/Ahem',
+        fontFamily: 'packages/flutter/MaterialIcons',
       );
     }
 
-    final robotoBold = File('$fontDir\\roboto-bold.ttf');
-    if (robotoBold.existsSync()) {
-      final bytes = robotoBold.readAsBytesSync();
-      await ui.loadFontFromList(bytes, fontFamily: 'Roboto');
+    // 2. Lucide Icons
+    if (lucideFile.existsSync()) {
+      final bytes = lucideFile.readAsBytesSync();
+      await ui.loadFontFromList(bytes, fontFamily: 'Lucide');
+      await ui.loadFontFromList(
+        bytes,
+        fontFamily: 'packages/lucide_icons_flutter/Lucide',
+      );
     }
 
-    final robotoMedium = File('$fontDir\\roboto-medium.ttf');
-    if (robotoMedium.existsSync()) {
-      final bytes = robotoMedium.readAsBytesSync();
-      await ui.loadFontFromList(bytes, fontFamily: 'Roboto');
+    // 3. Sans / Grotesque
+    final sansFile = arialFile.existsSync() ? arialFile : robotoFile;
+    if (sansFile.existsSync()) {
+      final sansBytes = sansFile.readAsBytesSync();
+      final sansFamilies = [
+        'Arial',
+        'Roboto',
+        'Ahem',
+        'packages/flutter_test/Ahem',
+        'packages/flutter_test/fonts/Ahem',
+        'BricolageGrotesque',
+        'BricolageGrotesque_200',
+        'BricolageGrotesque_300',
+        'BricolageGrotesque_regular',
+        'BricolageGrotesque_500',
+        'BricolageGrotesque_600',
+        'BricolageGrotesque_700',
+        'BricolageGrotesque-ExtraLight',
+        'BricolageGrotesque-Light',
+        'BricolageGrotesque-Regular',
+        'BricolageGrotesque-Medium',
+        'BricolageGrotesque-SemiBold',
+        'BricolageGrotesque-Bold',
+        'Inter',
+        'Inter_regular',
+        'Inter_300',
+        'Inter_400',
+        'Inter_500',
+        'Inter_600',
+        'Inter_700',
+        'Inter-Regular',
+        'Inter-Medium',
+        'Inter-SemiBold',
+        'Inter-Bold',
+      ];
+      for (final fam in sansFamilies) {
+        await ui.loadFontFromList(sansBytes, fontFamily: fam);
+      }
     }
 
-    final robotoLight = File('$fontDir\\roboto-light.ttf');
-    if (robotoLight.existsSync()) {
-      final bytes = robotoLight.readAsBytesSync();
-      await ui.loadFontFromList(bytes, fontFamily: 'Roboto');
+    // 4. Serif
+    final serifFile = georgiaFile.existsSync() ? georgiaFile : sansFile;
+    if (serifFile.existsSync()) {
+      final serifBytes = serifFile.readAsBytesSync();
+      final serifFamilies = [
+        'Georgia',
+        'Fraunces',
+        'Fraunces_regular',
+        'Fraunces_italic',
+        'Fraunces_400',
+        'Fraunces_600',
+        'Fraunces-Regular',
+        'Fraunces-Medium',
+        'Fraunces-SemiBold',
+        'Fraunces-Italic',
+      ];
+      for (final fam in serifFamilies) {
+        await ui.loadFontFromList(serifBytes, fontFamily: fam);
+      }
     }
   }
 
   setUpAll(() async {
+    GoogleFonts.config.allowRuntimeFetching = false;
     SharedPreferences.setMockInitialValues(<String, Object>{});
     Directory(repoDir).createSync(recursive: true);
+    Directory(repoDirV2).createSync(recursive: true);
     Directory(artifactDir).createSync(recursive: true);
+    Directory(artifactDirV2).createSync(recursive: true);
     await loadRealFonts();
   });
 
@@ -182,6 +240,10 @@ void main() {
   }) async {
     tester.view.physicalSize = const Size(1179, 2556);
     tester.view.devicePixelRatio = 3.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
 
     final key = GlobalKey();
 
@@ -198,14 +260,15 @@ void main() {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: isDark
-            ? KairosThemeData.dark(fontFamily: 'Roboto')
-            : KairosThemeData.light(fontFamily: 'Roboto'),
+            ? KairosThemeData.dark(fontFamily: 'Arial')
+            : KairosThemeData.light(fontFamily: 'Arial'),
         home: RepaintBoundary(key: key, child: child),
       ),
     );
 
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 300));
 
     await tester.runAsync(() async {
       final boundary =
@@ -214,11 +277,10 @@ void main() {
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final bytes = byteData!.buffer.asUint8List();
 
-      final repoPath = '$repoDir/$name.png';
-      final artifactPath = '$artifactDir/$name.png';
-
-      File(repoPath).writeAsBytesSync(bytes);
-      File(artifactPath).writeAsBytesSync(bytes);
+      File('$repoDir/$name.png').writeAsBytesSync(bytes);
+      File('$repoDirV2/$name.png').writeAsBytesSync(bytes);
+      File('$artifactDir/$name.png').writeAsBytesSync(bytes);
+      File('$artifactDirV2/$name.png').writeAsBytesSync(bytes);
     });
   }
 
@@ -372,7 +434,7 @@ void main() {
           isDark: isDark,
           child: ZeroMomentPage(moment: sampleUpcomingMoments.first),
         );
-        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 700));
       });
 
       testWidgets('16_settings_$modeSuffix', (tester) async {

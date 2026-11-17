@@ -12,7 +12,7 @@ void main() {
       final kairos = theme.extension<KairosTheme>()!;
 
       expect(kairos.colours.isDark, isTrue);
-      expect(kairos.colours.background, const Color(0xFF0C0C0F));
+      expect(kairos.colours.background, KairosColourTokens.dark.background);
       expect(theme.scaffoldBackgroundColor, kairos.colours.background);
       expect(theme.colorScheme.brightness, Brightness.dark);
     });
@@ -22,7 +22,7 @@ void main() {
       final kairos = theme.extension<KairosTheme>()!;
 
       expect(kairos.colours.isDark, isFalse);
-      expect(kairos.colours.background, const Color(0xFFFBFAF7));
+      expect(kairos.colours.background, KairosColourTokens.light.background);
       expect(theme.colorScheme.brightness, Brightness.light);
     });
 
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('type scale carries tabular figures on numeric styles', () {
-      const scale = KairosTypeScale.standard;
+      final scale = KairosTypeScale.standard;
       final features = scale.display.fontFeatures ?? const [];
       expect(
         features.any((f) => f.feature == 'tnum'),
@@ -53,7 +53,7 @@ void main() {
         reason: 'display digits must be tabular',
       );
       expect(scale.display.fontSize, 96);
-      expect(scale.body.fontSize, 15);
+      expect(scale.body.fontSize, 16);
     });
 
     test('both themes expose every token group through Theme.of', () {

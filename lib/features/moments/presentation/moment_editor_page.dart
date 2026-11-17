@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
-import '../../../core/widgets/glass/glass.dart';
+import '../../../core/widgets/kairos_chips.dart';
+import '../../../core/widgets/kairos_scaffold.dart';
+import '../../../core/widgets/kairos_segmented_control.dart';
+import '../../../core/widgets/pill_button.dart';
+import '../../../core/widgets/surface_card.dart';
 import '../domain/moment.dart';
 import 'moment_controller.dart';
 
@@ -170,375 +175,281 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
 
-    return AtmosphericBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(
-            _editing ? 'Edit Moment' : 'New Moment',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: colours.textPrimary,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.close_rounded, color: colours.textSecondary),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: GlassButton(
-                onPressed: _saving ? null : _save,
-                intensity: GlassIntensity.primary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Text(
-                  'Save',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: colours.accent,
-                  ),
-                ),
+    final dateStr =
+        '${_date.day.toString().padLeft(2, '0')}/${_date.month.toString().padLeft(2, '0')}/${_date.year}';
+    final timeStr =
+        '${_date.hour.toString().padLeft(2, '0')}:${_date.minute.toString().padLeft(2, '0')}';
+
+    return KairosScaffold(
+      title: _editing ? 'Edit Moment' : 'New Moment',
+      showBackButton: true,
+      body: Column(
+        children: <Widget>[
+          if (_error != null)
+            Container(
+              margin: const EdgeInsets.only(bottom: Space.sm),
+              padding: const EdgeInsets.all(Space.md),
+              decoration: BoxDecoration(
+                color: colours.danger.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(RadiusTokens.md),
               ),
-            ),
-          ],
-        ),
-        body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Space.phoneMargin,
-              vertical: Space.md,
-            ),
-            children: <Widget>[
-              // Group: Title & Subtitle
-              _GroupedCard(
+              child: Row(
                 children: [
-                  TextField(
-                    controller: _title,
-                    maxLength: 60,
-                    style: TextStyle(fontSize: 17, color: colours.textPrimary),
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      hintText: 'What are you counting to?',
-                      hintStyle: TextStyle(color: colours.textTertiary),
-                      border: InputBorder.none,
-                      counterText: '',
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                    ),
+                  Icon(
+                    LucideIcons.alertCircle,
+                    size: 18,
+                    color: colours.danger,
                   ),
-                  Divider(
-                    height: 1,
-                    color: colours.border.withValues(alpha: 0.3),
-                  ),
-                  TextField(
-                    controller: _subtitle,
-                    maxLength: 80,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: colours.textSecondary,
-                    ),
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      hintText: 'Subtitle or description (optional)',
-                      hintStyle: TextStyle(color: colours.textTertiary),
-                      border: InputBorder.none,
-                      counterText: '',
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: Space.lg),
-
-              // Group: Category selection
-              const GlassSectionHeader(title: 'CATEGORY'),
-              Wrap(
-                spacing: Space.xs,
-                runSpacing: Space.xs,
-                children: <Widget>[
-                  for (final category in MomentCategory.values)
-                    ChoiceChip(
-                      label: Text(_categoryLabel(category)),
-                      selected: _category == category,
-                      selectedColor: colours.accent.withValues(alpha: 0.22),
-                      backgroundColor: colours.surface.withValues(alpha: 0.3),
-                      labelStyle: TextStyle(
-                        fontSize: 13,
-                        fontWeight: _category == category
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                        color: _category == category
-                            ? colours.accent
-                            : colours.textSecondary,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(RadiusTokens.pill),
-                        side: BorderSide(
-                          color: _category == category
-                              ? colours.accent
-                              : colours.border.withValues(alpha: 0.4),
-                        ),
-                      ),
-                      onSelected: (_) {
-                        HapticFeedback.selectionClick();
-                        setState(() => _category = category);
-                      },
-                    ),
-                ],
-              ),
-              const SizedBox(height: Space.lg),
-
-              // Group: Date & Time configuration
-              const GlassSectionHeader(title: 'SCHEDULE'),
-              _GroupedCard(
-                children: [
-                  Material(
-                    color: Colors.transparent,
-                    child: SwitchListTile.adaptive(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-                      title: Text(
-                        'All-day moment',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: colours.textPrimary,
-                        ),
-                      ),
-                      subtitle: Text(
-                        'Counts calendar days rather than hours',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: colours.textTertiary,
-                        ),
-                      ),
-                      activeTrackColor: colours.accent,
-                      value: _allDay,
-                      onChanged: (value) {
-                        HapticFeedback.selectionClick();
-                        setState(() => _allDay = value);
-                      },
-                    ),
-                  ),
-                  Divider(
-                    height: 1,
-                    color: colours.border.withValues(alpha: 0.3),
-                  ),
-                  _GroupedActionRow(
-                    label: _allDay ? 'Date' : 'Date and time',
-                    value: _allDay
-                        ? _formatDate(_date)
-                        : '${_formatDate(_date)} · ${_formatTime(_date)}',
-                    onTap: () async {
-                      await _pickDate();
-                      if (!_allDay) await _pickTime();
-                    },
-                  ),
-                  Divider(
-                    height: 1,
-                    color: colours.border.withValues(alpha: 0.3),
-                  ),
-                  _GroupedActionRow(
-                    label: 'Ends (optional)',
-                    value: _endDate == null
-                        ? 'No end date'
-                        : _formatDate(_endDate!),
-                    onTap: () => _pickDate(end: true),
-                  ),
-                ],
-              ),
-              if (_endDate != null)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 6, left: 4),
-                    child: TextButton(
-                      onPressed: () {
-                        HapticFeedback.selectionClick();
-                        setState(() => _endDate = null);
-                      },
-                      child: Text(
-                        'Clear end date',
-                        style: TextStyle(color: colours.danger, fontSize: 13),
-                      ),
-                    ),
-                  ),
-                ),
-              const SizedBox(height: Space.lg),
-
-              // Group: Counting Direction
-              const GlassSectionHeader(title: 'COUNTING MODE'),
-              GlassSegmentedControl<MomentDirection>(
-                selectedValue: _direction,
-                onChanged: (value) {
-                  HapticFeedback.selectionClick();
-                  setState(() => _direction = value);
-                },
-                segments: const [
-                  GlassSegment(
-                    value: MomentDirection.down,
-                    label: 'Count down',
-                  ),
-                  GlassSegment(value: MomentDirection.up, label: 'Count up'),
-                  GlassSegment(value: MomentDirection.both, label: 'Both'),
-                ],
-              ),
-              const SizedBox(height: Space.lg),
-
-              // Group: Notes
-              const GlassSectionHeader(title: 'PERSONAL NOTES'),
-              _GroupedCard(
-                children: [
-                  TextField(
-                    controller: _notes,
-                    maxLines: 3,
-                    style: TextStyle(fontSize: 14, color: colours.textPrimary),
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      hintText:
-                          'Add thoughts, memory details, or milestones...',
-                      hintStyle: TextStyle(color: colours.textTertiary),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                  ),
-                ],
-              ),
-
-              if (_error != null) ...<Widget>[
-                const SizedBox(height: Space.md),
-                Center(
-                  child: Text(
+                  const SizedBox(width: Space.sm),
+                  Text(
                     _error!,
                     style: TextStyle(
                       color: colours.danger,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: Space.md),
+              children: <Widget>[
+                // Title and Subtitle Card
+                SurfaceCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: <Widget>[
+                      TextField(
+                        controller: _title,
+                        maxLength: 60,
+                        style: TextStyle(
+                          fontSize: 17,
+                          color: colours.textPrimary,
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          hintText: 'What are you counting to?',
+                          hintStyle: TextStyle(color: colours.textTertiary),
+                          border: InputBorder.none,
+                          counterText: '',
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                        ),
+                      ),
+                      Divider(height: 1, color: colours.border),
+                      TextField(
+                        controller: _subtitle,
+                        maxLength: 80,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: colours.textSecondary,
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          hintText: 'Subtitle or description (optional)',
+                          hintStyle: TextStyle(color: colours.textTertiary),
+                          border: InputBorder.none,
+                          counterText: '',
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: Space.lg),
+
+                // Category Chips
+                Text(
+                  'CATEGORY',
+                  style: kairos.typeScale.label.copyWith(
+                    color: colours.textTertiary,
+                  ),
+                ),
+                const SizedBox(height: Space.sm),
+                Wrap(
+                  spacing: Space.sm,
+                  runSpacing: Space.sm,
+                  children: MomentCategory.values.map((cat) {
+                    final isSelected = _category == cat;
+                    return KairosChoiceChip(
+                      label: cat.name.toUpperCase(),
+                      selected: isSelected,
+                      onSelected: (_) => setState(() => _category = cat),
+                    );
+                  }).toList(),
+                ),
+
+                const SizedBox(height: Space.lg),
+
+                // Target Date & Time
+                Text(
+                  'DATE & TIME',
+                  style: kairos.typeScale.label.copyWith(
+                    color: colours.textTertiary,
+                  ),
+                ),
+                const SizedBox(height: Space.sm),
+                SurfaceCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: <Widget>[
+                      // All Day Toggle
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 6,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'All-day',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: colours.textPrimary,
+                              ),
+                            ),
+                            Switch.adaptive(
+                              value: _allDay,
+                              activeTrackColor: colours.accent,
+                              activeThumbColor: colours.onAccent,
+                              onChanged: (val) => setState(() => _allDay = val),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 1, color: colours.border),
+                      // Target Date Row
+                      Material(
+                        type: MaterialType.transparency,
+                        child: ListTile(
+                          onTap: () => _pickDate(end: false),
+                          title: Text(
+                            'Date',
+                            style: TextStyle(color: colours.textPrimary),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                dateStr,
+                                style: TextStyle(color: colours.accent),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                LucideIcons.chevronRight,
+                                size: 16,
+                                color: colours.textTertiary,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (!_allDay) ...[
+                        Divider(height: 1, color: colours.border),
+                        Material(
+                          type: MaterialType.transparency,
+                          child: ListTile(
+                            onTap: _pickTime,
+                            title: Text(
+                              'Time',
+                              style: TextStyle(color: colours.textPrimary),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  timeStr,
+                                  style: TextStyle(color: colours.accent),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(
+                                  LucideIcons.chevronRight,
+                                  size: 16,
+                                  color: colours.textTertiary,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: Space.lg),
+
+                // Counting Direction
+                Text(
+                  'COUNTING DIRECTION',
+                  style: kairos.typeScale.label.copyWith(
+                    color: colours.textTertiary,
+                  ),
+                ),
+                const SizedBox(height: Space.sm),
+                KairosSegmentedControl<MomentDirection>(
+                  items: const <MomentDirection, String>{
+                    MomentDirection.down: 'Count Down',
+                    MomentDirection.up: 'Count Up',
+                    MomentDirection.both: 'Both',
+                  },
+                  selected: _direction,
+                  onChanged: (val) => setState(() => _direction = val),
+                ),
+
+                const SizedBox(height: Space.lg),
+
+                // Notes Field
+                Text(
+                  'NOTES',
+                  style: kairos.typeScale.label.copyWith(
+                    color: colours.textTertiary,
+                  ),
+                ),
+                const SizedBox(height: Space.sm),
+                SurfaceCard(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
+                  child: TextField(
+                    controller: _notes,
+                    maxLines: 4,
+                    style: TextStyle(fontSize: 15, color: colours.textPrimary),
+                    decoration: InputDecoration(
+                      hintText:
+                          'Add private thoughts, tickets, or packing notes...',
+                      hintStyle: TextStyle(color: colours.textTertiary),
+                      border: InputBorder.none,
                     ),
                   ),
                 ),
+
+                const SizedBox(height: Space.md),
               ],
-              const SizedBox(height: Space.huge),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
 
-  static String _formatDate(DateTime date) =>
-      '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-
-  static String _formatTime(DateTime date) =>
-      '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-
-  static String _categoryLabel(MomentCategory category) {
-    switch (category) {
-      case MomentCategory.birthday:
-        return 'Birthday';
-      case MomentCategory.exam:
-        return 'Exam';
-      case MomentCategory.travel:
-        return 'Travel';
-      case MomentCategory.work:
-        return 'Work';
-      case MomentCategory.health:
-        return 'Health';
-      case MomentCategory.festival:
-        return 'Festival';
-      case MomentCategory.memorial:
-        return 'Memorial';
-      case MomentCategory.custom:
-        return 'Custom';
-    }
-  }
-}
-
-class _GroupedCard extends StatelessWidget {
-  const _GroupedCard({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassContainer(
-      intensity: GlassIntensity.secondary,
-      borderRadius: BorderRadius.circular(RadiusTokens.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: children,
-      ),
-    );
-  }
-}
-
-class _GroupedActionRow extends StatelessWidget {
-  const _GroupedActionRow({
-    required this.label,
-    required this.value,
-    required this.onTap,
-  });
-
-  final String label;
-  final String value;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colours = KairosTheme.of(context).colours;
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: colours.textPrimary,
-                ),
-              ),
+          // Sticky Save Button in Thumb Zone
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: Space.md),
+            child: PillButton(
+              onPressed: _saving ? null : _save,
+              label: _editing ? 'Save Changes' : 'Create Moment',
+              isLoading: _saving,
+              variant: PillButtonVariant.primary,
             ),
-            const SizedBox(width: Space.sm),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colours.accent,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: 18,
-                  color: colours.textTertiary,
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

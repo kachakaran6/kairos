@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/time/time_service.dart';
-import '../../../core/widgets/glass/glass.dart';
+import '../../../core/widgets/kairos_empty_state.dart';
+import '../../../core/widgets/kairos_scaffold.dart';
+import '../../../core/widgets/pill_button.dart';
+import '../../../core/widgets/surface_card.dart';
 import '../domain/alarm.dart';
 import 'alarm_controller.dart';
 import 'alarm_editor_page.dart';
 
-/// Alarm instrument: the list of wake promises and their next ring.
+/// Alarm instrument: the list of wake promises with luxury typography,
+/// custom animated switches, and next-ring accent pills.
 class AlarmPage extends ConsumerWidget {
   const AlarmPage({super.key, this.clock = const SystemClock()});
 
@@ -19,116 +24,61 @@ class AlarmPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final kairos = KairosTheme.of(context);
     final alarms = ref.watch(alarmListProvider);
     final nowLocal = clock.nowUtc().toLocal();
 
-    return AtmosphericBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(
-            'Alarm',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: kairos.colours.textPrimary,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: 20,
-              color: kairos.colours.textPrimary,
-            ),
-            onPressed: () => Navigator.of(context).maybePop(),
-          ),
+    return KairosScaffold(
+      title: 'Alarm',
+      showBackButton: true,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: Space.md),
+        child: PillButton(
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const AlarmEditorPage()),
+            );
+          },
+          label: 'Add Alarm',
+          icon: const Icon(LucideIcons.plus, size: 18),
+          variant: PillButtonVariant.primary,
         ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: Space.md),
-          child: FloatingActionButton.extended(
-            elevation: 0,
-            focusElevation: 0,
-            hoverElevation: 0,
-            highlightElevation: 0,
-            backgroundColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            onPressed: () {
-              HapticFeedback.lightImpact();
-              Navigator.of(context).push(
+      ),
+      body: alarms.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) =>
+            Center(child: Text('Could not load alarms: $error')),
+        data: (items) {
+          if (items.isEmpty) {
+            return KairosEmptyState(
+              iconType: EmptyStateIconType.general,
+              title: 'No alarms yet',
+              description:
+                  'An alarm is a calm promise the phone keeps for your morning.',
+              actionLabel: 'Add an alarm',
+              onAction: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => const AlarmEditorPage(),
                 ),
-              );
-            },
-            label: GlassContainer(
-              intensity: GlassIntensity.primary,
-              borderRadius: BorderRadius.circular(RadiusTokens.pill),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.add_alarm_rounded,
-                    color: kairos.colours.accent,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Add Alarm',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: kairos.colours.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        body: alarms.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) =>
-              Center(child: Text('Could not load alarms: $error')),
-          data: (items) {
-            if (items.isEmpty) {
-              return GlassEmptyState(
-                icon: Icons.alarm_rounded,
-                heading: 'No alarms yet',
-                description: 'An alarm is a promise the phone keeps for you.',
-                primaryActionLabel: 'Add an alarm',
-                onPrimaryAction: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const AlarmEditorPage(),
-                  ),
-                ),
-              );
-            }
-
-            return ListView.separated(
-              padding: const EdgeInsets.fromLTRB(
-                Space.phoneMargin,
-                Space.lg,
-                Space.phoneMargin,
-                Space.huge,
-              ),
-              itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: Space.sm),
-              itemBuilder: (context, index) => _AlarmCard(
-                alarm: items[index],
-                nowLocal: nowLocal,
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => AlarmEditorPage(alarm: items[index]),
-                  ),
-                ),
               ),
             );
-          },
-        ),
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(vertical: Space.md),
+            itemCount: items.length,
+            separatorBuilder: (_, __) => const SizedBox(height: Space.sm),
+            itemBuilder: (context, index) => _AlarmCard(
+              alarm: items[index],
+              nowLocal: nowLocal,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => AlarmEditorPage(alarm: items[index]),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -148,45 +98,44 @@ class _AlarmCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final kairos = KairosTheme.of(context);
+    final colours = kairos.colours;
     final dim = !alarm.enabled;
 
-    return GlassCard(
-      intensity: GlassIntensity.secondary,
-      borderRadius: RadiusTokens.lgRadius,
+    return SurfaceCard(
+      isSelected: alarm.enabled,
       onTap: onTap,
-      padding: const EdgeInsets.fromLTRB(
-        Space.md,
-        Space.md,
-        Space.xs,
-        Space.md,
-      ),
+      padding: const EdgeInsets.all(Space.lg),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                // Large tabular time
                 Text(
                   alarm.timeLabel,
                   style: kairos.typeScale.title.copyWith(
-                    color: dim
-                        ? kairos.colours.textTertiary
-                        : kairos.colours.textPrimary,
-                    fontFeatures: kairos.typeScale.display.fontFeatures,
+                    fontSize: 34,
+                    fontWeight: FontWeight.w300,
+                    color: dim ? colours.textTertiary : colours.textPrimary,
+                    fontFeatures: const <FontFeature>[
+                      FontFeature.tabularFigures(),
+                    ],
                   ),
                 ),
-                const SizedBox(height: Space.xxs),
+                const SizedBox(height: 4),
                 Text(
                   alarm.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: kairos.typeScale.section.copyWith(
-                    color: dim
-                        ? kairos.colours.textTertiary
-                        : kairos.colours.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: dim ? colours.textTertiary : colours.textPrimary,
                   ),
                 ),
-                const SizedBox(height: Space.xxs),
+                const SizedBox(height: 4),
                 Text(
                   <String>[
                     alarm.repeatLabel,
@@ -195,26 +144,94 @@ class _AlarmCard extends ConsumerWidget {
                     if (alarm.skipNext) 'next skipped',
                   ].join(' · '),
                   style: kairos.typeScale.caption.copyWith(
-                    color: kairos.colours.textSecondary,
+                    color: colours.textSecondary,
                   ),
                 ),
-                const SizedBox(height: Space.xxs),
-                if (alarm.enabled)
-                  Text(
-                    nextRingLabel(alarm, nowLocal),
-                    style: kairos.typeScale.caption.copyWith(
-                      color: kairos.colours.accent,
+                if (alarm.enabled) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colours.accent.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(RadiusTokens.pill),
+                    ),
+                    child: Text(
+                      nextRingLabel(alarm, nowLocal),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: colours.accent,
+                      ),
                     ),
                   ),
+                ],
               ],
             ),
           ),
-          Switch(
+          // Custom tactile switch
+          _CustomSwitch(
             value: alarm.enabled,
-            onChanged: (_) =>
-                ref.read(alarmListProvider.notifier).toggle(alarm.id),
+            onChanged: (_) {
+              HapticFeedback.selectionClick();
+              ref.read(alarmListProvider.notifier).toggle(alarm.id);
+            },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CustomSwitch extends StatelessWidget {
+  const _CustomSwitch({required this.value, required this.onChanged});
+
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final kairos = KairosTheme.of(context);
+    final colours = kairos.colours;
+
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        width: 52,
+        height: 32,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(RadiusTokens.pill),
+          color: value
+              ? colours.accent
+              : (colours.isDark ? colours.surfaceElevated : colours.border),
+        ),
+        child: AnimatedAlign(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+          child: Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: value
+                  ? colours.onAccent
+                  : (colours.isDark ? colours.textTertiary : Colors.white),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x20000000),
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

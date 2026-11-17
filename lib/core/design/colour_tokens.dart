@@ -40,41 +40,41 @@ class KairosColourTokens {
   final Color night;
   final bool isDark;
 
-  /// Default canvas: #0C0C0F, warm off-white text: #E8E4DC.
+  /// Dark palette: True-warm near-black (#0F0D0B) with surface steps.
   static const KairosColourTokens dark = KairosColourTokens(
-    background: Color(0xFF0C0C0F),
-    surface: Color(0xFF141418),
-    surfaceElevated: Color(0xFF1B1B20),
-    textPrimary: Color(0xFFF5F2EE),
-    textSecondary: Color(0xFFA8A4A0),
-    textTertiary: Color(0xFF6E6A67),
-    border: Color(0xFF2A2A31),
-    accent: Color(0xFFE9A97B),
-    onAccent: Color(0xFF0C0C0F),
-    accentMuted: Color(0xFF3A2A22),
-    danger: Color(0xFFC2453C),
-    success: Color(0xFF7FB3A3),
-    warning: Color(0xFFE9A97B),
-    night: Color(0xFF5A6B8C),
+    background: Color(0xFF0F0D0B),
+    surface: Color(0xFF17140F),
+    surfaceElevated: Color(0xFF1F1B16),
+    textPrimary: Color(0xFFF4EFE8),
+    textSecondary: Color(0xFF9E968D),
+    textTertiary: Color(0xFF5C554D),
+    border: Color(0x1FFFFFFF), // Hairline border
+    accent: Color(0xFFE8895A),
+    onAccent: Color(0xFF0F0D0B),
+    accentMuted: Color(0x1FE8895A), // 12% tint
+    danger: Color(0xFFD9534F),
+    success: Color(0xFF5C9E75),
+    warning: Color(0xFFE8895A),
+    night: Color(0xFF4A5A7A),
     isDark: true,
   );
 
-  /// Paper-like light mode from the Ink theme: #FBFAF7 / #1B1B1E.
+  /// Light palette: Warm paper background (#FAF7F2), raised surface (#FFFFFF).
   static const KairosColourTokens light = KairosColourTokens(
-    background: Color(0xFFFBFAF7),
+    background: Color(0xFFFAF7F2),
     surface: Color(0xFFFFFFFF),
-    surfaceElevated: Color(0xFFF1EEE8),
-    textPrimary: Color(0xFF17171A),
-    textSecondary: Color(0xFF5E5A55),
-    textTertiary: Color(0xFF8A857E),
-    border: Color(0xFFE4E0D8),
-    accent: Color(0xFFA9552B),
-    onAccent: Color(0xFFFBFAF7),
-    accentMuted: Color(0xFFEDE5DD),
-    danger: Color(0xFFC2453C),
-    success: Color(0xFF7FB3A3),
-    warning: Color(0xFFA9552B),
-    night: Color(0xFF4A5A7A),
+    surfaceElevated: Color(0xFFF2ECE4),
+    textPrimary: Color(0xFF1A1714),
+    textSecondary: Color(0xFF6B645C),
+    textTertiary: Color(0xFF9C948A),
+    border: Color(0x141A1714), // Ink at 8% opacity
+    accent: Color(0xFFB5532D),
+    onAccent: Color(0xFFFFFFFF),
+    accentMuted: Color(0x1FB5532D), // 12% tint
+    danger: Color(0xFFBA382E),
+    success: Color(0xFF3D7857),
+    warning: Color(0xFFB5532D),
+    night: Color(0xFF3B4E6B),
     isDark: false,
   );
 
@@ -89,8 +89,8 @@ class KairosColourTokens {
       textTertiary: textTertiary,
       border: border,
       accent: newAccent,
-      onAccent: onAccent,
-      accentMuted: accentMuted,
+      onAccent: isDark ? const Color(0xFF0F0D0B) : Colors.white,
+      accentMuted: newAccent.withValues(alpha: 0.12),
       danger: danger,
       success: success,
       warning: warning,

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kairos — Screen Gallery (Warm Precision)</title>
+  <style>
+    :root {
+      --bg: #12100E;
+      --card-bg: #1C1916;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #F4EFE8;
+      --text-muted: #9E968D;
+      --terracotta: #E8895A;
+    }
+    body {
+      margin: 0;
+      padding: 40px 24px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .header {
+      max-width: 1200px;
+      margin: 0 auto 40px auto;
+      text-align: center;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+    p {
+      color: var(--text-muted);
+      font-size: 16px;
+      margin-top: 0;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(232, 137, 90, 0.15);
+      color: var(--terracotta);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      border: 1px solid rgba(232, 137, 90, 0.3);
+    }
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .screen-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+    }
+    .screen-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 6px 0;
+    }
+    .screen-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin: 0 0 20px 0;
+    }
+    .pair {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .frame-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .frame-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .phone-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 36px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border);
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="badge">Authentic Unmasked Typography</div>
+    <h1>Kairos Visual Gallery</h1>
+    <p>Every screen captured in Light Mode (Warm Paper) and Dark Mode (Warm Obsidian) with 100% genuine fonts.</p>
+  </div>
+
+  <div class="grid" id="gallery"></div>
+
+  <script>
+    const screens = [
+      { id: "01_now_tab", title: "01. Now Tab — Live Instrument Dashboard", desc: "Hero oversized clock (10:30.00), bento instrument cards (World Clock, Alarm, Timer, Stopwatch, Focus), and live active moments." },
+      { id: "02_next_empty", title: "02. Next Tab — Empty State", desc: "Warm minimalist composition, editorial headline ('Nothing ahead yet'), balanced description, and centered '+ Add a moment' pill button." },
+      { id: "03_next_populated", title: "03. Next Tab — Populated Moments", desc: "Hero countdown card ('Trip to Kyoto' • 42 days) with circular progress arc, secondary cards ('Karan\'s Birthday' • 6 days, 'Launch Kairos v1.0' • 14 days)." },
+      { id: "04_then_empty", title: "04. Then Tab — Empty State", desc: "Past moments empty canvas ('No memories logged yet'), memory hourglass icon, and '+ Log a past event' CTA." },
+      { id: "05_then_populated", title: "05. Then Tab — Populated Moments", desc: "Elapsed-time tracking cards with hairline timeline markers ('Graduation Day' • 312 days ago, 'Started Kairos' • 14 days ago)." },
+      { id: "06_world_clock", title: "06. World Clock", desc: "3D orthographic globe with solar day/night terminator line, interactive time-travel slider, and day/night city status cards." },
+      { id: "07_alarm_list", title: "07. Alarm List", desc: "Clean alarms list with large tabular time numerals (06:30, 07:45), next-ring pill countdown, and custom toggle switches." },
+      { id: "08_alarm_editor", title: "08. Alarm Editor", desc: "06:30 hero card, distinct M-T-W-T-F-S-S day chips, 90-minute sleep cycle calculator, wake window selector, and dismissal challenges." },
+      { id: "09_alarm_ring", title: "09. Alarm Ringing Screen", desc: "Full-screen wake experience, breathing radial pulse, editorial alarm label, and oversized Dismiss and Snooze controls." },
+      { id: "10_timer", title: "10. Timer", desc: "290pt progress ring with elapsed track, quick preset chips (1m, 5m, 15m, 25m), and centered pill action buttons." },
+      { id: "11_stopwatch", title: "11. Stopwatch", desc: "290pt analog dial with precision sweeping hand, large tabular split numerals, and split lap highlight card." },
+      { id: "12_focus", title: "12. Focus", desc: "25:00 progress ring, ambient soundscape selectors (Rain, White Noise, Forest, Cafe), and 7-day weekly streak heat-map." },
+      { id: "13_moment_editor", title: "13. Moment Editor", desc: "Grouped inset cards, date & time pickers, category selector chips, counting direction toggle, and save button." },
+      { id: "14_moment_detail", title: "14. Moment Detail", desc: "Circular progress ring, giant tabular numerals (42 days), editorial serif event title, and quick action bar." },
+      { id: "15_zero_moment", title: "15. The Zero Moment Celebration", desc: "Radial light bloom, confetti particle canvas, editorial serif headline ('It is here.'), and share moment CTA." },
+      { id: "16_settings", title: "16. Settings & Personalization", desc: "Segmented theme mode selector (Light / System / Dark), 5-color accent swatches, time format toggles, and privacy controls." }
+    ];
+
+    const gallery = document.getElementById("gallery");
+    screens.forEach(s => {
+      const card = document.createElement("div");
+      card.className = "screen-card";
+      card.innerHTML = `
+        <h2 class="screen-title">${s.title}</h2>
+        <p class="screen-desc">${s.desc}</p>
+        <div class="pair">
+          <div class="frame-container">
+            <span class="frame-label">Light Mode</span>
+            <img class="phone-img" src="${s.id}_light.png" alt="${s.title} Light" loading="lazy">
+          </div>
+          <div class="frame-container">
+            <span class="frame-label">Dark Mode</span>
+            <img class="phone-img" src="${s.id}_dark.png" alt="${s.title} Dark" loading="lazy">
+          </div>
+        </div>
+      `;
+      gallery.appendChild(card);
+    });
+  </script>
+</body>
+</html>

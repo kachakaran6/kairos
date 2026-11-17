@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
-import '../../../core/widgets/glass/glass.dart';
+import '../../../core/widgets/kairos_scaffold.dart';
+import '../../../core/widgets/kairos_segmented_control.dart';
+import '../../../core/widgets/surface_card.dart';
 import '../domain/user_settings.dart';
 import 'settings_controller.dart';
 
@@ -18,214 +21,377 @@ class SettingsPage extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final controller = ref.read(settingsProvider.notifier);
 
-    return Scaffold(
-      backgroundColor: colours.background,
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: kairos.typeScale.title.copyWith(color: colours.textPrimary),
+    return KairosScaffold(
+      title: 'Settings',
+      body: ListView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Space.phoneMargin,
+          vertical: Space.md,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: colours.textPrimary),
-      ),
-      body: AtmosphericBackground(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Space.phoneMargin,
-            vertical: Space.md,
-          ),
-          children: <Widget>[
-            // Section: Appearance
-            _SectionHeader(title: 'APPEARANCE'),
-            _SettingsContainer(
+        children: <Widget>[
+          // Section: Appearance
+          _SectionHeader(title: 'APPEARANCE'),
+          SurfaceCard(
+            padding: const EdgeInsets.all(Space.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _TileRow(
-                  title: 'Theme Mode',
-                  subtitle: 'Match system, light or dark appearance',
-                  trailing: DropdownButton<ThemeMode>(
-                    value: settings.themeMode,
-                    dropdownColor: colours.surface,
-                    style: TextStyle(color: colours.textPrimary),
-                    underline: const SizedBox(),
-                    onChanged: (mode) {
-                      if (mode != null) controller.setThemeMode(mode);
-                    },
-                    items: const [
-                      DropdownMenuItem(
-                        value: ThemeMode.system,
-                        child: Text('System'),
+                Text(
+                  'Theme Mode',
+                  style: kairos.typeScale.body.copyWith(
+                    color: colours.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Choose between daylight paper or warm obsidian dark.',
+                  style: kairos.typeScale.caption.copyWith(
+                    color: colours.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: Space.md),
+                KairosSegmentedControl<ThemeMode>(
+                  selected: settings.themeMode,
+                  onChanged: (mode) => controller.setThemeMode(mode),
+                  items: const {
+                    ThemeMode.system: 'System',
+                    ThemeMode.light: 'Light',
+                    ThemeMode.dark: 'Dark',
+                  },
+                ),
+                const SizedBox(height: Space.lg),
+                Divider(color: colours.border, height: 1),
+                const SizedBox(height: Space.lg),
+                Text(
+                  'Accent Palette',
+                  style: kairos.typeScale.body.copyWith(
+                    color: colours.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Curated precision color themes inspired by horology.',
+                  style: kairos.typeScale.caption.copyWith(
+                    color: colours.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: Space.md),
+                Wrap(
+                  spacing: Space.md,
+                  runSpacing: Space.md,
+                  alignment: WrapAlignment.spaceAround,
+                  children: AccentPalette.values.map((p) {
+                    final isSelected = settings.accentPalette == p;
+                    final activeColor = colours.isDark
+                        ? p.darkColor
+                        : p.lightColor;
+
+                    return GestureDetector(
+                      onTap: () => controller.setAccentPalette(p),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: activeColor,
+                              border: Border.all(
+                                color: isSelected
+                                    ? colours.textPrimary
+                                    : colours.border,
+                                width: isSelected ? 2.5 : 1.0,
+                              ),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: activeColor.withValues(
+                                          alpha: 0.35,
+                                        ),
+                                        blurRadius: 10,
+                                        spreadRadius: 2,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: isSelected
+                                ? const Center(
+                                    child: Icon(
+                                      LucideIcons.check,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            p.label,
+                            style: kairos.typeScale.caption.copyWith(
+                              fontSize: 11,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w400,
+                              color: isSelected
+                                  ? colours.textPrimary
+                                  : colours.textTertiary,
+                            ),
+                          ),
+                        ],
                       ),
-                      DropdownMenuItem(
-                        value: ThemeMode.light,
-                        child: Text('Light'),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: Space.xl),
+
+          // Section: Time & Precision
+          _SectionHeader(title: 'TIME & PRECISION'),
+          SurfaceCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: <Widget>[
+                _SettingSwitchTile(
+                  icon: LucideIcons.clock,
+                  title: '24-Hour Time',
+                  subtitle: 'Display time in 00:00 - 23:59 military format',
+                  value: settings.use24HourFormat,
+                  onChanged: (val) => controller.set24HourFormat(val),
+                ),
+                Divider(color: colours.border, height: 1, indent: 56),
+                _SettingSwitchTile(
+                  icon: LucideIcons.timer,
+                  title: 'Show Seconds',
+                  subtitle: 'Live sweeping seconds counter in clocks and cards',
+                  value: settings.showSeconds,
+                  onChanged: (val) => controller.setShowSeconds(val),
+                ),
+                Divider(color: colours.border, height: 1, indent: 56),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Space.lg,
+                    vertical: Space.md,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: colours.accentMuted,
+                        ),
+                        child: Icon(
+                          LucideIcons.hash,
+                          size: 18,
+                          color: colours.accent,
+                        ),
                       ),
-                      DropdownMenuItem(
-                        value: ThemeMode.dark,
-                        child: Text('Dark'),
+                      const SizedBox(width: Space.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Tabular Numerals',
+                              style: kairos.typeScale.body.copyWith(
+                                color: colours.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Equal glyph widths guarantee zero jitter as numbers tick',
+                              style: kairos.typeScale.caption.copyWith(
+                                color: colours.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colours.accentMuted,
+                          borderRadius: RadiusTokens.pillRadius,
+                        ),
+                        child: Text(
+                          'ALWAYS ON',
+                          style: kairos.typeScale.caption.copyWith(
+                            color: colours.accent,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const Divider(height: 1),
-                _TileRow(
-                  title: 'Accent Palette',
-                  subtitle: 'Curated Apple-inspired brand accent',
-                  trailing: const SizedBox(),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: Space.xl),
+
+          // Section: Calendar & Accessibility
+          _SectionHeader(title: 'CALENDAR & ACCESSIBILITY'),
+          SurfaceCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: <Widget>[
+                _SettingSwitchTile(
+                  icon: LucideIcons.calendar,
+                  title: 'Start Week on Monday',
+                  subtitle: 'Align week grids with ISO 8601 standard',
+                  value: settings.firstDayMonday,
+                  onChanged: (val) => controller.setFirstDayMonday(val),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    Space.md,
-                    0,
-                    Space.md,
-                    Space.md,
+                Divider(color: colours.border, height: 1, indent: 56),
+                _SettingSwitchTile(
+                  icon: LucideIcons.move,
+                  title: 'Reduce Motion',
+                  subtitle: 'Minimize animations and particle bursts',
+                  value: settings.reduceMotion,
+                  onChanged: (val) => controller.setReduceMotion(val),
+                ),
+                Divider(color: colours.border, height: 1, indent: 56),
+                _SettingSwitchTile(
+                  icon: LucideIcons.contrast,
+                  title: 'High Contrast Mode',
+                  subtitle: 'Boost border contrast and text definition',
+                  value: settings.highContrast,
+                  onChanged: (val) => controller.setHighContrast(val),
+                ),
+                Divider(color: colours.border, height: 1, indent: 56),
+                _SettingSwitchTile(
+                  icon: LucideIcons.bell,
+                  title: 'Moment Reminders',
+                  subtitle: 'Local alerts at target time and zero moments',
+                  value: settings.notificationsEnabled,
+                  onChanged: (val) => controller.setNotificationsEnabled(val),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: Space.xl),
+
+          // Section: Privacy & Local Architecture
+          _SectionHeader(title: 'LOCAL-FIRST ARCHITECTURE'),
+          SurfaceCard(
+            padding: const EdgeInsets.all(Space.lg),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colours.accentMuted,
                   ),
-                  child: Wrap(
-                    spacing: Space.sm,
-                    runSpacing: Space.sm,
-                    children: AccentPalette.values.map((p) {
-                      final isSelected = settings.accentPalette == p;
-                      final activeColor = colours.isDark
-                          ? p.darkColor
-                          : p.lightColor;
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(RadiusTokens.sm),
-                        onTap: () => controller.setAccentPalette(p),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? activeColor.withValues(alpha: 0.2)
-                                : colours.surfaceElevated,
-                            borderRadius: BorderRadius.circular(
-                              RadiusTokens.sm,
-                            ),
-                            border: Border.all(
-                              color: isSelected ? activeColor : colours.border,
-                              width: isSelected ? 2 : 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: activeColor,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                p.label,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
-                                  color: colours.textPrimary,
-                                ),
-                              ),
-                            ],
+                  child: Icon(
+                    LucideIcons.shieldCheck,
+                    size: 22,
+                    color: colours.accent,
+                  ),
+                ),
+                const SizedBox(width: Space.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '100% Offline & Private',
+                        style: kairos.typeScale.body.copyWith(
+                          color: colours.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'No trackers, no cloud sync, and no third-party telemetry. All moments and alarms stay on your device.',
+                        style: kairos.typeScale.caption.copyWith(
+                          color: colours.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: Space.xl),
+
+          // About
+          _SectionHeader(title: 'ABOUT KAIROS'),
+          SurfaceCard(
+            padding: const EdgeInsets.all(Space.lg),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: colours.accent,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          LucideIcons.hourglass,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: Space.md),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Kairos Chronometer',
+                          style: kairos.typeScale.body.copyWith(
+                            color: colours.textPrimary,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: Space.lg),
-
-            // Section: Time & Date
-            _SectionHeader(title: 'TIME & DATE'),
-            _SettingsContainer(
-              children: <Widget>[
-                _SwitchRow(
-                  title: '24-Hour Time',
-                  subtitle: 'Use 23:08 instead of 11:08 PM',
-                  value: settings.use24HourFormat,
-                  onChanged: controller.set24HourFormat,
-                ),
-                const Divider(height: 1),
-                _SwitchRow(
-                  title: 'Show Seconds',
-                  subtitle: 'Live ticking seconds on clock header',
-                  value: settings.showSeconds,
-                  onChanged: controller.setShowSeconds,
-                ),
-                const Divider(height: 1),
-                _SwitchRow(
-                  title: 'Start Week on Monday',
-                  subtitle: 'Calendar and week calculation standard',
-                  value: settings.firstDayMonday,
-                  onChanged: controller.setFirstDayMonday,
-                ),
-              ],
-            ),
-            const SizedBox(height: Space.lg),
-
-            // Section: Notifications & Accessibility
-            _SectionHeader(title: 'PREFERENCES & ACCESSIBILITY'),
-            _SettingsContainer(
-              children: <Widget>[
-                _SwitchRow(
-                  title: 'Moment Reminders',
-                  subtitle: 'Local notification ladder before moments arrive',
-                  value: settings.notificationsEnabled,
-                  onChanged: controller.setNotificationsEnabled,
-                ),
-                const Divider(height: 1),
-                _SwitchRow(
-                  title: 'Reduce Motion',
-                  subtitle: 'Simpler, calmer interface transitions',
-                  value: settings.reduceMotion,
-                  onChanged: controller.setReduceMotion,
-                ),
-                const Divider(height: 1),
-                _SwitchRow(
-                  title: 'High Contrast Mode',
-                  subtitle: 'Enhanced text borders and separations',
-                  value: settings.highContrast,
-                  onChanged: controller.setHighContrast,
-                ),
-              ],
-            ),
-            const SizedBox(height: Space.lg),
-
-            // Section: Data & About
-            _SectionHeader(title: 'DATA & ABOUT'),
-            _SettingsContainer(
-              children: <Widget>[
-                _TileRow(
-                  title: 'Storage Architecture',
-                  subtitle: 'Local-first, encrypted offline SQLite',
-                  trailing: Text(
-                    'Offline',
-                    style: TextStyle(
-                      color: colours.success,
-                      fontWeight: FontWeight.w600,
+                        Text(
+                          'Version 1.0.0 (Build 2026.11)',
+                          style: kairos.typeScale.caption.copyWith(
+                            color: colours.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
-                const Divider(height: 1),
-                _TileRow(
-                  title: 'Version',
-                  subtitle: 'Kairos v1.0.0 (Production Release)',
-                  trailing: Text(
-                    '1.0.0+1',
-                    style: TextStyle(color: colours.textTertiary),
+                const SizedBox(height: Space.md),
+                Text(
+                  'Designed with Warm Precision. Every instant counted with Swiss precision and calm intent.',
+                  style: kairos.typeScale.caption.copyWith(
+                    color: colours.textTertiary,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: Space.xxl),
-          ],
-        ),
+          ),
+
+          const SizedBox(height: Space.xxl),
+        ],
       ),
     );
   }
@@ -238,82 +404,32 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassSectionHeader(title: title);
-  }
-}
-
-class _SettingsContainer extends StatelessWidget {
-  const _SettingsContainer({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassContainer(
-      intensity: GlassIntensity.secondary,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: children,
-      ),
-    );
-  }
-}
-
-class _TileRow extends StatelessWidget {
-  const _TileRow({
-    required this.title,
-    required this.subtitle,
-    required this.trailing,
-  });
-
-  final String title;
-  final String subtitle;
-  final Widget trailing;
-
-  @override
-  Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
-    final colours = kairos.colours;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: colours.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 13, color: colours.textTertiary),
-                ),
-              ],
-            ),
-          ),
-          trailing,
-        ],
+      padding: const EdgeInsets.only(left: 4, bottom: Space.sm),
+      child: Text(
+        title,
+        style: kairos.typeScale.caption.copyWith(
+          color: kairos.colours.textTertiary,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.2,
+          fontSize: 11,
+        ),
       ),
     );
   }
 }
 
-class _SwitchRow extends StatelessWidget {
-  const _SwitchRow({
+class _SettingSwitchTile extends StatelessWidget {
+  const _SettingSwitchTile({
+    required this.icon,
     required this.title,
     required this.subtitle,
     required this.value,
     required this.onChanged,
   });
 
+  final IconData icon;
   final String title;
   final String subtitle;
   final bool value;
@@ -323,34 +439,50 @@ class _SwitchRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Space.lg,
+        vertical: Space.md,
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children: <Widget>[
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: colours.accentMuted,
+            ),
+            child: Icon(icon, size: 18, color: colours.accent),
+          ),
+          const SizedBox(width: Space.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  style: kairos.typeScale.body.copyWith(
                     color: colours.textPrimary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 13, color: colours.textTertiary),
+                  style: kairos.typeScale.caption.copyWith(
+                    color: colours.textSecondary,
+                  ),
                 ),
               ],
             ),
           ),
+          const SizedBox(width: Space.sm),
           Switch.adaptive(
             value: value,
             activeTrackColor: colours.accent,
+            activeThumbColor: colours.onAccent,
             onChanged: onChanged,
           ),
         ],

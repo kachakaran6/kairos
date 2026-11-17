@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/design/radius_tokens.dart';
 import '../../core/design/spacing_tokens.dart';
 import '../../core/theme/theme_extension.dart';
 import '../../core/time/clock_provider.dart';
-import '../../core/widgets/glass/glass.dart';
+import '../../core/widgets/glass/atmospheric_background.dart';
+import '../../core/widgets/surface_card.dart';
 import '../../features/alarm/presentation/alarm_controller.dart';
 import '../../features/alarm/presentation/alarm_page.dart';
 import '../../features/focus/presentation/focus_page.dart';
@@ -61,14 +64,6 @@ class _KairosShellState extends State<KairosShell> {
 class _NowPage extends ConsumerWidget {
   const _NowPage();
 
-  static const List<_Instrument> _instruments = <_Instrument>[
-    _Instrument('World clock', Icons.public, WorldClockPage()),
-    _Instrument('Alarm', Icons.alarm, AlarmPage()),
-    _Instrument('Timer', Icons.timer_outlined, TimerPage()),
-    _Instrument('Stopwatch', Icons.speed_outlined, StopwatchPage()),
-    _Instrument('Focus', Icons.center_focus_strong_outlined, FocusPage()),
-  ];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final kairos = KairosTheme.of(context);
@@ -84,10 +79,10 @@ class _NowPage extends ConsumerWidget {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(
-            Space.phoneMargin,
+            Space.xl,
             Space.lg,
-            Space.phoneMargin,
-            110, // Ensure content scrolls clear of floating pill nav
+            Space.xl,
+            110, // Clear of floating pill nav
           ),
           children: <Widget>[
             Row(
@@ -99,37 +94,62 @@ class _NowPage extends ConsumerWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: GlassIconButton(
-                    icon: Icon(
-                      Icons.settings_outlined,
-                      color: colours.textPrimary,
-                      size: 22,
-                    ),
-                    onPressed: () {
+                  child: GestureDetector(
+                    onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (_) => const SettingsPage(),
                         ),
                       );
                     },
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: colours.surfaceElevated.withValues(alpha: 0.6),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: colours.border, width: 1),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          LucideIcons.settings,
+                          color: colours.textPrimary,
+                          size: 20,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: Space.md),
-            const GlassSectionHeader(title: 'INSTRUMENTS'),
-            _InstrumentGrid(instruments: _instruments),
             const SizedBox(height: Space.lg),
-            const GlassSectionHeader(title: 'Happening Now'),
+            Text(
+              'INSTRUMENTS',
+              style: kairos.typeScale.label.copyWith(
+                color: colours.textTertiary,
+              ),
+            ),
+            const SizedBox(height: Space.sm),
+            const _InstrumentBentoGrid(),
+            const SizedBox(height: Space.xl),
+            Text(
+              'HAPPENING NOW',
+              style: kairos.typeScale.label.copyWith(
+                color: colours.textTertiary,
+              ),
+            ),
+            const SizedBox(height: Space.sm),
             if (ongoing.isEmpty)
-              GlassContainer(
-                intensity: GlassIntensity.subtle,
-                padding: const EdgeInsets.all(Space.md),
+              SurfaceCard(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 child: Row(
                   children: [
                     Icon(
-                      Icons.hourglass_empty_rounded,
-                      size: 20,
+                      LucideIcons.hourglass,
+                      size: 18,
                       color: colours.textTertiary,
                     ),
                     const SizedBox(width: Space.sm),
@@ -138,6 +158,7 @@ class _NowPage extends ConsumerWidget {
                         'No moment in progress.',
                         style: kairos.typeScale.body.copyWith(
                           color: colours.textTertiary,
+                          fontSize: 14,
                         ),
                       ),
                     ),
@@ -239,8 +260,9 @@ class _LiveClockBlockState extends State<_LiveClockBlock> {
               Text(
                 time,
                 style: kairos.typeScale.display.copyWith(
-                  fontSize: 64,
-                  height: 1,
+                  fontSize: 76,
+                  height: 1.0,
+                  fontWeight: FontWeight.w200,
                   color: colours.textPrimary,
                   fontFeatures: const <FontFeature>[
                     FontFeature.tabularFigures(),
@@ -251,8 +273,9 @@ class _LiveClockBlockState extends State<_LiveClockBlock> {
               Text(
                 seconds,
                 style: kairos.typeScale.title.copyWith(
-                  fontSize: 24,
-                  color: colours.textTertiary,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w300,
+                  color: colours.accent,
                   fontFeatures: const <FontFeature>[
                     FontFeature.tabularFigures(),
                   ],
@@ -261,12 +284,12 @@ class _LiveClockBlockState extends State<_LiveClockBlock> {
             ],
           ),
         ),
-        const SizedBox(height: Space.xs),
+        const SizedBox(height: 6),
         Text(
           date,
-          style: kairos.typeScale.body.copyWith(
-            color: colours.textTertiary,
-            fontSize: 15,
+          style: kairos.typeScale.caption.copyWith(
+            color: colours.textSecondary,
+            fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -275,10 +298,8 @@ class _LiveClockBlockState extends State<_LiveClockBlock> {
   }
 }
 
-class _InstrumentGrid extends ConsumerWidget {
-  const _InstrumentGrid({required this.instruments});
-
-  final List<_Instrument> instruments;
+class _InstrumentBentoGrid extends ConsumerWidget {
+  const _InstrumentBentoGrid();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -290,64 +311,75 @@ class _InstrumentGrid extends ConsumerWidget {
 
     return Column(
       children: <Widget>[
+        // Top row: World Clock & Alarm (prominent hero tiles)
         Row(
           children: <Widget>[
             Expanded(
-              child: _InstrumentTile(
-                instrument: instruments[0],
+              child: _BentoTile(
+                title: 'World clock',
                 microValue: '8 cities',
+                icon: LucideIcons.globe,
+                page: const WorldClockPage(),
               ),
             ),
             const SizedBox(width: Space.sm),
             Expanded(
-              child: _InstrumentTile(
-                instrument: instruments[1],
+              child: _BentoTile(
+                title: 'Alarm',
                 microValue: alarmSub,
+                icon: LucideIcons.alarmClock,
                 isLive: activeAlarm != null,
+                page: const AlarmPage(),
               ),
             ),
           ],
         ),
         const SizedBox(height: Space.sm),
+
+        // Middle row: Timer & Stopwatch
         Row(
           children: <Widget>[
-            Expanded(
-              child: _InstrumentTile(
-                instrument: instruments[2],
+            const Expanded(
+              child: _BentoTile(
+                title: 'Timer',
                 microValue: 'Presets ready',
+                icon: LucideIcons.timer,
+                page: TimerPage(),
               ),
             ),
             const SizedBox(width: Space.sm),
-            Expanded(
-              child: _InstrumentTile(
-                instrument: instruments[3],
+            const Expanded(
+              child: _BentoTile(
+                title: 'Stopwatch',
                 microValue: '00:00.00',
+                icon: LucideIcons.gauge,
+                page: StopwatchPage(),
               ),
             ),
           ],
         ),
         const SizedBox(height: Space.sm),
-        _InstrumentTile(
-          instrument: instruments[4],
-          span: true,
-          microValue: '25 min focus · Ready',
-        ),
+
+        // Bottom row: Focus (wide card with live mini progress arc)
+        _FocusBentoTile(),
       ],
     );
   }
 }
 
-class _InstrumentTile extends StatelessWidget {
-  const _InstrumentTile({
-    required this.instrument,
+class _BentoTile extends StatelessWidget {
+  const _BentoTile({
+    required this.title,
     required this.microValue,
-    this.span = false,
+    required this.icon,
+    required this.page,
     this.isLive = false,
   });
 
-  final _Instrument instrument;
+  final String title;
   final String microValue;
-  final bool span;
+  final IconData icon;
+  final Widget page;
   final bool isLive;
 
   @override
@@ -355,86 +387,172 @@ class _InstrumentTile extends StatelessWidget {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
 
-    return GlassCard(
-      intensity: GlassIntensity.secondary,
-      borderColor: isLive ? colours.accent.withValues(alpha: 0.5) : null,
+    return SurfaceCard(
+      isSelected: isLive,
       onTap: () => Navigator.of(
         context,
-      ).push(MaterialPageRoute<void>(builder: (_) => instrument.page)),
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 104),
-        width: span ? double.infinity : null,
-        padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Icon(
-                  instrument.icon,
-                  size: 22,
-                  color: isLive
-                      ? colours.accent
-                      : colours.accent.withValues(alpha: 0.85),
-                ),
-                if (span)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colours.surfaceElevated,
-                      borderRadius: BorderRadius.circular(RadiusTokens.sm),
-                    ),
-                    child: Text(
-                      'FOCUS MODE',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
-                        color: colours.textTertiary,
-                      ),
-                    ),
+      ).push(MaterialPageRoute<void>(builder: (_) => page)),
+      padding: const EdgeInsets.all(Space.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: isLive ? colours.accent : colours.textSecondary,
+              ),
+              if (isLive)
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: colours.accent,
+                    shape: BoxShape.circle,
                   ),
-              ],
+                ),
+            ],
+          ),
+          const SizedBox(height: Space.md),
+          Text(
+            title,
+            style: kairos.typeScale.section.copyWith(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: colours.textPrimary,
             ),
-            const SizedBox(height: Space.sm),
-            Column(
+          ),
+          const SizedBox(height: 2),
+          Text(
+            microValue,
+            style: kairos.typeScale.caption.copyWith(
+              fontSize: 12,
+              fontWeight: isLive ? FontWeight.w600 : FontWeight.w400,
+              color: isLive ? colours.accent : colours.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FocusBentoTile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final kairos = KairosTheme.of(context);
+    final colours = kairos.colours;
+
+    return SurfaceCard(
+      onTap: () => Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (_) => const FocusPage())),
+      padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 14),
+      child: Row(
+        children: <Widget>[
+          // Mini progress arc
+          SizedBox(
+            width: 38,
+            height: 38,
+            child: CustomPaint(
+              painter: _MiniArcPainter(
+                progress: 0.65,
+                accent: colours.accent,
+                border: colours.border,
+              ),
+              child: Center(
+                child: Icon(LucideIcons.focus, size: 16, color: colours.accent),
+              ),
+            ),
+          ),
+          const SizedBox(width: Space.md),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
-                  instrument.label,
+                  'Focus',
                   style: kairos.typeScale.section.copyWith(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: colours.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
-                  microValue,
+                  '25 min session · Soundscapes ready',
                   style: kairos.typeScale.caption.copyWith(
                     fontSize: 12,
-                    fontWeight: isLive ? FontWeight.w600 : FontWeight.w500,
-                    color: isLive ? colours.accent : colours.textTertiary,
+                    color: colours.textSecondary,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: colours.accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(RadiusTokens.pill),
+            ),
+            child: Text(
+              'READY',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: colours.accent,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _Instrument {
-  const _Instrument(this.label, this.icon, this.page);
+class _MiniArcPainter extends CustomPainter {
+  const _MiniArcPainter({
+    required this.progress,
+    required this.accent,
+    required this.border,
+  });
 
-  final String label;
-  final IconData icon;
-  final Widget page;
+  final double progress;
+  final Color accent;
+  final Color border;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 2;
+
+    final bgPaint = Paint()
+      ..color = border
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.0;
+    canvas.drawCircle(center, radius, bgPaint);
+
+    final arcPaint = Paint()
+      ..color = accent
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 3.0;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      math.pi * 2 * progress,
+      false,
+      arcPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _MiniArcPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.accent != accent ||
+      oldDelegate.border != border;
 }

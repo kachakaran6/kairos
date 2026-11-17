@@ -65,32 +65,32 @@ class KairosGlassTokens {
   factory KairosGlassTokens.fromColours(KairosColourTokens c) {
     if (c.isDark) {
       return KairosGlassTokens(
-        primaryBackground: c.surfaceElevated.withValues(alpha: 0.72),
-        secondaryBackground: c.surface.withValues(alpha: 0.54),
-        subtleBackground: c.surface.withValues(alpha: 0.32),
-        primaryBorder: Colors.white.withValues(alpha: 0.14),
-        secondaryBorder: Colors.white.withValues(alpha: 0.08),
-        subtleBorder: Colors.white.withValues(alpha: 0.05),
-        innerHighlight: Colors.white.withValues(alpha: 0.06),
+        primaryBackground: c.surfaceElevated.withValues(alpha: 0.85),
+        secondaryBackground: c.surface.withValues(alpha: 0.80),
+        subtleBackground: c.surface.withValues(alpha: 0.45),
+        primaryBorder: Colors.white.withValues(alpha: 0.10),
+        secondaryBorder: Colors.white.withValues(alpha: 0.06),
+        subtleBorder: Colors.white.withValues(alpha: 0.04),
+        innerHighlight: Colors.transparent, // Removed smear gradient
         primaryBlur: 20.0,
         secondaryBlur: 14.0,
         subtleBlur: 8.0,
-        shadow: <BoxShadow>[
+        shadow: const <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.28),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
+            color: Color(0x33000000),
+            blurRadius: 16,
+            offset: Offset(0, 4),
           ),
         ],
         heroShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.38),
-            blurRadius: 28,
-            offset: const Offset(0, 10),
+            color: const Color(0x55000000),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: c.accent.withValues(alpha: 0.12),
-            blurRadius: 36,
+            color: c.accent.withValues(alpha: 0.08),
+            blurRadius: 32,
             spreadRadius: -4,
             offset: const Offset(0, 8),
           ),
@@ -98,32 +98,32 @@ class KairosGlassTokens {
       );
     } else {
       return KairosGlassTokens(
-        primaryBackground: c.surface.withValues(alpha: 0.82),
-        secondaryBackground: c.surface.withValues(alpha: 0.65),
-        subtleBackground: c.surfaceElevated.withValues(alpha: 0.45),
-        primaryBorder: c.border.withValues(alpha: 0.65),
-        secondaryBorder: c.border.withValues(alpha: 0.42),
-        subtleBorder: c.border.withValues(alpha: 0.25),
-        innerHighlight: Colors.white.withValues(alpha: 0.55),
+        primaryBackground: c.surface.withValues(alpha: 0.95),
+        secondaryBackground: c.surface.withValues(alpha: 0.90),
+        subtleBackground: c.surfaceElevated.withValues(alpha: 0.70),
+        primaryBorder: c.border,
+        secondaryBorder: c.border.withValues(alpha: 0.6),
+        subtleBorder: c.border.withValues(alpha: 0.4),
+        innerHighlight: Colors.transparent, // Removed smear gradient
         primaryBlur: 18.0,
         secondaryBlur: 12.0,
         subtleBlur: 6.0,
-        shadow: <BoxShadow>[
+        shadow: const <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Color(0x0A1A1714), // Soft warm-tinted shadow
             blurRadius: 16,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
         heroShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: const Color(0x101A1714),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: c.accent.withValues(alpha: 0.08),
-            blurRadius: 32,
+            color: c.accent.withValues(alpha: 0.06),
+            blurRadius: 28,
             spreadRadius: -4,
             offset: const Offset(0, 6),
           ),

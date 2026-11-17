@@ -15,24 +15,24 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Focus'), findsWidgets);
-      expect(find.text('25m'), findsOneWidget);
-      expect(find.text('45m'), findsOneWidget);
+      expect(find.text('25 min'), findsOneWidget);
+      expect(find.text('45 min'), findsOneWidget);
       expect(find.text('00:25:00'), findsOneWidget);
       expect(find.text('Start Focus'), findsOneWidget);
       expect(find.text('Ambient Soundscape'), findsOneWidget);
       expect(find.text('Gentle Rain'), findsOneWidget);
 
-      await tester.drag(find.byType(ListView), const Offset(0, -400));
+      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -400));
       await tester.pumpAndSettle();
 
       expect(find.text('Weekly Activity & Streak'), findsOneWidget);
-      expect(find.text('4-Day Streak 🔥'), findsOneWidget);
+      expect(find.text('4-Day Streak'), findsOneWidget);
 
-      await tester.drag(find.byType(ListView), const Offset(0, 400));
+      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, 400));
       await tester.pumpAndSettle();
 
-      // Switch preset to 45m
-      await tester.tap(find.text('45m'));
+      // Switch preset to 45 min
+      await tester.tap(find.text('45 min'));
       await tester.pumpAndSettle();
       expect(find.text('00:45:00'), findsOneWidget);
 

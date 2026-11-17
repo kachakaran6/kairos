@@ -59,13 +59,17 @@ void main() {
     await tester.pumpWidget(wrap(InMemoryAlarmRepository(), clock));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(FloatingActionButton));
+    await tester.tap(find.text('Add Alarm'));
     await tester.pumpAndSettle();
 
     expect(find.text('New alarm'), findsOneWidget);
-    expect(find.text('Wake window'), findsOneWidget);
-    await tester.drag(find.byType(ListView), const Offset(0, -600));
+    expect(find.text('WAKE WINDOW'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Preview Alarm Ring'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
-    expect(find.text('Preview the ring'), findsOneWidget);
+    expect(find.text('Preview Alarm Ring'), findsOneWidget);
   });
 }

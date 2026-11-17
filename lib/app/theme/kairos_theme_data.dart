@@ -26,7 +26,7 @@ abstract final class KairosThemeData {
   static ThemeData _build(KairosColourTokens c, {String? fontFamily}) {
     final baseScale = KairosTypeScale.standard;
     final scale = fontFamily != null
-        ? baseScale.withFontFamily(fontFamily)
+        ? baseScale.withFontFamily(fontFamily, 'Georgia')
         : baseScale;
     final textTheme = scale.toTextTheme(
       c.textPrimary,

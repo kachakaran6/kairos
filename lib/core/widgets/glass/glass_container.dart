@@ -73,23 +73,7 @@ class GlassContainer extends StatelessWidget {
               borderRadius: borderRadius,
               border: Border.all(color: effectiveBorder, width: borderWidth),
             ),
-            child: showHighlight
-                ? DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: borderRadius,
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: <Color>[
-                          glass.innerHighlight,
-                          Colors.transparent,
-                        ],
-                        stops: const <double>[0.0, 0.45],
-                      ),
-                    ),
-                    child: child,
-                  )
-                : child,
+            child: child,
           ),
         ),
       ),

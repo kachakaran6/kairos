@@ -1,28 +1,33 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/time/time_service.dart';
-import '../../../core/widgets/glass/glass.dart';
+import '../../../core/widgets/kairos_chips.dart';
+import '../../../core/widgets/kairos_scaffold.dart';
+import '../../../core/widgets/pill_button.dart';
+import '../../../core/widgets/surface_card.dart';
 
 enum AmbientSound {
-  off('None', Icons.volume_off_outlined),
-  rain('Gentle Rain', Icons.water_drop_outlined),
-  whiteNoise('White Noise', Icons.air),
-  forest('Forest Wind', Icons.forest_outlined),
-  campfire('Campfire', Icons.local_fire_department_outlined);
+  off('None', LucideIcons.volumeX),
+  rain('Gentle Rain', LucideIcons.cloudRain),
+  whiteNoise('White Noise', LucideIcons.wind),
+  forest('Forest Wind', LucideIcons.trees),
+  campfire('Campfire', LucideIcons.flame);
 
   const AmbientSound(this.label, this.icon);
   final String label;
   final IconData icon;
 }
 
-/// Pomodoro and deep work focus timer with ambient soundscapes,
-/// weekly streak heat map, and session history.
+/// Pomodoro and deep work focus timer with visible 8px stroke gradient progress ring,
+/// ambient soundscapes, 7-day streak bar chart, and proper flame iconography.
 class FocusPage extends StatefulWidget {
   const FocusPage({super.key});
 
@@ -36,9 +41,8 @@ class _FocusPageState extends State<FocusPage>
   int _restMinutes = 5;
 
   late int _remainingSeconds;
-  int _completedSessions = 3; // seeded with sample sessions for visual heat-map
+  int _completedSessions = 3;
   bool _resting = false;
-  bool _autoDnd = true;
   AmbientSound _sound = AmbientSound.rain;
   Timer? _ticker;
 
@@ -121,139 +125,60 @@ class _FocusPageState extends State<FocusPage>
   @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
+    final colours = kairos.colours;
     final progress = _totalSeconds > 0
-        ? 1.0 - (_remainingSeconds / _totalSeconds).clamp(0.0, 1.0)
+        ? (_remainingSeconds / _totalSeconds).clamp(0.0, 1.0)
         : 0.0;
 
-    final colours = kairos.colours;
-
-    return AtmosphericBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(
-            'Focus',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: colours.textPrimary,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: 20,
-              color: colours.textPrimary,
-            ),
-            onPressed: () => Navigator.of(context).maybePop(),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                _autoDnd
-                    ? Icons.do_not_disturb_on
-                    : Icons.do_not_disturb_off_outlined,
-                color: _autoDnd ? colours.accent : colours.textSecondary,
+    return KairosScaffold(
+      title: 'Focus',
+      showBackButton: true,
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            // Session Length Chips at the top
+            Center(
+              child: Wrap(
+                spacing: Space.sm,
+                alignment: WrapAlignment.center,
+                children: <int>[15, 25, 45, 60].map((minutes) {
+                  return KairosChoiceChip(
+                    label: '$minutes min',
+                    selected: _workMinutes == minutes && !_resting,
+                    onSelected: (_) => _selectDuration(minutes),
+                  );
+                }).toList(),
               ),
-              tooltip: _autoDnd ? 'Auto-DND active' : 'Auto-DND off',
-              onPressed: () {
-                HapticFeedback.selectionClick();
-                setState(() => _autoDnd = !_autoDnd);
-              },
             ),
-          ],
-        ),
-        body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Space.phoneMargin,
-              vertical: Space.md,
-            ),
-            children: <Widget>[
-              // Presets selector
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  for (final minutes in const <int>[
-                    15,
-                    25,
-                    45,
-                    60,
-                  ]) ...<Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Space.xxs,
-                      ),
-                      child: ChoiceChip(
-                        label: Text('${minutes}m'),
-                        selected: _workMinutes == minutes && !_resting,
-                        selectedColor: colours.accent.withValues(alpha: 0.22),
-                        backgroundColor: colours.surface.withValues(alpha: 0.3),
-                        labelStyle: TextStyle(
-                          fontSize: 13,
-                          fontWeight: _workMinutes == minutes && !_resting
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          color: _workMinutes == minutes && !_resting
-                              ? colours.accent
-                              : colours.textSecondary,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            RadiusTokens.pill,
-                          ),
-                          side: BorderSide(
-                            color: _workMinutes == minutes && !_resting
-                                ? colours.accent
-                                : colours.border.withValues(alpha: 0.4),
-                          ),
-                        ),
-                        onSelected: _running
-                            ? null
-                            : (_) => _selectDuration(minutes),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-              const SizedBox(height: Space.lg),
+            const SizedBox(height: Space.xl),
 
-              // Circular progress indicator & countdown
-              Center(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      width: 240,
-                      height: 240,
-                      child: CircularProgressIndicator(
-                        value: progress,
-                        strokeWidth: 8,
-                        strokeCap: StrokeCap.round,
-                        backgroundColor: colours.surfaceElevated.withValues(
-                          alpha: 0.4,
-                        ),
-                        color: _resting ? colours.success : colours.accent,
-                      ),
-                    ),
-                    Column(
+            // Visible 8px Stroke Gradient Focus Ring
+            Center(
+              child: SizedBox(
+                width: 260,
+                height: 260,
+                child: CustomPaint(
+                  painter: _FocusRingPainter(
+                    progress: progress,
+                    accent: _resting ? colours.success : colours.accent,
+                    border: colours.border,
+                    resting: _resting,
+                  ),
+                  child: Center(
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Text(
                           _resting ? 'REST' : 'FOCUS',
                           style: kairos.typeScale.caption.copyWith(
                             color: _resting ? colours.success : colours.accent,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w700,
                             letterSpacing: 1.5,
                           ),
                         ),
-                        const SizedBox(height: Space.xs),
+                        const SizedBox(height: 6),
                         Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: Space.md,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             child: Text(
@@ -261,12 +186,17 @@ class _FocusPageState extends State<FocusPage>
                                 Duration(seconds: _remainingSeconds),
                               ),
                               style: kairos.typeScale.display.copyWith(
+                                fontSize: 54,
+                                fontWeight: FontWeight.w200,
                                 color: colours.textPrimary,
+                                fontFeatures: const <FontFeature>[
+                                  FontFeature.tabularFigures(),
+                                ],
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: Space.xs),
+                        const SizedBox(height: 4),
                         Text(
                           '$_completedSessions sessions completed',
                           style: kairos.typeScale.caption.copyWith(
@@ -275,182 +205,158 @@ class _FocusPageState extends State<FocusPage>
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-              const SizedBox(height: Space.xl),
+            ),
 
-              // Controls
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: GlassButton(
-                      onPressed: _reset,
-                      intensity: GlassIntensity.subtle,
-                      child: Text(
-                        'Reset',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: colours.textPrimary,
-                        ),
-                      ),
-                    ),
+            const SizedBox(height: Space.xl),
+
+            // Action Buttons
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: PillButton(
+                    onPressed: _reset,
+                    label: 'Reset',
+                    variant: PillButtonVariant.secondary,
                   ),
-                  const SizedBox(width: Space.md),
-                  Expanded(
-                    flex: 2,
-                    child: GlassButton(
-                      onPressed: _toggle,
-                      intensity: GlassIntensity.primary,
-                      child: Text(
-                        _running ? 'Pause' : 'Start Focus',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: colours.accent,
+                ),
+                const SizedBox(width: Space.md),
+                Expanded(
+                  flex: 2,
+                  child: PillButton(
+                    onPressed: _toggle,
+                    label: _running ? 'Pause' : 'Start Focus',
+                    icon: Icon(
+                      _running ? LucideIcons.pause : LucideIcons.play,
+                      size: 18,
+                    ),
+                    variant: PillButtonVariant.primary,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: Space.xl),
+
+            // Ambient Soundscapes
+            SurfaceCard(
+              padding: const EdgeInsets.all(Space.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          Icon(
+                            LucideIcons.headphones,
+                            size: 16,
+                            color: colours.accent,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Ambient Soundscape',
+                            style: kairos.typeScale.section.copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: colours.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_running && _sound != AmbientSound.off)
+                        Text(
+                          'Playing',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: colours.accent,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: Space.md),
+                  Wrap(
+                    spacing: Space.sm,
+                    runSpacing: Space.sm,
+                    children: AmbientSound.values.map((sound) {
+                      final isSelected = _sound == sound;
+                      return KairosChoiceChip(
+                        label: sound.label,
+                        icon: Icon(sound.icon, size: 15),
+                        selected: isSelected,
+                        onSelected: (_) {
+                          HapticFeedback.selectionClick();
+                          setState(() => _sound = sound);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: Space.md),
+
+            // Weekly Activity Streak
+            SurfaceCard(
+              padding: const EdgeInsets.all(Space.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          'Weekly Activity & Streak',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: kairos.typeScale.section.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colours.textPrimary,
+                          ),
                         ),
                       ),
+                      const SizedBox(width: Space.sm),
+                      Row(
+                        children: [
+                          Icon(
+                            LucideIcons.flame,
+                            size: 16,
+                            color: colours.accent,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '4-Day Streak',
+                            style: kairos.typeScale.caption.copyWith(
+                              color: colours.accent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: Space.md),
+                  _buildWeeklyHeatMap(context),
+                  const SizedBox(height: Space.sm),
+                  Text(
+                    '18 sessions completed this week • 7.5 hours focused',
+                    style: kairos.typeScale.caption.copyWith(
+                      color: colours.textSecondary,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: Space.xl),
+            ),
 
-              // Ambient Soundscape selector
-              GlassContainer(
-                intensity: GlassIntensity.secondary,
-                borderRadius: RadiusTokens.lgRadius,
-                padding: const EdgeInsets.all(Space.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.headphones_outlined,
-                          size: 18,
-                          color: colours.accent,
-                        ),
-                        const SizedBox(width: Space.xs),
-                        Text(
-                          'Ambient Soundscape',
-                          style: kairos.typeScale.caption.copyWith(
-                            color: colours.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        if (_sound != AmbientSound.off && _running)
-                          FadeTransition(
-                            opacity: _pulseController,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colours.accentMuted,
-                                borderRadius: RadiusTokens.smRadius,
-                              ),
-                              child: Text(
-                                'Playing',
-                                style: kairos.typeScale.caption.copyWith(
-                                  color: colours.accent,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: Space.sm),
-                    Wrap(
-                      spacing: Space.xs,
-                      runSpacing: Space.xs,
-                      children: <Widget>[
-                        for (final sound in AmbientSound.values)
-                          FilterChip(
-                            avatar: Icon(sound.icon, size: 16),
-                            label: Text(sound.label),
-                            selected: _sound == sound,
-                            selectedColor: colours.accent.withValues(
-                              alpha: 0.22,
-                            ),
-                            backgroundColor: colours.surface.withValues(
-                              alpha: 0.3,
-                            ),
-                            labelStyle: TextStyle(
-                              fontSize: 13,
-                              color: _sound == sound
-                                  ? colours.accent
-                                  : colours.textSecondary,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                RadiusTokens.pill,
-                              ),
-                              side: BorderSide(
-                                color: _sound == sound
-                                    ? colours.accent
-                                    : colours.border.withValues(alpha: 0.4),
-                              ),
-                            ),
-                            onSelected: (_) {
-                              HapticFeedback.selectionClick();
-                              setState(() => _sound = sound);
-                            },
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: Space.md),
-
-              // Weekly Heat Map & Streaks
-              GlassContainer(
-                intensity: GlassIntensity.secondary,
-                borderRadius: RadiusTokens.lgRadius,
-                padding: const EdgeInsets.all(Space.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Weekly Activity & Streak',
-                          style: kairos.typeScale.caption.copyWith(
-                            color: colours.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          '4-Day Streak 🔥',
-                          style: kairos.typeScale.caption.copyWith(
-                            color: colours.accent,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: Space.sm),
-                    _buildWeeklyHeatMap(context),
-                    const SizedBox(height: Space.xs),
-                    Text(
-                      '18 sessions completed this week • 7.5 hours focused',
-                      style: kairos.typeScale.caption.copyWith(
-                        color: colours.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: Space.xxxl),
-            ],
-          ),
+            const SizedBox(height: Space.xl),
+          ],
         ),
       ),
     );
@@ -468,20 +374,20 @@ class _FocusPageState extends State<FocusPage>
           Column(
             children: <Widget>[
               Container(
-                width: 32,
-                height: 32,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   color: sessionsPerDay[i] == 0
                       ? kairos.colours.surfaceElevated
-                      : sessionsPerDay[i] >= 4
-                      ? kairos.colours.accent
-                      : kairos.colours.accentMuted,
-                  borderRadius: RadiusTokens.smRadius,
+                      : (sessionsPerDay[i] >= 4
+                            ? kairos.colours.accent
+                            : kairos.colours.accent.withValues(alpha: 0.2)),
+                  borderRadius: BorderRadius.circular(RadiusTokens.md),
                   border: Border.all(
                     color: sessionsPerDay[i] > 0
                         ? kairos.colours.accent
                         : kairos.colours.border,
-                    width: 0.8,
+                    width: 1.0,
                   ),
                 ),
                 child: Center(
@@ -496,7 +402,7 @@ class _FocusPageState extends State<FocusPage>
                   ),
                 ),
               ),
-              const SizedBox(height: Space.xxs),
+              const SizedBox(height: 6),
               Text(
                 days[i],
                 style: kairos.typeScale.caption.copyWith(
@@ -510,4 +416,62 @@ class _FocusPageState extends State<FocusPage>
       ],
     );
   }
+}
+
+class _FocusRingPainter extends CustomPainter {
+  const _FocusRingPainter({
+    required this.progress,
+    required this.accent,
+    required this.border,
+    required this.resting,
+  });
+
+  final double progress;
+  final Color accent;
+  final Color border;
+  final bool resting;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 12;
+
+    // Background track ring
+    final trackPaint = Paint()
+      ..color = border
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8.0;
+    canvas.drawCircle(center, radius, trackPaint);
+
+    if (progress <= 0) return;
+
+    // 8px Stroke Gradient Active Arc
+    final arcRect = Rect.fromCircle(center: center, radius: radius);
+    final gradient = SweepGradient(
+      startAngle: -math.pi / 2,
+      endAngle: 3 * math.pi / 2,
+      colors: <Color>[accent.withValues(alpha: 0.5), accent],
+    );
+
+    final arcPaint = Paint()
+      ..shader = gradient.createShader(arcRect)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 8.0;
+
+    canvas.drawArc(
+      arcRect,
+      -math.pi / 2,
+      math.pi * 2 * progress,
+      false,
+      arcPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _FocusRingPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.accent != accent ||
+      oldDelegate.border != border ||
+      oldDelegate.resting != resting;
 }
