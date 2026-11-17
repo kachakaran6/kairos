@@ -192,23 +192,28 @@ class _WorldClockPageState extends State<WorldClockPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.tune_rounded,
-                              size: 16,
-                              color: colours.accent,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Time-Travel Planner',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: colours.textPrimary,
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.tune_rounded,
+                                size: 16,
+                                color: colours.accent,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  'Time-Travel Planner',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: colours.textPrimary,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         Text(
                           _timeTravelHours == 0

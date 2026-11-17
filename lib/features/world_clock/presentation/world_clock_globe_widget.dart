@@ -53,23 +53,28 @@ class WorldClockGlobeWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.wb_sunny_rounded,
-                      size: 14,
-                      color: colours.accent,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Solar Day/Night Terminator',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: colours.textTertiary,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.wb_sunny_rounded,
+                        size: 14,
+                        color: colours.accent,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          'Solar Terminator',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: colours.textTertiary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Text(
                   '${selectedOffsetMinutes >= 0 ? "+" : ""}${(selectedOffsetMinutes / 60).toStringAsFixed(1)}h Slider',

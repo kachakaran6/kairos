@@ -23,14 +23,16 @@ import 'kairos_bottom_nav.dart';
 
 /// Three-tab shell: Next, Now, Then. Instruments live inside Now.
 class KairosShell extends StatefulWidget {
-  const KairosShell({super.key});
+  const KairosShell({super.key, this.initialIndex = 1});
+
+  final int initialIndex;
 
   @override
   State<KairosShell> createState() => _KairosShellState();
 }
 
 class _KairosShellState extends State<KairosShell> {
-  int _index = 1;
+  late int _index = widget.initialIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -131,10 +133,12 @@ class _NowPage extends ConsumerWidget {
                       color: colours.textTertiary,
                     ),
                     const SizedBox(width: Space.sm),
-                    Text(
-                      'No moment in progress.',
-                      style: kairos.typeScale.body.copyWith(
-                        color: colours.textTertiary,
+                    Flexible(
+                      child: Text(
+                        'No moment in progress.',
+                        style: kairos.typeScale.body.copyWith(
+                          color: colours.textTertiary,
+                        ),
                       ),
                     ),
                   ],
@@ -225,29 +229,37 @@ class _LiveClockBlockState extends State<_LiveClockBlock> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: <Widget>[
-            Text(
-              time,
-              style: kairos.typeScale.display.copyWith(
-                fontSize: 64,
-                height: 1,
-                color: colours.textPrimary,
-                fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: <Widget>[
+              Text(
+                time,
+                style: kairos.typeScale.display.copyWith(
+                  fontSize: 64,
+                  height: 1,
+                  color: colours.textPrimary,
+                  fontFeatures: const <FontFeature>[
+                    FontFeature.tabularFigures(),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: Space.xs),
-            Text(
-              seconds,
-              style: kairos.typeScale.title.copyWith(
-                fontSize: 24,
-                color: colours.textTertiary,
-                fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+              const SizedBox(width: Space.xs),
+              Text(
+                seconds,
+                style: kairos.typeScale.title.copyWith(
+                  fontSize: 24,
+                  color: colours.textTertiary,
+                  fontFeatures: const <FontFeature>[
+                    FontFeature.tabularFigures(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: Space.xs),
         Text(
@@ -350,9 +362,9 @@ class _InstrumentTile extends StatelessWidget {
         context,
       ).push(MaterialPageRoute<void>(builder: (_) => instrument.page)),
       child: Container(
-        height: 96,
+        constraints: const BoxConstraints(minHeight: 104),
         width: span ? double.infinity : null,
-        padding: const EdgeInsets.all(Space.md),
+        padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -389,6 +401,7 @@ class _InstrumentTile extends StatelessWidget {
                   ),
               ],
             ),
+            const SizedBox(height: Space.sm),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

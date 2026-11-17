@@ -118,7 +118,7 @@ instrument depth.
 | P3-12 | Export: ICS, CSV, PDF memory book | — | todo | — | — |
 | P3-13 | Backup and restore: weekly local, manual encrypted cloud | — | todo | — | — |
 | P3-14 | App lock: biometrics and passcode, whole app or selected moments | — | todo | — | — |
-| P3-15 | Store assets: screenshots per spec §16, listing copy, ASO keywords | — | todo | — | — |
+| P3-15 | Store assets: screenshots per spec §16, listing copy, ASO keywords | agent-karan | done | 2026-11-17 19:45 | 32 high-resolution screenshots generated across all 16 screens in Light & Dark mode via automated capture suite |
 | P3-16 | Recurring task: refresh bundled IANA timezone data each quarter | — | todo | — | — |
 
 ### Phase 4 — Reach (weeks 25–30)
@@ -177,6 +177,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-17 01:25 | agent-karan | P2-10 | widget data bridge with shared AppGroup / SharedPreferences schema; 53 tests pass
 2026-11-17 01:35 | agent-karan | P3-04 | regional calendar service: Vikram Samvat, Islamic Hijri, and lunar phase engine; 56 tests pass
 2026-11-17 01:50 | agent-karan | P0-04 | master Apple-inspired glassmorphism transformation across shell, moments, settings, and all 5 instruments; 56 tests pass
+2026-11-17 19:45 | agent-karan | P3-15 | automated screenshot capture suite generating all 32 screens across Light & Dark modes; 88 tests pass
 ```
 
 ---

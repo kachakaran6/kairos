@@ -305,29 +305,34 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
               const GlassSectionHeader(title: 'SCHEDULE'),
               _GroupedCard(
                 children: [
-                  SwitchListTile.adaptive(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    title: Text(
-                      'All-day moment',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: colours.textPrimary,
+                  Material(
+                    color: Colors.transparent,
+                    child: SwitchListTile.adaptive(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
                       ),
-                    ),
-                    subtitle: Text(
-                      'Counts calendar days rather than hours',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: colours.textTertiary,
+                      title: Text(
+                        'All-day moment',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: colours.textPrimary,
+                        ),
                       ),
+                      subtitle: Text(
+                        'Counts calendar days rather than hours',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colours.textTertiary,
+                        ),
+                      ),
+                      activeTrackColor: colours.accent,
+                      value: _allDay,
+                      onChanged: (value) {
+                        HapticFeedback.selectionClick();
+                        setState(() => _allDay = value);
+                      },
                     ),
-                    activeTrackColor: colours.accent,
-                    value: _allDay,
-                    onChanged: (value) {
-                      HapticFeedback.selectionClick();
-                      setState(() => _allDay = value);
-                    },
                   ),
                   Divider(
                     height: 1,
@@ -502,15 +507,19 @@ class _GroupedActionRow extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: colours.textPrimary,
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: colours.textPrimary,
+                ),
               ),
             ),
+            const SizedBox(width: Space.sm),
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   value,
