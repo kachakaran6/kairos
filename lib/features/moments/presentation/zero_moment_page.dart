@@ -197,6 +197,7 @@ class _ZeroMomentPageState extends State<ZeroMomentPage>
                             padding: const EdgeInsets.symmetric(
                               horizontal: Space.sm,
                             ),
+                            padding: const EdgeInsets.symmetric(horizontal: Space.sm),
                             minimumSize: const Size.fromHeight(
                               Space.touchTargetAndroid,
                             ),
