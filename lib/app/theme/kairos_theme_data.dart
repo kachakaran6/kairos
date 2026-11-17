@@ -110,8 +110,8 @@ abstract final class KairosThemeData {
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: c.surfaceElevated,
+        filled: false,
+        fillColor: Colors.transparent,
         hintStyle: scale.body.copyWith(color: c.textTertiary),
         labelStyle: scale.caption.copyWith(color: c.textSecondary),
         contentPadding: const EdgeInsets.symmetric(
@@ -119,16 +119,16 @@ abstract final class KairosThemeData {
           vertical: Space.sm,
         ),
         border: OutlineInputBorder(
-          borderRadius: RadiusTokens.mdRadius,
+          borderRadius: RadiusTokens.inputRadius,
           borderSide: BorderSide(color: c.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: RadiusTokens.mdRadius,
+          borderRadius: RadiusTokens.inputRadius,
           borderSide: BorderSide(color: c.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: RadiusTokens.mdRadius,
-          borderSide: BorderSide(color: c.accent, width: 2),
+          borderRadius: RadiusTokens.inputRadius,
+          borderSide: BorderSide(color: c.accent, width: 1.5),
         ),
       ),
       snackBarTheme: SnackBarThemeData(

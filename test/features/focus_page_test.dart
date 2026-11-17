@@ -22,13 +22,19 @@ void main() {
       expect(find.text('Ambient Soundscape'), findsOneWidget);
       expect(find.text('Gentle Rain'), findsOneWidget);
 
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -400));
+      await tester.drag(
+        find.byType(SingleChildScrollView),
+        const Offset(0, -400),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Weekly Activity & Streak'), findsOneWidget);
       expect(find.text('4-Day Streak'), findsOneWidget);
 
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, 400));
+      await tester.drag(
+        find.byType(SingleChildScrollView),
+        const Offset(0, 400),
+      );
       await tester.pumpAndSettle();
 
       // Switch preset to 45 min

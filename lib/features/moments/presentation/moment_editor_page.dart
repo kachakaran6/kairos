@@ -233,6 +233,10 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                           hintText: 'What are you counting to?',
                           hintStyle: TextStyle(color: colours.textTertiary),
                           border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          filled: false,
+                          fillColor: Colors.transparent,
                           counterText: '',
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -253,6 +257,10 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                           hintText: 'Subtitle or description (optional)',
                           hintStyle: TextStyle(color: colours.textTertiary),
                           border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          filled: false,
+                          fillColor: Colors.transparent,
                           counterText: '',
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -417,9 +425,10 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                 ),
                 const SizedBox(height: Space.sm),
                 SurfaceCard(
+                  borderRadius: BorderRadius.circular(RadiusTokens.input),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 4,
+                    vertical: 12,
                   ),
                   child: TextField(
                     controller: _notes,
@@ -430,6 +439,11 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                           'Add private thoughts, tickets, or packing notes...',
                       hintStyle: TextStyle(color: colours.textTertiary),
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      filled: false,
+                      fillColor: Colors.transparent,
+                      contentPadding: EdgeInsets.zero,
                     ),
                   ),
                 ),

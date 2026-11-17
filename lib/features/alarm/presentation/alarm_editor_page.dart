@@ -190,21 +190,40 @@ class _AlarmEditorPageState extends ConsumerState<AlarmEditorPage> {
 
                 const SizedBox(height: Space.lg),
 
-                // Label Input Field
+                // Label Section
+                Text(
+                  'LABEL',
+                  style: kairos.typeScale.label.copyWith(
+                    color: colours.textTertiary,
+                  ),
+                ),
+                const SizedBox(height: Space.sm),
                 SurfaceCard(
+                  borderRadius: BorderRadius.circular(RadiusTokens.input),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 4,
+                    horizontal: Space.md,
+                    vertical: 14,
                   ),
                   child: TextField(
                     controller: _label,
                     maxLength: 40,
                     textCapitalization: TextCapitalization.sentences,
-                    style: TextStyle(fontSize: 16, color: colours.textPrimary),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: colours.textPrimary,
+                    ),
                     decoration: InputDecoration(
-                      labelText: 'Label',
-                      labelStyle: TextStyle(color: colours.textSecondary),
+                      hintText: 'Alarm label (e.g. Morning Run)',
+                      hintStyle: TextStyle(color: colours.textTertiary),
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      filled: false,
+                      fillColor: Colors.transparent,
+                      contentPadding: EdgeInsets.zero,
                       counterText: '',
                     ),
                   ),
