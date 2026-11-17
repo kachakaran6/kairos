@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/time/clock_provider.dart';
+import '../../../core/widgets/widget_suite/widget_sync_service.dart';
 import '../data/alarm_repository.dart';
 import '../domain/alarm.dart';
 
@@ -106,6 +107,11 @@ class AlarmListNotifier extends AsyncNotifier<List<Alarm>> {
     final sorted = _sorted(alarms);
     state = AsyncData(sorted);
     await _repository.saveAll(sorted);
+    try {
+      ref.read(widgetSyncServiceProvider).syncAllWidgets();
+    } catch (_) {
+      // Safe fallback in test harnesses without home_widget platform channel
+    }
   }
 
   List<Alarm> _sorted(List<Alarm> alarms) {

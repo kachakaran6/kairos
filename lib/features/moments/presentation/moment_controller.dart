@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/time/clock_provider.dart';
+import '../../../core/widgets/widget_suite/widget_sync_service.dart';
 import '../data/moment_repository.dart';
 import '../domain/moment.dart';
 
@@ -83,6 +84,11 @@ class MomentListNotifier extends AsyncNotifier<List<Moment>> {
     final sorted = _sorted(moments);
     state = AsyncData(sorted);
     await _repository.saveAll(sorted);
+    try {
+      ref.read(widgetSyncServiceProvider).syncAllWidgets();
+    } catch (_) {
+      // Safe fallback in test harnesses without home_widget platform channel
+    }
   }
 
   List<Moment> _sorted(List<Moment> moments) {

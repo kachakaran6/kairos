@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="16dp"
+    android:background="@drawable/widget_background_dark">
+
+    <View
+        android:id="@+id/compact_dot"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:background="@drawable/widget_pill_accent"
+        android:layout_marginEnd="12dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/compact_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trip to Kyoto"
+            android:textSize="14sp"
+            android:fontFamily="serif"
+            android:textColor="#F4EFE8"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/compact_time_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="in 42 days"
+            android:textSize="12sp"
+            android:textColor="#9E968D" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/compact_days"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="42d"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="#E8895A" />
+</LinearLayout>

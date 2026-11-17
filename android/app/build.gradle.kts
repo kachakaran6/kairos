@@ -42,3 +42,9 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    implementation("androidx.glance:glance-appwidget:1.1.1")
+}

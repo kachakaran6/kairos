@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="20dp"
+    android:background="@drawable/widget_background_dark">
+
+    <!-- Left: Live Clock & Alarm -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextClock
+            android:id="@+id/combo_clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="hh:mm"
+            android:format24Hour="kk:mm"
+            android:textSize="44sp"
+            android:fontFamily="sans-serif-thin"
+            android:textColor="#F4EFE8"
+            android:includeFontPadding="false" />
+
+        <TextClock
+            android:id="@+id/combo_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="EEE, MMM d"
+            android:format24Hour="EEE, d MMM"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#9E968D"
+            android:letterSpacing="0.08"
+            android:textAllCaps="true" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="12dp">
+
+            <View
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@drawable/widget_pill_accent"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/combo_alarm_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alarm 06:30"
+                android:textSize="12sp"
+                android:textColor="#F4EFE8" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#1AFFFFFF"
+        android:layout_marginHorizontal="16dp" />
+
+    <!-- Right: Next Moment & Progress Rings -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NEXT MOMENT"
+            android:textSize="10sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#E8895A"
+            android:letterSpacing="0.08" />
+
+        <TextView
+            android:id="@+id/combo_moment_days"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="42 days"
+            android:textSize="26sp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#F4EFE8" />
+
+        <TextView
+            android:id="@+id/combo_moment_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trip to Kyoto"
+            android:textSize="13sp"
+            android:fontFamily="serif"
+            android:textColor="#9E968D"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <ImageView
+            android:id="@+id/combo_life_rings"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="fitCenter" />
+    </LinearLayout>
+</LinearLayout>

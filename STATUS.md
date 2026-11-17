@@ -97,7 +97,7 @@ instrument depth.
 | P2-09 | Reminder ladder UI and scheduling | — | todo | — | — |
 | P2-10 | Widget data bridge: App Group contract, SharedPreferences contract, refresh triggers | agent-karan | done | 2026-11-17 01:25 | `KairosWidgetPayload` schema + `MethodChannelWidgetBridge` for iOS AppGroup / Android Glance sync |
 | P2-11 | iOS WidgetKit extension: first six designs (Dial, Odometer, Photo, Ring, Stack, Split) | — | todo | — | — |
-| P2-12 | Android Glance widgets: the same six designs, resizable | — | todo | — | — |
+| P2-12 | Android Glance & RemoteViews widgets: Clock, World Clock, Next, Then, Interactive, Combo | agent-karan | done | 2026-11-17 18:15 | 6 native AppWidgetProviders, TextClock live ticking, WorkManager + AlarmManager midnight rollover, deep linking, `flutter build apk --debug` succeeded |
 | P2-13 | Lock-screen surfaces: iOS accessory families, Android 14 keyguard widgets | — | todo | — | — |
 | P2-14 | Per-instance widget configuration UI | — | todo | — | — |
 
@@ -128,7 +128,7 @@ instrument depth.
 |---|---|---|---|---|---|
 | P4-01 | Moment suggestions: on-device heuristics from import and usage | — | todo | — | — |
 | P4-02 | Web read-only view of moments | — | todo | — | — |
-| P4-03 | Widget gallery with live previews | — | todo | — | — |
+| P4-03 | Widget Studio gallery with live previews and 6 curated looks | agent-karan | done | 2026-11-17 18:15 | `WidgetStudioPage` interactive configurator, 6 Looks, opacity/corner sliders, live canvas preview, 88 tests pass |
 | P4-04 | Performance pass: 120Hz frame budget, cold start under 1.5s | — | todo | — | — |
 | P4-05 | PostHog and Sentry wiring, off by default, opt-in only | — | todo | — | — |
 | P4-06 | RevenueCat paywall and entitlement gating against spec §12 | — | todo | — | — |
@@ -161,6 +161,8 @@ Append-only. Format and rules in `AGENTS.md` §9.
 | D-006 | 2026-11-16 | Riverpod 3 for state; moments persist through a JSON repository in `shared_preferences` until P1-01 replaces it with Drift | Unblocks the moments UI and offline persistence without codegen; Drift schema lands in Phase 1 | No relational queries or full-text until the P1-01 migration | Yes |
 | D-007 | 2026-11-17 | Glassmorphism design system built atop `KairosColourTokens` with static atmospheric radial gradients | Delivers luxury Apple-inspired glass depth and tactile feedback while avoiding full-screen blur performance penalties | Centralized tokens ensure 100% theme adaptability without hardcoded hex colors | Yes |
 | D-008 | 2026-11-17 | Added google_fonts and lucide_icons for typography and iconography | Provides distinctive grotesque numerals, editorial serif headers, and consistent 1.75 stroke iconography per ADA guidelines | +600KB binary, cached fonts | Yes |
+| D-009 | 2026-11-17 | Android home screen widget suite uses native RemoteViews + TextClock and offscreen Flutter artwork | Zero battery consumption / no CPU wake locks for live ticking digits; rich progress arcs & streak heatmaps rendered via home_widget offscreen | Native Kotlin layouts for 6 families | No |
+| D-010 | 2026-11-17 | Interactive Widget Studio with 6 curated Looks (Terracotta Paper, Midnight Ink, Sakura, Forest Quiet, Mono Graphite, Sunset Glass) | Empowers users to preview and tailor widgets before pinning to home screen with custom opacity and squircle radii | Small stateful configurator in Settings | Yes |
 
 ---
 
@@ -187,6 +189,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-17 22:15 | agent-karan | P3-17 | complete open-source transformation: LICENSE, README, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, CHANGELOG, SUPPORT, issue templates, dependabot, CI workflow, 1280x640 social preview; all gates green
 2026-11-17 23:20 | agent-karan | P3-18 | FontLoader TrueType typography (Arial, Georgia) and Lucide vector icons registered; Ahem blocks eliminated; 32 authentic device screenshots updated across gallery and repo; package migrated to com.samyukt.kairos; release workflow configured; all gates green
 2026-11-17 23:22 | agent-karan | P3-19 | removed redundant flutter-ci.yml and dependabot.yml; retained solely the APK release workflow (.github/workflows/release.yml)
+2026-11-17 23:44 | agent-karan | P2-12/P4-03 | Android home screen widget suite (Clock, World Clock, Next, Then, Interactive, Combo) + in-app Widget Studio with live preview; flutter build apk green, 88 tests pass
 ```
 
 ---

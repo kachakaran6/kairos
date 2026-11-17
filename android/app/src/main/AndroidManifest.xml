@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
     <application
-        android:label="kairos"
+        android:label="Kairos"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -24,7 +28,115 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!-- Kairos deep-link handler for home screen widgets -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="kairos" />
+            </intent-filter>
         </activity>
+
+        <!-- 1. Clock Widget Provider -->
+        <receiver
+            android:name=".widgets.ClockWidgetProvider"
+            android:exported="true"
+            android:label="Kairos Clock">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_clock_info" />
+        </receiver>
+
+        <!-- 2. World Clock Widget Provider -->
+        <receiver
+            android:name=".widgets.WorldClockWidgetProvider"
+            android:exported="true"
+            android:label="Kairos World Clock">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_world_clock_info" />
+        </receiver>
+
+        <!-- 3. Next Moment Widget Provider -->
+        <receiver
+            android:name=".widgets.NextMomentWidgetProvider"
+            android:exported="true"
+            android:label="Kairos Next Moment">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_next_moment_info" />
+        </receiver>
+
+        <!-- 4. Then Moment Widget Provider -->
+        <receiver
+            android:name=".widgets.ThenMomentWidgetProvider"
+            android:exported="true"
+            android:label="Kairos Memories">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_then_moment_info" />
+        </receiver>
+
+        <!-- 5. Interactive Widget Provider -->
+        <receiver
+            android:name=".widgets.InteractiveWidgetProvider"
+            android:exported="true"
+            android:label="Kairos Instruments">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_interactive_info" />
+        </receiver>
+
+        <!-- 6. Combo Dashboard Widget Provider -->
+        <receiver
+            android:name=".widgets.ComboWidgetProvider"
+            android:exported="true"
+            android:label="Kairos Dashboard">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_combo_info" />
+        </receiver>
+
+        <!-- Midnight Rollover Alarm Receiver -->
+        <receiver
+            android:name=".widgets.receivers.MidnightRolloverReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="app.kairos.MIDNIGHT_ROLLOVER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- System Event Receiver -->
+        <receiver
+            android:name=".widgets.receivers.SystemEventReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
