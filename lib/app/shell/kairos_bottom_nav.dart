@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/design/motion_tokens.dart';
 import '../../core/design/radius_tokens.dart';
@@ -96,7 +97,7 @@ class KairosBottomNav extends StatelessWidget {
                         _NavItem(
                           index: 0,
                           label: 'Next',
-                          icon: const _NextIcon(),
+                          icon: const Icon(LucideIcons.calendar),
                           currentIndex: currentIndex,
                           onTap: (idx) {
                             HapticFeedback.selectionClick();
@@ -106,7 +107,7 @@ class KairosBottomNav extends StatelessWidget {
                         _NavItem(
                           index: 1,
                           label: 'Now',
-                          icon: const _NowIcon(),
+                          icon: const Icon(LucideIcons.clock),
                           currentIndex: currentIndex,
                           onTap: (idx) {
                             HapticFeedback.selectionClick();
@@ -116,7 +117,7 @@ class KairosBottomNav extends StatelessWidget {
                         _NavItem(
                           index: 2,
                           label: 'Then',
-                          icon: const _ThenIcon(),
+                          icon: const Icon(LucideIcons.history),
                           currentIndex: currentIndex,
                           onTap: (idx) {
                             HapticFeedback.selectionClick();
@@ -189,137 +190,4 @@ class _NavItem extends StatelessWidget {
       ),
     );
   }
-}
-
-class _NextIcon extends StatelessWidget {
-  const _NextIcon();
-
-  @override
-  Widget build(BuildContext context) {
-    final color = IconTheme.of(context).color ?? Colors.white;
-    return CustomPaint(
-      size: const Size.square(20),
-      painter: _NextIconPainter(color: color),
-    );
-  }
-}
-
-class _NextIconPainter extends CustomPainter {
-  const _NextIconPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1.8
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round
-      ..style = PaintingStyle.stroke;
-
-    final rect = Rect.fromLTWH(2, 2, size.width - 4, size.height - 4);
-    canvas.drawArc(rect, 0.45, 4.9, false, paint);
-
-    final tip = Offset(size.width - 2, 2);
-    canvas.drawLine(Offset(size.width * 0.48, size.height * 0.52), tip, paint);
-    canvas.drawLine(tip, Offset(tip.dx - 5, tip.dy), paint);
-    canvas.drawLine(tip, Offset(tip.dx, tip.dy + 5), paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _NextIconPainter oldDelegate) =>
-      oldDelegate.color != color;
-}
-
-class _NowIcon extends StatelessWidget {
-  const _NowIcon();
-
-  @override
-  Widget build(BuildContext context) {
-    final color = IconTheme.of(context).color ?? Colors.white;
-    return CustomPaint(
-      size: const Size.square(20),
-      painter: _NowIconPainter(color: color),
-    );
-  }
-}
-
-class _NowIconPainter extends CustomPainter {
-  const _NowIconPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final stroke = Paint()
-      ..color = color
-      ..strokeWidth = 1.8
-      ..style = PaintingStyle.stroke;
-
-    final center = Offset(size.width / 2, size.height / 2);
-    canvas.drawCircle(center, size.width / 2 - 2, stroke);
-    canvas.drawCircle(center, size.width / 2 - 6, stroke);
-
-    final fill = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, 2.0, fill);
-  }
-
-  @override
-  bool shouldRepaint(covariant _NowIconPainter oldDelegate) =>
-      oldDelegate.color != color;
-}
-
-class _ThenIcon extends StatelessWidget {
-  const _ThenIcon();
-
-  @override
-  Widget build(BuildContext context) {
-    final color = IconTheme.of(context).color ?? Colors.white;
-    return CustomPaint(
-      size: const Size.square(20),
-      painter: _ThenIconPainter(color: color),
-    );
-  }
-}
-
-class _ThenIconPainter extends CustomPainter {
-  const _ThenIconPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1.8
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    final center = Offset(size.width / 2 + 1, size.height / 2);
-    canvas.drawCircle(center, size.width / 2 - 3, paint);
-
-    canvas.drawLine(center, Offset(center.dx, center.dy - 5.0), paint);
-    canvas.drawLine(center, Offset(center.dx - 4.0, center.dy), paint);
-
-    final trail = Paint()
-      ..color = color.withValues(alpha: 0.45)
-      ..strokeWidth = 1.8
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    canvas.drawArc(
-      Rect.fromCircle(center: Offset(center.dx - 3, center.dy), radius: 5.0),
-      2.0,
-      2.4,
-      false,
-      trail,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _ThenIconPainter oldDelegate) =>
-      oldDelegate.color != color;
 }
