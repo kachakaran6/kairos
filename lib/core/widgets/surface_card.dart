@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../design/elevation_tokens.dart';
 import '../design/radius_tokens.dart';
 import '../theme/theme_extension.dart';
 
@@ -61,16 +62,16 @@ class _SurfaceCardState extends State<SurfaceCard> {
     final shadows = isDark
         ? const <BoxShadow>[
             BoxShadow(
-              color: Color(0x33000000),
+              color: ElevationTokens.shadowDark,
               blurRadius: 16,
               offset: Offset(0, 4),
             ),
           ]
-        : <BoxShadow>[
+        : const <BoxShadow>[
             BoxShadow(
-              color: const Color(0x0A1A1714),
+              color: ElevationTokens.shadowLight,
               blurRadius: 18,
-              offset: const Offset(0, 6),
+              offset: Offset(0, 6),
             ),
           ];
 

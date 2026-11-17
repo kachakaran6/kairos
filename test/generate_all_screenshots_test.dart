@@ -30,12 +30,8 @@ import 'package:kairos/features/world_clock/presentation/world_clock_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  const artifactDir =
-      r'C:\Users\karan\.gemini\antigravity\brain\bde0f4dc-cf1e-4dbc-815a-3992ba7c9ac2\screenshots';
-  const artifactDirV2 =
-      r'C:\Users\karan\.gemini\antigravity\brain\bde0f4dc-cf1e-4dbc-815a-3992ba7c9ac2\screenshots_v2';
+  final artifactDir = Platform.environment['KAIROS_ARTIFACT_DIR'];
   const repoDir = 'screenshots';
-  const repoDirV2 = 'screenshots_v2';
 
   final fixedNow = DateTime.utc(2026, 11, 17, 10, 30);
   final fixedClock = FixedClock(fixedNow);
@@ -129,13 +125,32 @@ void main() {
   ];
 
   Future<void> loadRealFonts() async {
+    final pubCache = Platform.environment['PUB_CACHE'] ??
+        (Platform.environment['LOCALAPPDATA'] != null
+            ? '${Platform.environment['LOCALAPPDATA']}\\Pub\\Cache'
+            : '${Platform.environment['HOME']}/.pub-cache');
+
+    final possibleLucideFiles = [
+      File(
+        '$pubCache/hosted/pub.dev/lucide_icons_flutter-4.0.3/assets/lucide.ttf',
+      ),
+      File(
+        '$pubCache\\hosted\\pub.dev\\lucide_icons_flutter-4.0.3\\assets\\lucide.ttf',
+      ),
+    ];
+
+    File? lucideFile;
+    for (final f in possibleLucideFiles) {
+      if (f.existsSync()) {
+        lucideFile = f;
+        break;
+      }
+    }
+
     const fontDir = r'C:\flutter\bin\cache\artifacts\material_fonts';
     final arialFile = File(r'C:\Windows\Fonts\arial.ttf');
     final robotoFile = File('$fontDir\\roboto-regular.ttf');
     final georgiaFile = File(r'C:\Windows\Fonts\georgia.ttf');
-    final lucideFile = File(
-      r'C:\Users\karan\AppData\Local\Pub\Cache\hosted\pub.dev\lucide_icons_flutter-4.0.3\assets\lucide.ttf',
-    );
 
     // 1. Material Icons
     final iconFile = File('$fontDir\\materialicons-regular.otf');
@@ -149,7 +164,7 @@ void main() {
     }
 
     // 2. Lucide Icons
-    if (lucideFile.existsSync()) {
+    if (lucideFile != null && lucideFile.existsSync()) {
       final bytes = lucideFile.readAsBytesSync();
       await ui.loadFontFromList(bytes, fontFamily: 'Lucide');
       await ui.loadFontFromList(
@@ -224,9 +239,9 @@ void main() {
     GoogleFonts.config.allowRuntimeFetching = false;
     SharedPreferences.setMockInitialValues(<String, Object>{});
     Directory(repoDir).createSync(recursive: true);
-    Directory(repoDirV2).createSync(recursive: true);
-    Directory(artifactDir).createSync(recursive: true);
-    Directory(artifactDirV2).createSync(recursive: true);
+    if (artifactDir != null) {
+      Directory(artifactDir).createSync(recursive: true);
+    }
     await loadRealFonts();
   });
 
@@ -278,9 +293,9 @@ void main() {
       final bytes = byteData!.buffer.asUint8List();
 
       File('$repoDir/$name.png').writeAsBytesSync(bytes);
-      File('$repoDirV2/$name.png').writeAsBytesSync(bytes);
-      File('$artifactDir/$name.png').writeAsBytesSync(bytes);
-      File('$artifactDirV2/$name.png').writeAsBytesSync(bytes);
+      if (artifactDir != null) {
+        File('$artifactDir/$name.png').writeAsBytesSync(bytes);
+      }
     });
   }
 

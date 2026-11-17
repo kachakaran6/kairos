@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../core/design/elevation_tokens.dart';
 import '../../core/design/motion_tokens.dart';
 import '../../core/design/radius_tokens.dart';
 import '../../core/design/spacing_tokens.dart';
@@ -46,14 +47,14 @@ class KairosBottomNav extends StatelessWidget {
               boxShadow: isDark
                   ? const <BoxShadow>[
                       BoxShadow(
-                        color: Color(0x40000000),
+                        color: ElevationTokens.navShadowDark,
                         blurRadius: 20,
                         offset: Offset(0, 8),
                       ),
                     ]
                   : const <BoxShadow>[
                       BoxShadow(
-                        color: Color(0x121A1714),
+                        color: ElevationTokens.navShadowLight,
                         blurRadius: 24,
                         offset: Offset(0, 8),
                       ),

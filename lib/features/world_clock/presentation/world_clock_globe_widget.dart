@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/design/colour_tokens.dart';
+import '../../../core/design/elevation_tokens.dart';
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/widgets/surface_card.dart';
@@ -156,7 +157,9 @@ class _GlobeTerminatorPainter extends CustomPainter {
     // Smooth Curved Day/Night Terminator
     final nightPaint = Paint()
       ..color =
-          (colours.isDark ? const Color(0xFF080605) : const Color(0xFF1E1A17))
+          (colours.isDark
+                  ? ElevationTokens.globeNightDark
+                  : ElevationTokens.globeNightLight)
               .withValues(alpha: colours.isDark ? 0.65 : 0.45)
       ..style = PaintingStyle.fill;
 

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../../core/design/elevation_tokens.dart';
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
@@ -224,7 +225,7 @@ class _CustomSwitch extends StatelessWidget {
                   : (colours.isDark ? colours.textTertiary : Colors.white),
               boxShadow: const <BoxShadow>[
                 BoxShadow(
-                  color: Color(0x20000000),
+                  color: ElevationTokens.shadowSubtle,
                   blurRadius: 4,
                   offset: Offset(0, 2),
                 ),

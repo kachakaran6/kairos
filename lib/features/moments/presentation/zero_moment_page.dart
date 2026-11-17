@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../../core/design/elevation_tokens.dart';
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
@@ -370,9 +371,9 @@ class _CelebrationPainter extends CustomPainter {
           ? accentColor.withValues(alpha: particleOpacity * 0.9)
           : (isDark
                 ? Colors.white.withValues(alpha: particleOpacity * 0.8)
-                : const Color(
-                    0xFFD4AF37,
-                  ).withValues(alpha: particleOpacity * 0.85));
+                : ElevationTokens.goldCelebration.withValues(
+                    alpha: particleOpacity * 0.85,
+                  ));
 
       final paint = Paint()
         ..color = color
