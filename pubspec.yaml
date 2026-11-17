@@ -40,7 +40,7 @@ dev_dependencies:
     sdk: flutter
 
   # freezed for immutable models; json_annotation for serialization
-  freezed: ^2.4.6
+  freezed: ^4.0.3
   json_annotation: ^4.9.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
