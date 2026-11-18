@@ -40,29 +40,12 @@ class InteractiveWidgetProvider : BaseKairosWidget() {
         views.setTextViewText(R.id.alarm_time, time)
         views.setTextViewText(R.id.alarm_label, label)
         views.setTextViewText(R.id.btn_alarm_toggle, if (isEnabled) "ON" else "OFF")
+        views.setTextColor(R.id.btn_alarm_toggle, Color.WHITE)
+        views.setInt(R.id.btn_alarm_toggle, "setBackgroundResource", if (isEnabled) R.drawable.widget_pill_accent else R.drawable.widget_chip_dark)
 
-        // Concentric toggle button
-        val toggleBmp = WidgetShapeHelper.createConcentricChipBitmap(
-            context,
-            widthDp = 48,
-            heightDp = 30,
-            outerRadiusDp = config.cornerRadiusDp,
-            paddingDp = 16f,
-            fillColor = if (isEnabled) accentColor else Color.argb(40, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText))
-        )
-        views.setImageViewBitmap(R.id.btn_alarm_toggle, toggleBmp)
-
-        // Concentric quick focus button
-        val focusBtnBmp = WidgetShapeHelper.createConcentricChipBitmap(
-            context,
-            widthDp = 88,
-            heightDp = 30,
-            outerRadiusDp = config.cornerRadiusDp,
-            paddingDp = 16f,
-            fillColor = Color.argb(24, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText)),
-            strokeColor = Color.argb(40, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText))
-        )
-        views.setImageViewBitmap(R.id.btn_quick_focus, focusBtnBmp)
+        views.setTextViewText(R.id.btn_quick_focus, "Focus 25m")
+        views.setTextColor(R.id.btn_quick_focus, primaryText)
+        views.setInt(R.id.btn_quick_focus, "setBackgroundResource", R.drawable.widget_chip_dark)
 
         // Pending Intents for deep-linking
         val alarmIntent = createDeepLinkIntent(context, "alarm")

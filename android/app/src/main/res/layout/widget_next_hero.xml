@@ -18,10 +18,12 @@
 
         <LinearLayout
             android:id="@+id/moment_text_group"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/moment_progress_ring"
             android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
             android:orientation="vertical">
 
             <!-- Category Badge -->
@@ -41,10 +43,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="42"
-                android:textSize="54sp"
+                android:textSize="48sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="#14120E"
                 android:includeFontPadding="false"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:layout_marginTop="2dp" />
 
             <!-- Moment Title -->
@@ -56,8 +60,9 @@
                 android:textSize="15sp"
                 android:fontFamily="serif"
                 android:textColor="#14120E"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:ellipsize="end"
+                android:lineSpacingExtra="1dp"
                 android:layout_marginTop="2dp" />
 
             <!-- Subtitle or date -->

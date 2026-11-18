@@ -58,20 +58,6 @@ class WorldClockWidgetProvider : BaseKairosWidget() {
         views.setTextColor(R.id.city_name_3, secondaryText)
         views.setTextColor(R.id.city_clock_3, primaryText)
 
-        // Concentric inner cards for the 3 cities
-        val cardBmp = WidgetShapeHelper.createConcentricChipBitmap(
-            context,
-            widthDp = 90,
-            heightDp = 64,
-            outerRadiusDp = config.cornerRadiusDp,
-            paddingDp = 16f,
-            fillColor = Color.argb(20, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText)),
-            strokeColor = Color.argb(28, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText))
-        )
-        views.setImageViewBitmap(R.id.city_card_1, cardBmp)
-        views.setImageViewBitmap(R.id.city_card_2, cardBmp)
-        views.setImageViewBitmap(R.id.city_card_3, cardBmp)
-
         val pendingIntent = createDeepLinkIntent(context, "world_clock")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 

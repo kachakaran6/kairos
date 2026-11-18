@@ -59,7 +59,7 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
             when (countingMode.lowercase()) {
                 "continuous", "live_countdown" -> {
                     val str = if (d > 0) "${d}d ${h}h ${m}m ${s}s" else if (h > 0) "${h}h ${m}m ${s}s" else if (m > 0) "${m}m ${s}s" else "${s}s"
-                    Pair(str, 24f)
+                    Pair(str, 21f)
                 }
                 "hours" -> Pair("${totalHours}h", 36f)
                 "minutes" -> Pair("${totalMinutes}m", 36f)
@@ -137,6 +137,8 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
             views.setTextViewText(R.id.compact_time_left, if (isToday) "today" else "in $countText")
             views.setTextViewText(R.id.compact_days, countText)
         }
+
+        KairosWidgetTicker.start(context)
 
         val pendingIntent = createDeepLinkIntent(context, "moments")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)

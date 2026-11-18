@@ -8,6 +8,7 @@ import android.content.Intent
 import com.samyukt.kairos.widgets.ClockWidgetProvider
 import com.samyukt.kairos.widgets.ComboWidgetProvider
 import com.samyukt.kairos.widgets.InteractiveWidgetProvider
+import com.samyukt.kairos.widgets.KairosWidgetTicker
 import com.samyukt.kairos.widgets.NextMomentWidgetProvider
 import com.samyukt.kairos.widgets.ThenMomentWidgetProvider
 import com.samyukt.kairos.widgets.WorldClockWidgetProvider
@@ -21,6 +22,9 @@ class SystemEventReceiver : BroadcastReceiver() {
 
         // 2. Schedule WorkManager periodic sync fallback
         WidgetSyncWorker.enqueuePeriodic(context)
+
+        // 3. Ensure live ticker is active
+        KairosWidgetTicker.start(context)
 
         // 3. Notify all widgets
         val appWidgetManager = AppWidgetManager.getInstance(context) ?: return

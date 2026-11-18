@@ -55,18 +55,6 @@ class ComboWidgetProvider : BaseKairosWidget() {
             } else {
                 views.setTextViewText(R.id.combo_alarm_text, "Alarm $rawAlarmTime")
             }
-
-            // Concentric pill background for alarm container
-            val alarmChipBmp = WidgetShapeHelper.createConcentricChipBitmap(
-                context,
-                widthDp = 96,
-                heightDp = 26,
-                outerRadiusDp = config.cornerRadiusDp,
-                paddingDp = 16f,
-                fillColor = Color.argb(24, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText)),
-                strokeColor = Color.argb(38, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText))
-            )
-            views.setImageViewBitmap(R.id.combo_alarm_dot, alarmChipBmp)
         } else {
             views.setViewVisibility(R.id.combo_alarm_container, View.GONE)
         }
@@ -129,6 +117,8 @@ class ComboWidgetProvider : BaseKairosWidget() {
         } else {
             views.setViewVisibility(R.id.combo_life_rings, View.GONE)
         }
+
+        KairosWidgetTicker.start(context)
 
         val pendingIntent = createDeepLinkIntent(context, "dashboard")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)

@@ -3,6 +3,7 @@ package com.samyukt.kairos.widgets
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.TypedValue
+import android.view.View
 import android.widget.RemoteViews
 import com.samyukt.kairos.R
 
@@ -32,7 +33,15 @@ class ThenMomentWidgetProvider : BaseKairosWidget() {
         val customVal = widgetData.getString("then_moment_value", null)
         val defaultDays = widgetData.getInt("then_moment_days", 520)
 
-        val (countText, unitText, textSizeSp) = if (targetEpoch > 0L) {
+        views.setTextColor(R.id.then_header, accentColor)
+        views.setTextColor(R.id.then_days, primaryText)
+        views.setTextColor(R.id.then_unit_label, secondaryText)
+        views.setTextColor(R.id.then_title, primaryText)
+        views.setTextColor(R.id.then_date_subtitle, secondaryText)
+
+        views.setTextViewText(R.id.then_title, title)
+
+        if (targetEpoch > 0L) {
             val nowMs = System.currentTimeMillis()
             val diffMs = Math.abs(nowMs - targetEpoch)
             val diffSec = diffMs / 1000
@@ -46,40 +55,77 @@ class ThenMomentWidgetProvider : BaseKairosWidget() {
             when (countingMode.lowercase()) {
                 "continuous", "live_countdown" -> {
                     val str = if (d > 0) "${d}d ${h}h ${m}m ${s}s" else if (h > 0) "${h}h ${m}m ${s}s" else if (m > 0) "${m}m ${s}s" else "${s}s"
-                    Triple(str, "ago", 24f)
+                    views.setTextViewText(R.id.then_days, str)
+                    views.setViewVisibility(R.id.then_unit_label, View.GONE)
+                    views.setTextViewText(R.id.then_date_subtitle, "$d days since this moment")
+                    views.setViewVisibility(R.id.then_date_subtitle, View.VISIBLE)
+
+                    val scaledSize = (22f * config.scaleFactor).coerceIn(16f, 30f)
+                    views.setTextViewTextSize(R.id.then_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
                 }
-                "hours" -> Triple("${totalHours}h", "ago", 36f)
-                "minutes" -> Triple("${totalMinutes}m", "ago", 36f)
-                "seconds" -> Triple("${diffSec}s", "ago", 34f)
+                "hours" -> {
+                    views.setTextViewText(R.id.then_days, "${totalHours}h")
+                    views.setTextViewText(R.id.then_unit_label, " ago")
+                    views.setViewVisibility(R.id.then_unit_label, View.VISIBLE)
+                    views.setTextViewText(R.id.then_date_subtitle, "$d days elapsed")
+                    views.setViewVisibility(R.id.then_date_subtitle, View.VISIBLE)
+
+                    val scaledSize = (36f * config.scaleFactor).coerceIn(20f, 44f)
+                    views.setTextViewTextSize(R.id.then_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+                }
+                "minutes" -> {
+                    views.setTextViewText(R.id.then_days, "${totalMinutes}m")
+                    views.setTextViewText(R.id.then_unit_label, " ago")
+                    views.setViewVisibility(R.id.then_unit_label, View.VISIBLE)
+                    views.setTextViewText(R.id.then_date_subtitle, "$d days elapsed")
+                    views.setViewVisibility(R.id.then_date_subtitle, View.VISIBLE)
+
+                    val scaledSize = (34f * config.scaleFactor).coerceIn(20f, 44f)
+                    views.setTextViewTextSize(R.id.then_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+                }
+                "seconds" -> {
+                    views.setTextViewText(R.id.then_days, "${diffSec}s")
+                    views.setTextViewText(R.id.then_unit_label, " ago")
+                    views.setViewVisibility(R.id.then_unit_label, View.VISIBLE)
+                    views.setTextViewText(R.id.then_date_subtitle, "$d days elapsed")
+                    views.setViewVisibility(R.id.then_date_subtitle, View.VISIBLE)
+
+                    val scaledSize = (32f * config.scaleFactor).coerceIn(18f, 40f)
+                    views.setTextViewTextSize(R.id.then_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+                }
                 "weeks" -> {
                     val w = d / 7.0
-                    Triple(String.format("%.1fw", w), "ago", 38f)
+                    views.setTextViewText(R.id.then_days, String.format("%.1fw", w))
+                    views.setTextViewText(R.id.then_unit_label, " ago")
+                    views.setViewVisibility(R.id.then_unit_label, View.VISIBLE)
+                    views.setTextViewText(R.id.then_date_subtitle, "$d days ago")
+                    views.setViewVisibility(R.id.then_date_subtitle, View.VISIBLE)
+
+                    val scaledSize = (38f * config.scaleFactor).coerceIn(20f, 46f)
+                    views.setTextViewTextSize(R.id.then_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
                 }
-                "months_days" -> {
-                    val mo = d / 30
-                    val remD = d % 30
-                    val str = if (mo > 0) "${mo}m ${remD}d" else "${remD}d"
-                    Triple(str, "ago", 32f)
+                else -> {
+                    views.setTextViewText(R.id.then_days, "$d")
+                    views.setTextViewText(R.id.then_unit_label, " days ago")
+                    views.setViewVisibility(R.id.then_unit_label, View.VISIBLE)
+                    views.setViewVisibility(R.id.then_date_subtitle, View.GONE)
+
+                    val scaledSize = (48f * config.scaleFactor).coerceIn(24f, 56f)
+                    views.setTextViewTextSize(R.id.then_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
                 }
-                else -> Triple("$d", "days ago", 50f)
             }
         } else {
-            val count = customVal ?: "$defaultDays"
-            val label = widgetData.getString("then_moment_unit_label", "days ago") ?: "days ago"
-            Triple(count, label, 44f)
+            views.setTextViewText(R.id.then_days, customVal ?: "$defaultDays")
+            views.setTextViewText(R.id.then_unit_label, " days ago")
+            views.setViewVisibility(R.id.then_unit_label, View.VISIBLE)
+            views.setViewVisibility(R.id.then_date_subtitle, View.GONE)
+
+            val scaledSize = (46f * config.scaleFactor).coerceIn(24f, 56f)
+            views.setTextViewTextSize(R.id.then_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
         }
 
-        views.setTextColor(R.id.then_header, accentColor)
-        views.setTextColor(R.id.then_days, primaryText)
-        views.setTextColor(R.id.then_unit_label, secondaryText)
-        views.setTextColor(R.id.then_title, primaryText)
-
-        views.setTextViewText(R.id.then_title, title)
-        views.setTextViewText(R.id.then_days, countText)
-        views.setTextViewText(R.id.then_unit_label, " $unitText")
-
-        val scaledSize = (textSizeSp * config.scaleFactor).coerceIn(18f, 64f)
-        views.setTextViewTextSize(R.id.then_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+        // Start live ticker when a widget instance is rendered
+        KairosWidgetTicker.start(context)
 
         val pendingIntent = createDeepLinkIntent(context, "moments")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
