@@ -35,12 +35,51 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
         val rawTitle = widgetData.getString("next_moment_title", null)
         val title = if (rawTitle.isNullOrEmpty() || rawTitle == "Nothing ahead yet") "Trip to Kyoto" else rawTitle
         val subtitle = widgetData.getString("next_moment_subtitle", "Autumn exploration") ?: "Autumn exploration"
-        val customVal = widgetData.getString("next_moment_value", null)
-        val days = widgetData.getInt("next_moment_days", 42)
         val category = widgetData.getString("next_moment_category", "TRAVEL")?.uppercase() ?: "TRAVEL"
         val isToday = widgetData.getBoolean("next_moment_is_today", false)
 
-        val displayCount = if (isToday) "Today!" else (customVal ?: "$days")
+        val targetEpoch = widgetData.getLong("next_moment_target_epoch", 0L)
+        val countingMode = widgetData.getString("next_moment_counting_mode", config.momentUnit) ?: config.momentUnit
+        val customVal = widgetData.getString("next_moment_value", null)
+        val defaultDays = widgetData.getInt("next_moment_days", 42)
+
+        val (countText, textSizeSp) = if (isToday) {
+            Pair("Today!", 42f)
+        } else if (targetEpoch > 0L) {
+            val nowMs = System.currentTimeMillis()
+            val diffMs = targetEpoch - nowMs
+            val absSec = Math.abs(diffMs) / 1000
+            val d = absSec / 86400
+            val h = (absSec % 86400) / 3600
+            val m = (absSec % 3600) / 60
+            val s = absSec % 60
+            val totalHours = absSec / 3600
+            val totalMinutes = absSec / 60
+
+            when (countingMode.lowercase()) {
+                "continuous", "live_countdown" -> {
+                    val str = if (d > 0) "${d}d ${h}h ${m}m ${s}s" else if (h > 0) "${h}h ${m}m ${s}s" else if (m > 0) "${m}m ${s}s" else "${s}s"
+                    Pair(str, 24f)
+                }
+                "hours" -> Pair("${totalHours}h", 36f)
+                "minutes" -> Pair("${totalMinutes}m", 36f)
+                "seconds" -> Pair("${absSec}s", 34f)
+                "weeks" -> {
+                    val w = d / 7.0
+                    Pair(String.format("%.1fw", w), 40f)
+                }
+                "months_days" -> {
+                    val mo = d / 30
+                    val remD = d % 30
+                    val str = if (mo > 0) "${mo}m ${remD}d" else "${remD}d"
+                    Pair(str, 32f)
+                }
+                else -> Pair("${d}d", 48f)
+            }
+        } else {
+            val str = customVal ?: "${defaultDays}d"
+            Pair(str, 44f)
+        }
 
         if (layoutId == R.layout.widget_next_hero) {
             views.setTextColor(R.id.moment_category, accentColor)
@@ -49,13 +88,10 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
             views.setTextColor(R.id.moment_subtitle, secondaryText)
 
             views.setTextViewText(R.id.moment_title, title)
-            views.setTextViewText(R.id.moment_days, displayCount)
+            views.setTextViewText(R.id.moment_days, countText)
 
-            // Dynamic scaling for hero numeral
-            if (config.scaleFactor != 1.0f) {
-                val scaledSize = (44f * config.scaleFactor).coerceIn(24f, 64f)
-                views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
-            }
+            val scaledSize = (textSizeSp * config.scaleFactor).coerceIn(18f, 64f)
+            views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
 
             // Category visibility
             if (config.showMomentCategory) {
@@ -98,8 +134,8 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
             views.setInt(R.id.compact_dot, "setColorFilter", accentColor)
 
             views.setTextViewText(R.id.compact_title, title)
-            views.setTextViewText(R.id.compact_time_left, if (isToday) "today" else "in $displayCount")
-            views.setTextViewText(R.id.compact_days, if (isToday) "0d" else "${days}d")
+            views.setTextViewText(R.id.compact_time_left, if (isToday) "today" else "in $countText")
+            views.setTextViewText(R.id.compact_days, countText)
         }
 
         val pendingIntent = createDeepLinkIntent(context, "moments")

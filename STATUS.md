@@ -201,6 +201,8 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-18 08:21 | agent-karan | P4-10 | deployed build 4 (v1.0.0+4) to Google Play closed testing track via fastlane; release notes attached; tagged v1.0.0+4 and pushed to GitHub
 2026-11-18 16:45 | agent-karan | P2-15 | all widget options functional on placed widgets (time formatting engine, custom format, 12/24h, separators, moment selection & units, world clock cities); merged Next and Then into unified MomentsPage with segmented switcher & filters; bottom nav updated to Moments / Now / Widgets; 111 tests pass; APK built & running on device
 2026-11-18 22:26 | agent-karan | P4-11 | integrated automatic version and build number manager into Fastfile with 20-patch rollover (1.0.1..1.0.20 -> 1.1.1); committed and pushed to GitHub
+2026-11-18 16:56 | agent-karan | P2-16 | added continuous live counter & flexible unit options (Continuous d h m s, Days, Hours, Minutes, Seconds) in Memories tab, MomentDetailPage, and MomentEditorPage; live 1s ticking ticker; 113 tests pass; APK built & running on device
+2026-11-18 17:11 | agent-karan | P2-17 | live hours, minutes & seconds count on Android home screen widgets (Next, Then, Combo & Clock); dynamic epoch-based Kotlin countdown/countup, adaptive font sizing, space before seconds fixed in WidgetTimeFormatter, instant sync on unit toggle; 113 tests pass; APK installed & verified on device
 ```
 
 ---

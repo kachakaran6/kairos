@@ -119,35 +119,46 @@ class WidgetSyncService {
     String formatMomentValue(Duration diff, String unit) {
       switch (unit) {
         case 'continuous':
+        case 'live_countdown':
           final d = diff.inDays;
           final h = diff.inHours % 24;
           final m = diff.inMinutes % 60;
-          return d > 0 ? '${d}d ${h}h' : '${h}h ${m}m';
+          final s = diff.inSeconds % 60;
+          if (d > 0) {
+            return '${d}d ${h}h ${m}m ${s}s';
+          } else if (h > 0) {
+            return '${h}h ${m}m ${s}s';
+          } else if (m > 0) {
+            return '${m}m ${s}s';
+          } else {
+            return '${s}s';
+          }
         case 'seconds':
           return '${diff.inSeconds}s';
         case 'minutes':
           return '${diff.inMinutes}m';
+        case 'hours':
+          return '${diff.inHours}h';
         case 'weeks':
           final w = diff.inDays / 7.0;
           return '${w.toStringAsFixed(1)}w';
-        case 'hours':
-          return '${diff.inHours}h';
-        case 'percent':
-          return '72%';
         case 'months_days':
           final m = diff.inDays ~/ 30;
           final d = diff.inDays % 30;
           return m > 0 ? '${m}m ${d}d' : '${d}d';
+        case 'percent':
+          return '72%';
         case 'days':
         default:
-          return '${diff.inDays}';
+          return '${diff.inDays}d';
       }
     }
 
     String getUnitLabel(String unit) {
       switch (unit) {
         case 'continuous':
-          return 'counter';
+        case 'live_countdown':
+          return '';
         case 'seconds':
           return 'seconds';
         case 'minutes':
@@ -181,7 +192,9 @@ class WidgetSyncService {
       final days = absDiff.inDays;
       final isToday =
           absDiff.inHours < 24 && targetNextMoment.targetUtc.day == nowUtc.day;
-      final unit = config?.momentUnit ?? 'days';
+      final unit = (config?.momentUnit != null && config!.momentUnit != 'days')
+          ? config.momentUnit
+          : targetNextMoment.countingMode.name;
       final formattedVal = formatMomentValue(absDiff, unit);
       final unitLabel = getUnitLabel(unit);
 
@@ -201,6 +214,14 @@ class WidgetSyncService {
       await HomeWidget.saveWidgetData<String>(
         'next_moment_unit_label',
         unitLabel,
+      );
+      await HomeWidget.saveWidgetData<int>(
+        'next_moment_target_epoch',
+        targetNextMoment.targetUtc.millisecondsSinceEpoch,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'next_moment_counting_mode',
+        unit,
       );
       await HomeWidget.saveWidgetData<String>(
         'next_moment_category',
@@ -234,14 +255,22 @@ class WidgetSyncService {
       await HomeWidget.saveWidgetData<String>('next_moment_value', '0');
       await HomeWidget.saveWidgetData<String>('next_moment_unit_label', 'days');
       await HomeWidget.saveWidgetData<bool>('next_moment_is_today', false);
+      await HomeWidget.saveWidgetData<int>('next_moment_target_epoch', 0);
+      await HomeWidget.saveWidgetData<String>(
+        'next_moment_counting_mode',
+        'days',
+      );
     }
 
     if (pastMoments.isNotEmpty) {
       final p = pastMoments.first;
       final diff = nowUtc.difference(p.targetUtc);
-      final unit = config?.momentUnit ?? 'days';
-      final formattedVal = formatMomentValue(diff, unit);
-      final unitLabel = getUnitLabel(unit);
+      final pastUnit =
+          (config?.momentUnit != null && config!.momentUnit != 'days')
+          ? config.momentUnit
+          : p.countingMode.name;
+      final formattedVal = formatMomentValue(diff, pastUnit);
+      final unitLabel = getUnitLabel(pastUnit);
 
       await HomeWidget.saveWidgetData<String>('then_moment_title', p.title);
       await HomeWidget.saveWidgetData<int>('then_moment_days', diff.inDays);
@@ -252,6 +281,14 @@ class WidgetSyncService {
       await HomeWidget.saveWidgetData<String>(
         'then_moment_unit_label',
         unitLabel,
+      );
+      await HomeWidget.saveWidgetData<int>(
+        'then_moment_target_epoch',
+        p.targetUtc.millisecondsSinceEpoch,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'then_moment_counting_mode',
+        pastUnit,
       );
     }
 

@@ -74,10 +74,11 @@ class ComboWidgetProvider : BaseKairosWidget() {
         // 4. Moment Data & Custom Unit formatting
         val rawTitle = widgetData.getString("next_moment_title", null)
         val momentTitle = if (rawTitle.isNullOrEmpty() || rawTitle == "Nothing ahead yet") "Trip to Kyoto" else rawTitle
-        val momentValue = widgetData.getString("next_moment_value", null)
-        val momentDays = widgetData.getInt("next_moment_days", 42)
         val isToday = widgetData.getBoolean("next_moment_is_today", false)
-        val unitLabel = widgetData.getString("next_moment_unit_label", "days") ?: "days"
+        val targetEpoch = widgetData.getLong("next_moment_target_epoch", 0L)
+        val countingMode = widgetData.getString("next_moment_counting_mode", config.momentUnit) ?: config.momentUnit
+        val customVal = widgetData.getString("next_moment_value", null)
+        val momentDays = widgetData.getInt("next_moment_days", 42)
 
         views.setTextViewText(R.id.combo_moment_title, momentTitle)
         if (isToday) {
@@ -85,7 +86,27 @@ class ComboWidgetProvider : BaseKairosWidget() {
             views.setTextViewText(R.id.combo_moment_days, "Today!")
         } else {
             views.setTextViewText(R.id.combo_moment_category, "NEXT MOMENT")
-            val displayCount = momentValue ?: "$momentDays $unitLabel"
+            val displayCount = if (targetEpoch > 0L) {
+                val nowMs = System.currentTimeMillis()
+                val diffMs = targetEpoch - nowMs
+                val absSec = Math.abs(diffMs) / 1000
+                val d = absSec / 86400
+                val h = (absSec % 86400) / 3600
+                val m = (absSec % 3600) / 60
+                val s = absSec % 60
+                val totalHours = absSec / 3600
+                val totalMinutes = absSec / 60
+
+                when (countingMode.lowercase()) {
+                    "continuous", "live_countdown" -> if (d > 0) "${d}d ${h}h ${m}m" else "${h}h ${m}m ${s}s"
+                    "hours" -> "${totalHours}h left"
+                    "minutes" -> "${totalMinutes}m left"
+                    "seconds" -> "${absSec}s left"
+                    else -> "${d}d left"
+                }
+            } else {
+                customVal ?: "$momentDays days left"
+            }
             views.setTextViewText(R.id.combo_moment_days, displayCount)
         }
 

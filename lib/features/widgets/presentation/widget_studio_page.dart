@@ -1102,6 +1102,40 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
                 ),
               ),
               SwitchListTile(
+                title: const Text('Show Hours'),
+                value: _showHours,
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() => _showHours = val);
+                  _scheduleSync();
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Show Minutes'),
+                value: _showMinutes,
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() => _showMinutes = val);
+                  _scheduleSync();
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Show Seconds'),
+                value: _showSeconds,
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() {
+                    _showSeconds = val;
+                    if (val && _secondsStyle == 'hidden') {
+                      _secondsStyle = 'inline';
+                    } else if (!val) {
+                      _secondsStyle = 'hidden';
+                    }
+                  });
+                  _scheduleSync();
+                },
+              ),
+              SwitchListTile(
                 title: const Text('24-Hour Format'),
                 subtitle: const Text('Toggle between 12h (AM/PM) and 24h'),
                 value: _use24Hour,
@@ -1144,6 +1178,42 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
                 contentPadding: EdgeInsets.zero,
                 onChanged: (val) {
                   setState(() => _showDate = val);
+                  _scheduleSync();
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Show Year'),
+                value: _showYear,
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() => _showYear = val);
+                  _scheduleSync();
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Show Week Number'),
+                value: _showWeekNumber,
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() => _showWeekNumber = val);
+                  _scheduleSync();
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Show Day of Year'),
+                value: _showDayOfYear,
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() => _showDayOfYear = val);
+                  _scheduleSync();
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Show Time Zone'),
+                value: _showTimeZone,
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() => _showTimeZone = val);
                   _scheduleSync();
                 },
               ),
@@ -1323,13 +1393,16 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
           spacing: Space.xs,
           children: [
             for (final u in [
+              ('Continuous (D H M S)', 'continuous'),
               ('Days', 'days'),
+              ('Hours', 'hours'),
+              ('Minutes', 'minutes'),
+              ('Seconds', 'seconds'),
               ('Weeks', 'weeks'),
               ('Months & Days', 'months_days'),
               ('Years/Months/Days', 'ymd'),
-              ('Hours', 'hours'),
               ('Percentage', 'percent'),
-              ('Live DD:HH:MM:SS', 'live_countdown'),
+              ('Live Countdown', 'live_countdown'),
             ])
               ChoiceChip(
                 label: Text(u.$1),
@@ -1747,25 +1820,45 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
                       letterSpacing: 1.2,
                     ),
                   ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      '42',
-                      style: TextStyle(
-                        fontSize: 48 * _scaleFactor,
-                        fontWeight: FontWeight.w600,
-                        color: textPrimary,
-                        fontFamily: fontFamily,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      _momentUnit == 'weeks' ? 'weeks' : 'days',
-                      style: TextStyle(fontSize: 13, color: textSecondary),
-                    ),
-                  ],
+                Builder(
+                  builder: (context) {
+                    final (valStr, unitStr, sz) = switch (_momentUnit) {
+                      'continuous' ||
+                      'live_countdown' => ('42d 14h 32m 45s', '', 22.0),
+                      'hours' => ('1,022', 'hours', 38.0),
+                      'minutes' => ('61,352', 'mins', 34.0),
+                      'seconds' => ('3,681,120', 'secs', 30.0),
+                      'weeks' => ('6.0', 'weeks', 42.0),
+                      'months_days' => ('1m 12d', 'left', 36.0),
+                      'percent' => ('72%', 'done', 44.0),
+                      _ => ('42', 'days', 48.0),
+                    };
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          valStr,
+                          style: TextStyle(
+                            fontSize: sz * _scaleFactor,
+                            fontWeight: FontWeight.w600,
+                            color: textPrimary,
+                            fontFamily: fontFamily,
+                          ),
+                        ),
+                        if (unitStr.isNotEmpty) ...[
+                          const SizedBox(width: 4),
+                          Text(
+                            unitStr,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: textSecondary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    );
+                  },
                 ),
                 if (_showMomentTitle)
                   Text(

@@ -1,0 +1,4 @@
+• Live Countdown & Counters on Home Widgets: Next Moment, Memories (Then), and Combo widgets now dynamically render live continuous count (days, hours, minutes, seconds), single-unit counts (hours, minutes, seconds), and days with auto-scaled crisp typography.
+• Unified Moments Experience: Next (upcoming) and Memories (past) seamlessly unified into a single luxury view with quick segmented switcher and real-time ticking unit filters.
+• Enhanced Widget Studio: Added independent element toggles (hours, minutes, seconds, year, week, day of year, timezone) and instant live preview for all counter formats.
+• Fixed time separator spacing and resolved home screen widget layout wrapping.
