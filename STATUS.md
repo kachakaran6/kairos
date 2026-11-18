@@ -198,6 +198,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-18 06:01 | agent-karan | P4-10 | deployed build 3 (v1.0.0+3) to Google Play closed testing track via fastlane; release notes attached; tagged v1.0.0+3 and pushed to GitHub
 2026-11-18 07:35 | agent-karan | P2-14 | completed Widget Studio full customization (Time Builder, Moment Builder, 10 Looks, Import/Export) & generated complete Play Store listing assets in store_assets/ (8 composed 1080x1920 PNGs, 1024x500 feature graphic, 512x512 app icon); 104 tests pass; release APK built clean (62.4MB)
 2026-11-18 08:15 | agent-karan | P1-03 | Luxury 3D Earth Globe redesign ("Obsidian & Ember"): GLSL ray-sphere + Fibonacci lattice, solar terminator & twilight gradient, Fresnel rim, twinkling stars, 340dp card, 111 tests pass
+2026-11-18 08:21 | agent-karan | P4-10 | deployed build 4 (v1.0.0+4) to Google Play closed testing track via fastlane; release notes attached; tagged v1.0.0+4 and pushed to GitHub
 ```
 
 ---
