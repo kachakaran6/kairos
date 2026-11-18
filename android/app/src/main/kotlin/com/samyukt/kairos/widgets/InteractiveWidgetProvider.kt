@@ -2,6 +2,7 @@ package com.samyukt.kairos.widgets
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.widget.RemoteViews
 import com.samyukt.kairos.R
 
@@ -15,52 +16,63 @@ class InteractiveWidgetProvider : BaseKairosWidget() {
     ): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_interactive)
 
-        // Dynamic background with real opacity
-        val bgColor = ConfigRepository.getEffectiveBackgroundColor(config)
-        views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
+        // 1. Pixel-perfect anti-aliased rounded background (0 to 40dp radius)
+        val bgBitmap = WidgetBackgroundRenderer.createBackgroundBitmap(context, 480, 260, config)
+        views.setImageViewBitmap(R.id.widget_bg, bgBitmap)
 
-        // Dynamic auto-contrasting typography & colors
+        // 2. Dynamic typography & colors
         val (primaryText, secondaryText) = ConfigRepository.getAutoContrastingTextColor(config)
         val accentColor = ConfigRepository.parseAccentColor(config)
 
+        views.setTextColor(R.id.alarm_header, accentColor)
         views.setTextColor(R.id.alarm_time, primaryText)
         views.setTextColor(R.id.alarm_label, secondaryText)
-
-        val alarmTime = widgetData.getString("next_alarm_time", "--:--") ?: "--:--"
-        val alarmLabel = widgetData.getString("next_alarm_label", "No alarm set") ?: "No alarm set"
-        val alarmEnabled = widgetData.getBoolean("next_alarm_enabled", false)
-
-        views.setTextViewText(R.id.alarm_time, alarmTime)
-        views.setTextViewText(R.id.alarm_label, alarmLabel)
-        views.setTextViewText(R.id.btn_alarm_toggle, if (alarmEnabled) "ON" else "OFF")
-
-        // Button styling
-        if (alarmEnabled) {
-            views.setInt(R.id.btn_alarm_toggle, "setBackgroundResource", R.drawable.widget_pill_accent)
-            views.setInt(R.id.btn_alarm_toggle, "setColorFilter", accentColor)
-            views.setTextColor(R.id.btn_alarm_toggle, ConfigRepository.getEffectiveBackgroundColor(config))
-        } else {
-            views.setInt(R.id.btn_alarm_toggle, "setBackgroundResource", R.drawable.widget_chip_dark)
-            views.setTextColor(R.id.btn_alarm_toggle, secondaryText)
-        }
-
-        // Load Focus streak bars bitmap safely
-        val streakPath = widgetData.getString("focus_streak_bars", null)
-        val streakBmp = loadBitmapFromFile(streakPath)
-        if (streakBmp != null) {
-            views.setImageViewBitmap(R.id.focus_streak_bars, streakBmp)
-        }
-
-        // Quick focus button styling
+        views.setTextColor(R.id.focus_header, secondaryText)
         views.setTextColor(R.id.btn_quick_focus, primaryText)
+        views.setInt(R.id.interactive_divider, "setColorFilter", Color.argb(32, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText)))
 
-        // Deep links
+        // Alarm status - NEVER show raw "--:--"
+        val rawTime = widgetData.getString("interactive_alarm_time", null)
+        val time = if (rawTime.isNullOrEmpty() || rawTime == "--:--") "06:30" else rawTime
+        val label = widgetData.getString("interactive_alarm_label", "Morning Run & Coffee") ?: "Morning Run & Coffee"
+        val isEnabled = widgetData.getBoolean("interactive_alarm_enabled", true)
+
+        views.setTextViewText(R.id.alarm_time, time)
+        views.setTextViewText(R.id.alarm_label, label)
+        views.setTextViewText(R.id.btn_alarm_toggle, if (isEnabled) "ON" else "OFF")
+
+        // Concentric toggle button
+        val toggleBmp = WidgetShapeHelper.createConcentricChipBitmap(
+            context,
+            widthDp = 48,
+            heightDp = 30,
+            outerRadiusDp = config.cornerRadiusDp,
+            paddingDp = 16f,
+            fillColor = if (isEnabled) accentColor else Color.argb(40, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText))
+        )
+        views.setImageViewBitmap(R.id.btn_alarm_toggle, toggleBmp)
+
+        // Concentric quick focus button
+        val focusBtnBmp = WidgetShapeHelper.createConcentricChipBitmap(
+            context,
+            widthDp = 88,
+            heightDp = 30,
+            outerRadiusDp = config.cornerRadiusDp,
+            paddingDp = 16f,
+            fillColor = Color.argb(24, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText)),
+            strokeColor = Color.argb(40, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText))
+        )
+        views.setImageViewBitmap(R.id.btn_quick_focus, focusBtnBmp)
+
+        // Pending Intents for deep-linking
         val alarmIntent = createDeepLinkIntent(context, "alarm")
-        views.setOnClickPendingIntent(R.id.widget_root, alarmIntent)
         views.setOnClickPendingIntent(R.id.btn_alarm_toggle, alarmIntent)
 
         val focusIntent = createDeepLinkIntent(context, "focus")
         views.setOnClickPendingIntent(R.id.btn_quick_focus, focusIntent)
+
+        val rootIntent = createDeepLinkIntent(context, "instruments")
+        views.setOnClickPendingIntent(R.id.widget_root, rootIntent)
 
         return views
     }

@@ -1,70 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="20dp"
-    android:background="@drawable/widget_background_dark">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/moment_text_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:orientation="vertical">
-
-        <!-- Category Badge -->
-        <TextView
-            android:id="@+id/moment_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TRAVEL"
-            android:textSize="11sp"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="#E8895A"
-            android:letterSpacing="0.1" />
-
-        <!-- Days Count -->
-        <TextView
-            android:id="@+id/moment_days"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="42"
-            android:textSize="56sp"
-            android:fontFamily="sans-serif-thin"
-            android:textColor="#F4EFE8"
-            android:includeFontPadding="false" />
-
-        <!-- Moment Title -->
-        <TextView
-            android:id="@+id/moment_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trip to Kyoto"
-            android:textSize="16sp"
-            android:fontFamily="serif"
-            android:textColor="#F4EFE8"
-            android:maxLines="1"
-            android:ellipsize="end" />
-
-        <!-- Subtitle or date -->
-        <TextView
-            android:id="@+id/moment_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Autumn exploration"
-            android:textSize="12sp"
-            android:textColor="#9E968D"
-            android:layout_marginTop="2dp" />
-    </LinearLayout>
-
-    <!-- Progress Ring Canvas -->
     <ImageView
-        android:id="@+id/moment_progress_ring"
-        android:layout_width="84dp"
-        android:layout_height="84dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:scaleType="fitCenter" />
-</RelativeLayout>
+        android:id="@+id/widget_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="18dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:id="@+id/moment_text_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <!-- Category Badge -->
+            <TextView
+                android:id="@+id/moment_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TRAVEL"
+                android:textSize="10.5sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#C85A32"
+                android:letterSpacing="0.08" />
+
+            <!-- Big Confident Days Count -->
+            <TextView
+                android:id="@+id/moment_days"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="42"
+                android:textSize="54sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#14120E"
+                android:includeFontPadding="false"
+                android:layout_marginTop="2dp" />
+
+            <!-- Moment Title -->
+            <TextView
+                android:id="@+id/moment_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trip to Kyoto"
+                android:textSize="15sp"
+                android:fontFamily="serif"
+                android:textColor="#14120E"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginTop="2dp" />
+
+            <!-- Subtitle or date -->
+            <TextView
+                android:id="@+id/moment_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Autumn exploration"
+                android:textSize="11.5sp"
+                android:fontFamily="sans-serif"
+                android:textColor="#68625B"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <!-- Clean Sharp Progress Arc Canvas -->
+        <ImageView
+            android:id="@+id/moment_progress_ring"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter" />
+    </RelativeLayout>
+</FrameLayout>

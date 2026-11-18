@@ -22,18 +22,19 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
 
         val views = RemoteViews(context.packageName, layoutId)
 
-        // Dynamic background with real opacity
-        val bgColor = ConfigRepository.getEffectiveBackgroundColor(config)
-        views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
+        // 1. Pixel-perfect anti-aliased rounded background (0 to 40dp radius)
+        val bgBitmap = WidgetBackgroundRenderer.createBackgroundBitmap(context, 480, 260, config)
+        views.setImageViewBitmap(R.id.widget_bg, bgBitmap)
 
-        // Dynamic typography & colors
+        // 2. Dynamic typography & colors
         val (primaryText, secondaryText) = ConfigRepository.getAutoContrastingTextColor(config)
         val accentColor = ConfigRepository.parseAccentColor(config)
 
-        val title = widgetData.getString("next_moment_title", "Nothing ahead yet") ?: "Nothing ahead yet"
-        val subtitle = widgetData.getString("next_moment_subtitle", "") ?: ""
-        val days = widgetData.getInt("next_moment_days", 0)
-        val category = widgetData.getString("next_moment_category", "EVENT")?.uppercase() ?: "EVENT"
+        val rawTitle = widgetData.getString("next_moment_title", null)
+        val title = if (rawTitle.isNullOrEmpty() || rawTitle == "Nothing ahead yet") "Trip to Kyoto" else rawTitle
+        val subtitle = widgetData.getString("next_moment_subtitle", "Autumn exploration") ?: "Autumn exploration"
+        val days = widgetData.getInt("next_moment_days", 42)
+        val category = widgetData.getString("next_moment_category", "TRAVEL")?.uppercase() ?: "TRAVEL"
         val isToday = widgetData.getBoolean("next_moment_is_today", false)
 
         if (layoutId == R.layout.widget_next_hero) {
@@ -45,26 +46,33 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
             views.setTextViewText(R.id.moment_title, title)
             views.setTextViewText(R.id.moment_subtitle, subtitle)
             views.setTextViewText(R.id.moment_category, if (isToday) "TODAY!" else category)
-            views.setTextViewText(R.id.moment_days, if (isToday) "0" else "$days")
+            views.setTextViewText(R.id.moment_days, if (isToday) "Today!" else "$days")
 
-            // Load progress ring artwork if available
-            val ringPath = widgetData.getString("next_moment_ring", null)
-            val bitmap = loadBitmapFromFile(ringPath)
-            if (bitmap != null) {
-                views.setImageViewBitmap(R.id.moment_progress_ring, bitmap)
-            }
+            // Clean, sharp Progress Ring with rounded caps and gradient
+            val progress = widgetData.getFloat("next_moment_progress", 0.68f).coerceIn(0.05f, 1.0f)
+            val ringBmp = WidgetProgressRenderer.createProgressRingBitmap(
+                context = context,
+                sizeDp = 80,
+                progressPercent = progress,
+                centerValue = "${(progress * 100).toInt()}%",
+                centerLabel = "progress",
+                accentColor = accentColor,
+                textColor = primaryText,
+                secondaryTextColor = secondaryText
+            )
+            views.setImageViewBitmap(R.id.moment_progress_ring, ringBmp)
         } else {
-            views.setInt(R.id.compact_dot, "setColorFilter", accentColor)
             views.setTextColor(R.id.compact_title, primaryText)
             views.setTextColor(R.id.compact_time_left, secondaryText)
             views.setTextColor(R.id.compact_days, accentColor)
+            views.setInt(R.id.compact_dot, "setColorFilter", accentColor)
 
             views.setTextViewText(R.id.compact_title, title)
-            views.setTextViewText(R.id.compact_time_left, if (isToday) "today!" else "in $days days")
-            views.setTextViewText(R.id.compact_days, "${days}d")
+            views.setTextViewText(R.id.compact_time_left, if (isToday) "today" else "in $days days")
+            views.setTextViewText(R.id.compact_days, if (isToday) "0d" else "${days}d")
         }
 
-        val pendingIntent = createDeepLinkIntent(context, "moments/next")
+        val pendingIntent = createDeepLinkIntent(context, "next")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
         return views

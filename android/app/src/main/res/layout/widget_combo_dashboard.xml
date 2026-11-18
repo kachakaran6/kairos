@@ -1,116 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:padding="20dp"
-    android:background="@drawable/widget_background_dark">
+    android:layout_height="match_parent">
 
-    <!-- Left: Live Clock & Alarm -->
-    <LinearLayout
-        android:layout_width="0dp"
+    <!-- 1. Anti-aliased rounded background with subtle luxury gradient & hairline border -->
+    <ImageView
+        android:id="@+id/widget_bg"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
+        android:scaleType="fitXY" />
+
+    <!-- 2. Balanced foreground content on 8dp grid, centered vertically -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="16dp"
         android:gravity="center_vertical">
 
-        <TextClock
-            android:id="@+id/combo_clock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:format12Hour="hh:mm"
-            android:format24Hour="HH:mm"
-            android:textSize="44sp"
-            android:fontFamily="sans-serif-thin"
-            android:textColor="#F4EFE8"
-            android:includeFontPadding="false" />
-
-        <TextClock
-            android:id="@+id/combo_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:format12Hour="EEE, MMM d"
-            android:format24Hour="EEE, d MMM"
-            android:textSize="12sp"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="#9E968D"
-            android:letterSpacing="0.08"
-            android:textAllCaps="true" />
-
+        <!-- Left Column: Confident Live Clock, Date, and Next Alarm -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="12dp">
+            android:layout_weight="1.15"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
 
-            <ImageView
-                android:layout_width="6dp"
-                android:layout_height="6dp"
-                android:background="@drawable/widget_pill_accent"
-                android:layout_marginEnd="6dp" />
-
-            <TextView
-                android:id="@+id/combo_alarm_text"
+            <TextClock
+                android:id="@+id/combo_clock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Alarm 06:30"
+                android:format12Hour="hh:mm"
+                android:format24Hour="HH:mm"
+                android:textSize="44sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#14120E"
+                android:includeFontPadding="false" />
+
+            <TextClock
+                android:id="@+id/combo_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:format12Hour="EEE, MMM d"
+                android:format24Hour="EEE, d MMM"
                 android:textSize="12sp"
-                android:textColor="#F4EFE8" />
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#68625B"
+                android:letterSpacing="0.06"
+                android:textAllCaps="true"
+                android:layout_marginTop="2dp" />
+
+            <!-- Alarm / Friendly Action Pill -->
+            <LinearLayout
+                android:id="@+id/combo_alarm_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="10dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp">
+
+                <ImageView
+                    android:id="@+id/combo_alarm_dot"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:background="@drawable/widget_pill_accent"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:id="@+id/combo_alarm_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Alarm 06:30"
+                    android:textSize="11sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="#14120E" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Elegant Hairline Vertical Divider -->
+        <ImageView
+            android:id="@+id/combo_divider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#1F000000"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp" />
+
+        <!-- Right Column: Moment Countdown & Clean Progress Arc -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/combo_moment_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NEXT MOMENT"
+                    android:textSize="9.5sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="#C85A32"
+                    android:letterSpacing="0.08" />
+
+                <TextView
+                    android:id="@+id/combo_moment_days"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="42 days"
+                    android:textSize="26sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="#14120E"
+                    android:includeFontPadding="false"
+                    android:layout_marginTop="1dp" />
+
+                <TextView
+                    android:id="@+id/combo_moment_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Trip to Kyoto"
+                    android:textSize="12.5sp"
+                    android:fontFamily="serif"
+                    android:textColor="#68625B"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <!-- Ultra-Clean Progress Arc Bitmap -->
+            <ImageView
+                android:id="@+id/combo_life_rings"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:scaleType="fitCenter"
+                android:layout_marginStart="6dp" />
         </LinearLayout>
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/combo_divider"
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="#1AFFFFFF"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
-
-    <!-- Right: Next Moment & Progress Rings -->
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center_vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="NEXT MOMENT"
-            android:textSize="10sp"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="#E8895A"
-            android:letterSpacing="0.08" />
-
-        <TextView
-            android:id="@+id/combo_moment_days"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="42 days"
-            android:textSize="26sp"
-            android:fontFamily="sans-serif-light"
-            android:textColor="#F4EFE8" />
-
-        <TextView
-            android:id="@+id/combo_moment_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trip to Kyoto"
-            android:textSize="13sp"
-            android:fontFamily="serif"
-            android:textColor="#9E968D"
-            android:maxLines="1"
-            android:ellipsize="end" />
-
-        <ImageView
-            android:id="@+id/combo_life_rings"
-            android:layout_width="54dp"
-            android:layout_height="54dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="fitCenter" />
-    </LinearLayout>
-</LinearLayout>
+</FrameLayout>

@@ -63,4 +63,36 @@ abstract final class WidgetTokens {
   static const sunsetGlassPrimaryText = Color(0xFFFFF0EB);
   static const sunsetGlassSecondaryText = Color(0xFFA88998);
   static const sunsetGlassBorder = Color(0x28FF8B60);
+
+  // Look 7: Neon Dial
+  static const neonDialBackground = Color(0xFF080706);
+  static const neonDialSurface = Color(0xFF141210);
+  static const neonDialAccent = Color(0xFFFFB800);
+  static const neonDialPrimaryText = Color(0xFFFFFBE6);
+  static const neonDialSecondaryText = Color(0xFFA89A78);
+  static const neonDialBorder = Color(0x33FFB800);
+
+  // Look 8: Editorial
+  static const editorialBackground = Color(0xFFF7F4EB);
+  static const editorialSurface = Color(0xFFFFFFFF);
+  static const editorialAccent = Color(0xFFC0362C);
+  static const editorialPrimaryText = Color(0xFF1A2530);
+  static const editorialSecondaryText = Color(0xFF6B7280);
+  static const editorialBorder = Color(0x1F1A2530);
+
+  // Look 9: Minimal Dots
+  static const minimalDotsBackground = Color(0xFF111111);
+  static const minimalDotsSurface = Color(0xFF1A1A1A);
+  static const minimalDotsAccent = Color(0xFFD4D4D4);
+  static const minimalDotsPrimaryText = Color(0xFFF5F5F5);
+  static const minimalDotsSecondaryText = Color(0xFF888888);
+  static const minimalDotsBorder = Color(0x1AFFFFFF);
+
+  // Look 10: Poster
+  static const posterBackground = Color(0xFFD8582B);
+  static const posterSurface = Color(0xFFB8451D);
+  static const posterAccent = Color(0xFFFFFFFF);
+  static const posterPrimaryText = Color(0xFFFFFFFF);
+  static const posterSecondaryText = Color(0xFFFFD4C4);
+  static const posterBorder = Color(0x33FFFFFF);
 }

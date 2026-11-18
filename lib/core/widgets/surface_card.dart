@@ -90,9 +90,12 @@ class _SurfaceCardState extends State<SurfaceCard> {
       ),
       child: ClipRRect(
         borderRadius: widget.borderRadius,
-        child: Padding(
-          padding: widget.padding ?? const EdgeInsets.all(20),
-          child: widget.child,
+        child: Material(
+          type: MaterialType.transparency,
+          child: Padding(
+            padding: widget.padding ?? const EdgeInsets.all(20),
+            child: widget.child,
+          ),
         ),
       ),
     );

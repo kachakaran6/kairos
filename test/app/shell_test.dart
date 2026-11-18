@@ -61,6 +61,9 @@ void main() {
     await tester.tap(find.text('World clock'));
     await tester.pumpAndSettle();
 
+    await tester.drag(find.byType(ListView), const Offset(0, -300));
+    await tester.pumpAndSettle();
+
     expect(find.text('Mumbai'), findsOneWidget);
     expect(find.text('London'), findsOneWidget);
   });

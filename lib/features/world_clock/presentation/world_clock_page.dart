@@ -99,7 +99,7 @@ class _WorldClockPageState extends State<WorldClockPage> {
   List<GlobeCity> _displayedCities = List.of(_defaultCities);
   double _timeTravelHours = 0;
   GlobeCity? _selectedCity;
-  GlobeStyle _globeStyle = GlobeStyle.dottedAtlas;
+  GlobeStyle _globeStyle = GlobeStyle.atlas;
 
   @override
   void initState() {
@@ -221,6 +221,10 @@ class _WorldClockPageState extends State<WorldClockPage> {
             globeStyle: _globeStyle,
             onGlobeStyleChanged: (style) => setState(() => _globeStyle = style),
             onCitySelected: (city) => setState(() => _selectedCity = city),
+            onResetOffset: () {
+              HapticFeedback.lightImpact();
+              setState(() => _timeTravelHours = 0);
+            },
           ),
 
           const SizedBox(height: Space.md),

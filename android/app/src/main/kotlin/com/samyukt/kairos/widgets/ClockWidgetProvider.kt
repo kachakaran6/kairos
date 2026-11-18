@@ -13,10 +13,10 @@ class ClockWidgetProvider : BaseKairosWidget() {
         appWidgetId: Int,
         config: WidgetConfig
     ): RemoteViews {
-        val style = widgetData.getString("clock_style_$appWidgetId", "monolith")
+        val style = widgetData.getString("clock_style_$appWidgetId", config.timeLayout)
 
         val layoutId = when {
-            style == "stacked" -> R.layout.widget_clock_stacked
+            style == "stacked" || config.timeLayout == "stacked" -> R.layout.widget_clock_stacked
             config.fontStyle.equals("serif", ignoreCase = true) -> R.layout.widget_clock_monolith_serif
             config.fontStyle.equals("mono", ignoreCase = true) -> R.layout.widget_clock_monolith_mono
             else -> R.layout.widget_clock_monolith
@@ -24,11 +24,11 @@ class ClockWidgetProvider : BaseKairosWidget() {
 
         val views = RemoteViews(context.packageName, layoutId)
 
-        // Dynamic background with real opacity
-        val bgColor = ConfigRepository.getEffectiveBackgroundColor(config)
-        views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
+        // 1. Pixel-perfect anti-aliased rounded background (0 to 40dp radius)
+        val bgBitmap = WidgetBackgroundRenderer.createBackgroundBitmap(context, 480, 260, config)
+        views.setImageViewBitmap(R.id.widget_bg, bgBitmap)
 
-        // Dynamic auto-contrasting typography
+        // 2. Dynamic auto-contrasting typography
         val (primaryText, secondaryText) = ConfigRepository.getAutoContrastingTextColor(config)
         val accentColor = ConfigRepository.parseAccentColor(config)
 
@@ -39,6 +39,12 @@ class ClockWidgetProvider : BaseKairosWidget() {
             views.setTextColor(R.id.clock_time, primaryText)
             views.setTextColor(R.id.clock_date, secondaryText)
             views.setInt(R.id.clock_dot, "setColorFilter", accentColor)
+
+            // Dynamic format
+            val format12 = if (config.showSeconds) "hh:mm:ss" else "hh:mm"
+            val format24 = if (config.showSeconds) "HH:mm:ss" else "HH:mm"
+            views.setString(R.id.clock_time, "setFormat12Hour", format12)
+            views.setString(R.id.clock_time, "setFormat24Hour", format24)
         }
 
         // Deep link to Now tab

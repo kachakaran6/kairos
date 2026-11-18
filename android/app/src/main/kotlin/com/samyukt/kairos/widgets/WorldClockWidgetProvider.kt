@@ -2,6 +2,7 @@ package com.samyukt.kairos.widgets
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.widget.RemoteViews
 import com.samyukt.kairos.R
 
@@ -15,25 +16,53 @@ class WorldClockWidgetProvider : BaseKairosWidget() {
     ): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_world_clock)
 
-        // Dynamic background with real opacity
-        val bgColor = ConfigRepository.getEffectiveBackgroundColor(config)
-        views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
+        // 1. Pixel-perfect anti-aliased rounded background (0 to 40dp radius)
+        val bgBitmap = WidgetBackgroundRenderer.createBackgroundBitmap(context, 480, 260, config)
+        views.setImageViewBitmap(R.id.widget_bg, bgBitmap)
 
-        // Dynamic typography & colors
+        // 2. Dynamic typography & colors
         val (primaryText, secondaryText) = ConfigRepository.getAutoContrastingTextColor(config)
         val accentColor = ConfigRepository.parseAccentColor(config)
 
         views.setTextColor(R.id.world_header, accentColor)
 
-        val cityNames = listOf(R.id.city_name_1, R.id.city_name_2, R.id.city_name_3, R.id.city_name_4)
-        val cityClocks = listOf(R.id.city_clock_1, R.id.city_clock_2, R.id.city_clock_3, R.id.city_clock_4)
+        val city1 = widgetData.getString("world_city_1", "London") ?: "London"
+        val tz1 = widgetData.getString("world_tz_1", "Europe/London") ?: "Europe/London"
 
-        for (nameId in cityNames) {
-            views.setTextColor(nameId, secondaryText)
-        }
-        for (clockId in cityClocks) {
-            views.setTextColor(clockId, primaryText)
-        }
+        val city2 = widgetData.getString("world_city_2", "New York") ?: "New York"
+        val tz2 = widgetData.getString("world_tz_2", "America/New_York") ?: "America/New_York"
+
+        val city3 = widgetData.getString("world_city_3", "Tokyo") ?: "Tokyo"
+        val tz3 = widgetData.getString("world_tz_3", "Asia/Tokyo") ?: "Asia/Tokyo"
+
+        views.setTextViewText(R.id.city_name_1, city1)
+        views.setString(R.id.city_clock_1, "setTimeZone", tz1)
+        views.setTextColor(R.id.city_name_1, secondaryText)
+        views.setTextColor(R.id.city_clock_1, primaryText)
+
+        views.setTextViewText(R.id.city_name_2, city2)
+        views.setString(R.id.city_clock_2, "setTimeZone", tz2)
+        views.setTextColor(R.id.city_name_2, secondaryText)
+        views.setTextColor(R.id.city_clock_2, primaryText)
+
+        views.setTextViewText(R.id.city_name_3, city3)
+        views.setString(R.id.city_clock_3, "setTimeZone", tz3)
+        views.setTextColor(R.id.city_name_3, secondaryText)
+        views.setTextColor(R.id.city_clock_3, primaryText)
+
+        // Concentric inner cards for the 3 cities
+        val cardBmp = WidgetShapeHelper.createConcentricChipBitmap(
+            context,
+            widthDp = 90,
+            heightDp = 64,
+            outerRadiusDp = config.cornerRadiusDp,
+            paddingDp = 16f,
+            fillColor = Color.argb(20, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText)),
+            strokeColor = Color.argb(28, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText))
+        )
+        views.setImageViewBitmap(R.id.city_card_1, cardBmp)
+        views.setImageViewBitmap(R.id.city_card_2, cardBmp)
+        views.setImageViewBitmap(R.id.city_card_3, cardBmp)
 
         val pendingIntent = createDeepLinkIntent(context, "world_clock")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)

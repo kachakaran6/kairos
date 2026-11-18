@@ -1,32 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp"
-    android:background="@drawable/widget_background_dark">
+    android:layout_height="match_parent">
 
-    <TextClock
-        android:id="@+id/clock_hours"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:format12Hour="hh"
-        android:format24Hour="HH"
-        android:textSize="54sp"
-        android:fontFamily="sans-serif-light"
-        android:textColor="#F4EFE8"
-        android:includeFontPadding="false" />
+    <ImageView
+        android:id="@+id/widget_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
 
-    <TextClock
-        android:id="@+id/clock_minutes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:format12Hour="mm"
-        android:format24Hour="mm"
-        android:textSize="54sp"
-        android:fontFamily="sans-serif-black"
-        android:textColor="#E8895A"
-        android:includeFontPadding="false" />
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <TextClock
+            android:id="@+id/clock_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="hh"
+            android:format24Hour="HH"
+            android:textSize="52sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#14120E"
+            android:includeFontPadding="false" />
+
+        <TextClock
+            android:id="@+id/clock_minutes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="mm"
+            android:format24Hour="mm"
+            android:textSize="52sp"
+            android:fontFamily="sans-serif-black"
+            android:textColor="#C85A32"
+            android:includeFontPadding="false" />
+    </LinearLayout>
+</FrameLayout>

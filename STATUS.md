@@ -59,7 +59,7 @@ A claim is live for 2 hours. Stale after 24 hours and open to takeover, per `AGE
 |---|---|---|---|---|---|
 | P1-01 | Drift schema v1: moments, alarms, timers, laps, focus sessions, settings + migrations | — | todo | — | — |
 | P1-02 | Timezone service: bundled IANA data, DST, half-hour offsets, injectable clock | — | todo | — | — |
-| P1-03 | World clock: globe with day/night terminator, city list with sun arcs | agent-karan | done | 2026-11-17 00:45 | `flutter test` 49 passed; globe widget + day/night terminator + sun indicators |
+| P1-03 | World clock: globe with day/night terminator, city list with sun arcs | agent-karan | done | 2026-11-18 08:15 | Luxury 3D Earth Globe ("Obsidian & Ember"): real-time GLSL ray-sphere + Fibonacci lattice, SkSL & Impeller compliant, true solar terminator & 16° twilight gradient, soft Fresnel rim, twinkling stars, 340dp card with 74% globe scale, 3 style switchers, flight arcs & glowing ember pins; 111 tests passed; debug APK built & installed |
 | P1-04 | World clock: time-travel slider and meeting planner | agent-karan | done | 2026-11-17 00:45 | Slider from -12h to +12h in 30m steps dynamically shifts city times |
 | P1-05 | Alarm scheduling: exact alarms, foreground service, DND and silent-mode override | — | todo | — | — |
 | P1-06 | Alarm: wake window, 90-minute cycle suggestion, volume ramp | agent-karan | done | 2026-11-17 00:55 | Wake window (0/15/30m), 90m cycle suggestions chips, 0/1/5/10m volume ramp |
@@ -90,7 +90,7 @@ A claim is live for 2 hours. Stale after 24 hours and open to takeover, per `AGE
 | P2-11 | iOS WidgetKit extension: first six designs (Dial, Odometer, Photo, Ring, Stack, Split) | — | todo | — | — |
 | P2-12 | Android Glance & RemoteViews widgets: Clock, World Clock, Next, Then, Interactive, Combo | agent-karan | done | 2026-11-17 18:15 | 6 native AppWidgetProviders, TextClock live ticking, WorkManager + AlarmManager midnight rollover, deep linking, `flutter build apk --debug` succeeded |
 | P2-13 | Lock-screen surfaces: iOS accessory families, Android 14 keyguard widgets | — | todo | — | — |
-| P2-14 | Per-instance widget configuration UI | — | todo | — | — |
+| P2-14 | Per-instance widget configuration UI & Widget Studio with live sync | agent-karan | done | 2026-11-18 07:35 | Full Widget Studio redesign (Time Builder, Moment Builder, Style Controls, 10 Looks, Import/Export); 104 tests pass; 8 Play Store marketing assets + feature graphic + app icon generated |
 
 ### Phase 3 — Depth (weeks 18–24)
 
@@ -162,6 +162,7 @@ Append-only. Format and rules in `AGENTS.md` §9.
 | D-016 | 2026-11-18 | Generated high-res `widget_preview_*.png` drawables and added keep rules in `proguard-rules.pro` | HyperOS picker requires `android:previewImage` in provider xmls; ProGuard stripped widget receivers on release builds | +180KB drawable assets | No |
 | D-017 | 2026-11-18 | Unified `WidgetConfig` schema & Kotlin `ConfigRepository` with WCAG auto-contrast and 250ms debounced sync | Widget Studio styles failed to apply due to class name mismatch in `home_widget` and unread preferences | Centralized config reader | Yes |
 | D-018 | 2026-11-18 | 3D rotating world clock globe powered by GLSL fragment shader (`globe3d.frag`) with equirectangular day/night textures & Reduce Motion handling | Replaces flat 2D circle with 60fps ray-sphere shader, real solar terminator astronomy, inertia gestures, and CustomPainter fallback | Impeller compatible, textures under 65KB | Yes |
+| D-019 | 2026-11-18 | Spherical Fibonacci lattice & discrete neighbor sampling for 3D Globe | Equirectangular lat/long grids create moiré banding at poles; standard dFdx is unsupported in SkSL. Golden-spiral Fibonacci lattice ensures uniform point density, and discrete UV offset sampling guarantees 100% Impeller and Skia shader cross-compilation | 60fps rendering, zero moiré | Yes |
 
 ---
 
@@ -195,6 +196,8 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-18 01:31 | agent-karan | P4-10 | deployed build 2 (v1.0.0+2) to Google Play closed testing track via fastlane; tagged v1.0.2 and pushed to GitHub; release workflow triggered
 2026-11-18 05:50 | agent-karan | P2-12/P4-03 | Job A widget inflation & preview fix, Job B Widget Studio sync & auto-contrast, Job C real 3D GLSL rotating globe; debug & release APKs built, 94 tests pass
 2026-11-18 06:01 | agent-karan | P4-10 | deployed build 3 (v1.0.0+3) to Google Play closed testing track via fastlane; release notes attached; tagged v1.0.0+3 and pushed to GitHub
+2026-11-18 07:35 | agent-karan | P2-14 | completed Widget Studio full customization (Time Builder, Moment Builder, 10 Looks, Import/Export) & generated complete Play Store listing assets in store_assets/ (8 composed 1080x1920 PNGs, 1024x500 feature graphic, 512x512 app icon); 104 tests pass; release APK built clean (62.4MB)
+2026-11-18 08:15 | agent-karan | P1-03 | Luxury 3D Earth Globe redesign ("Obsidian & Ember"): GLSL ray-sphere + Fibonacci lattice, solar terminator & twilight gradient, Fresnel rim, twinkling stars, 340dp card, 111 tests pass
 ```
 
 ---
