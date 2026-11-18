@@ -119,12 +119,21 @@ platform :android do
     # Write changelog
     changelogs_dir = File.expand_path("metadata/android/en-US/changelogs", __dir__)
     FileUtils.mkdir_p(changelogs_dir)
-    changelog_content = options[:release_notes] || options[:changelog] || [
-      "• Performance enhancements and bug fixes.",
-      "• UI/UX optimizations and stability improvements."
-    ].join("\n")
-    File.write(File.join(changelogs_dir, "#{build_num}.txt"), changelog_content)
-    UI.success("Generated changelog for build #{build_num}")
+    changelog_file = File.join(changelogs_dir, "#{build_num}.txt")
+    if options[:release_notes] || options[:changelog]
+      changelog_content = options[:release_notes] || options[:changelog]
+      File.write(changelog_file, changelog_content)
+      UI.success("Generated changelog for build #{build_num}")
+    elsif !File.exist?(changelog_file)
+      changelog_content = [
+        "• Performance enhancements and bug fixes.",
+        "• UI/UX optimizations and stability improvements."
+      ].join("\n")
+      File.write(changelog_file, changelog_content)
+      UI.success("Generated default changelog for build #{build_num}")
+    else
+      UI.success("Using existing changelog at #{changelog_file}")
+    end
 
     upload_params = {
       track: track_name,

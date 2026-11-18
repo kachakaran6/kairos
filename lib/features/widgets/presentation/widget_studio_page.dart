@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +11,9 @@ import '../../../core/widgets/kairos_scaffold.dart';
 import '../../../core/widgets/pill_button.dart';
 import '../../../core/widgets/surface_card.dart';
 import '../../../core/widgets/widget_suite/widget_artwork_renderer.dart';
+import '../../../core/widgets/widget_suite/widget_config.dart';
 import '../../../core/widgets/widget_suite/widget_sync_service.dart';
+import '../../settings/presentation/settings_controller.dart';
 import '../domain/widget_look.dart';
 
 /// Spec: Interactive Widget Studio for tailoring home screen widgets.
@@ -36,7 +39,35 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
   WidgetLook _activeLook = WidgetLook.all[0];
   double _backgroundOpacity = 1.0;
   double _cornerRoundness = 28.0;
+  String _fontStyle = 'modern'; // 'modern', 'serif', 'mono'
   bool _isSaving = false;
+  Timer? _debounceTimer;
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  WidgetConfig _buildCurrentConfig() {
+    final settings = ref.read(settingsProvider);
+    return WidgetConfig.fromLook(
+      _activeLook,
+      backgroundOpacity: _backgroundOpacity,
+      cornerRadius: _cornerRoundness,
+      fontStyle: _fontStyle,
+      use24Hour: settings.use24HourFormat,
+      showSeconds: settings.showSeconds,
+    );
+  }
+
+  void _scheduleSync() {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 250), () async {
+      final config = _buildCurrentConfig();
+      await ref.read(widgetSyncServiceProvider).syncConfig(config);
+    });
+  }
 
   final List<String> _clockStyles = const [
     'Monolith',
@@ -101,17 +132,19 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
   }
 
   Future<void> _applyAndSync() async {
+    _debounceTimer?.cancel();
     setState(() => _isSaving = true);
     HapticFeedback.mediumImpact();
 
     try {
-      await ref.read(widgetSyncServiceProvider).syncAllWidgets();
+      final config = _buildCurrentConfig();
+      await ref.read(widgetSyncServiceProvider).syncAllWidgets(config: config);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: _activeLook.surfaceColor,
             content: Text(
-              'Widgets synchronized with ${_activeLook.name} look!',
+              'Widgets synchronized with ${_activeLook.name} look & ${_fontStyle.toUpperCase()} font!',
               style: TextStyle(color: _activeLook.primaryTextColor),
             ),
           ),
@@ -235,6 +268,7 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
                   onTap: () {
                     HapticFeedback.selectionClick();
                     setState(() => _selectedStyleIndex = index);
+                    _scheduleSync();
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -288,6 +322,7 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
                   onTap: () {
                     HapticFeedback.selectionClick();
                     setState(() => _activeLook = look);
+                    _scheduleSync();
                   },
                   child: Container(
                     width: 140,
@@ -342,7 +377,63 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
 
           const SizedBox(height: Space.lg),
 
-          // 5. Customization Sliders (Opacity & Corner Radius)
+          // 5. Typography Selector
+          Text(
+            'TYPOGRAPHY STYLE',
+            style: kairos.typeScale.label.copyWith(color: colours.textTertiary),
+          ),
+          const SizedBox(height: Space.xs),
+          Row(
+            children: [
+              for (final font in [
+                ('Modern Sans', 'modern'),
+                ('Editorial Serif', 'serif'),
+                ('Monospace', 'mono'),
+              ]) ...[
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      setState(() => _fontStyle = font.$2);
+                      _scheduleSync();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _fontStyle == font.$2
+                            ? colours.accent.withValues(alpha: 0.15)
+                            : colours.surfaceElevated,
+                        borderRadius: BorderRadius.circular(RadiusTokens.md),
+                        border: Border.all(
+                          color: _fontStyle == font.$2
+                              ? colours.accent
+                              : colours.border,
+                          width: _fontStyle == font.$2 ? 1.5 : 1.0,
+                        ),
+                      ),
+                      child: Text(
+                        font.$1,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: _fontStyle == font.$2
+                              ? colours.accent
+                              : colours.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                if (font != ('Monospace', 'mono'))
+                  const SizedBox(width: Space.sm),
+              ],
+            ],
+          ),
+
+          const SizedBox(height: Space.lg),
+
+          // 6. Customization Sliders (Opacity & Corner Radius)
           SurfaceCard(
             padding: const EdgeInsets.all(Space.lg),
             child: Column(
@@ -369,7 +460,10 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
                   min: 0.2,
                   max: 1.0,
                   activeColor: colours.accent,
-                  onChanged: (val) => setState(() => _backgroundOpacity = val),
+                  onChanged: (val) {
+                    setState(() => _backgroundOpacity = val);
+                    _scheduleSync();
+                  },
                 ),
                 const SizedBox(height: Space.sm),
                 Row(
@@ -393,7 +487,10 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
                   min: 12.0,
                   max: 36.0,
                   activeColor: colours.accent,
-                  onChanged: (val) => setState(() => _cornerRoundness = val),
+                  onChanged: (val) {
+                    setState(() => _cornerRoundness = val);
+                    _scheduleSync();
+                  },
                 ),
               ],
             ),
@@ -401,7 +498,7 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
 
           const SizedBox(height: Space.xl),
 
-          // 6. Action Button: Apply & Sync
+          // 7. Action Button: Apply & Sync
           PillButton(
             onPressed: _isSaving ? null : _applyAndSync,
             label: _isSaving ? 'Synchronizing...' : 'Apply Look & Sync Widgets',

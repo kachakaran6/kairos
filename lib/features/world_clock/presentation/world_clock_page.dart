@@ -8,7 +8,7 @@ import '../../../core/theme/theme_extension.dart';
 import '../../../core/time/time_service.dart';
 import '../../../core/widgets/kairos_scaffold.dart';
 import '../../../core/widgets/surface_card.dart';
-import 'world_clock_globe_widget.dart';
+import 'world_clock_globe_3d_widget.dart';
 
 class WorldClockPage extends StatefulWidget {
   const WorldClockPage({super.key, this.clock = const SystemClock()});
@@ -19,32 +19,87 @@ class WorldClockPage extends StatefulWidget {
   State<WorldClockPage> createState() => _WorldClockPageState();
 }
 
-class _City {
-  const _City(this.name, this.utcOffsetMinutes);
-
-  final String name;
-  final int utcOffsetMinutes;
-}
-
-const List<_City> _defaultCities = <_City>[
-  _City('Mumbai', 330),
-  _City('London', 0),
-  _City('New York', -300),
-  _City('Tokyo', 540),
-  _City('Sydney', 600),
-  _City('Dubai', 240),
-  _City('Paris', 60),
-  _City('Singapore', 480),
-  _City('San Francisco', -420),
-  _City('Berlin', 60),
-  _City('Toronto', -300),
-  _City('Auckland', 720),
+const List<GlobeCity> _defaultCities = <GlobeCity>[
+  GlobeCity(
+    name: 'Mumbai',
+    utcOffsetMinutes: 330,
+    latitude: 19.0760,
+    longitude: 72.8777,
+  ),
+  GlobeCity(
+    name: 'London',
+    utcOffsetMinutes: 0,
+    latitude: 51.5074,
+    longitude: -0.1278,
+  ),
+  GlobeCity(
+    name: 'New York',
+    utcOffsetMinutes: -300,
+    latitude: 40.7128,
+    longitude: -74.0060,
+  ),
+  GlobeCity(
+    name: 'Tokyo',
+    utcOffsetMinutes: 540,
+    latitude: 35.6762,
+    longitude: 139.6503,
+  ),
+  GlobeCity(
+    name: 'Sydney',
+    utcOffsetMinutes: 600,
+    latitude: -33.8688,
+    longitude: 151.2093,
+  ),
+  GlobeCity(
+    name: 'Dubai',
+    utcOffsetMinutes: 240,
+    latitude: 25.2048,
+    longitude: 55.2708,
+  ),
+  GlobeCity(
+    name: 'Paris',
+    utcOffsetMinutes: 60,
+    latitude: 48.8566,
+    longitude: 2.3522,
+  ),
+  GlobeCity(
+    name: 'Singapore',
+    utcOffsetMinutes: 480,
+    latitude: 1.3521,
+    longitude: 103.8198,
+  ),
+  GlobeCity(
+    name: 'San Francisco',
+    utcOffsetMinutes: -420,
+    latitude: 37.7749,
+    longitude: -122.4194,
+  ),
+  GlobeCity(
+    name: 'Berlin',
+    utcOffsetMinutes: 60,
+    latitude: 52.5200,
+    longitude: 13.4050,
+  ),
+  GlobeCity(
+    name: 'Toronto',
+    utcOffsetMinutes: -300,
+    latitude: 43.6532,
+    longitude: -79.3832,
+  ),
+  GlobeCity(
+    name: 'Auckland',
+    utcOffsetMinutes: 720,
+    latitude: -36.8485,
+    longitude: 174.7633,
+  ),
 ];
 
 class _WorldClockPageState extends State<WorldClockPage> {
   final TextEditingController _search = TextEditingController();
-  List<_City> _displayedCities = List.of(_defaultCities);
+  List<GlobeCity> _displayedCities = List.of(_defaultCities);
   double _timeTravelHours = 0;
+  GlobeCity? _selectedCity;
+  GlobeStyle _globeStyle = GlobeStyle.dottedAtlas;
 
   @override
   void initState() {
@@ -158,10 +213,14 @@ class _WorldClockPageState extends State<WorldClockPage> {
 
           const SizedBox(height: Space.md),
 
-          // Day/Night Terminator 3D Globe
-          WorldClockGlobeWidget(
+          // Day/Night Terminator Real 3D Globe
+          WorldClockGlobe3DWidget(
             nowUtc: baseNow,
             selectedOffsetMinutes: (_timeTravelHours * 60).round(),
+            selectedCity: _selectedCity,
+            globeStyle: _globeStyle,
+            onGlobeStyleChanged: (style) => setState(() => _globeStyle = style),
+            onCitySelected: (city) => setState(() => _selectedCity = city),
           ),
 
           const SizedBox(height: Space.md),
@@ -256,6 +315,11 @@ class _WorldClockPageState extends State<WorldClockPage> {
                 city: city,
                 time: adjustedNow.add(Duration(minutes: city.utcOffsetMinutes)),
                 homeOffsetMinutes: homeOffset,
+                isSelected: _selectedCity?.name == city.name,
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _selectedCity = city);
+                },
               ),
             ),
             const SizedBox(height: Space.sm),
@@ -271,11 +335,15 @@ class _CityRow extends StatelessWidget {
     required this.city,
     required this.time,
     required this.homeOffsetMinutes,
+    this.isSelected = false,
+    this.onTap,
   });
 
-  final _City city;
+  final GlobeCity city;
   final DateTime time;
   final int homeOffsetMinutes;
+  final bool isSelected;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -318,76 +386,105 @@ class _CityRow extends StatelessWidget {
     final dateStr =
         '${weekdays[time.weekday - 1]}, ${time.day} ${months[time.month - 1]}';
 
-    return SurfaceCard(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Space.lg,
-        vertical: Space.md,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Expanded(
-            child: Row(
-              children: [
-                Icon(
-                  isDay ? LucideIcons.sun : LucideIcons.moon,
-                  size: 18,
-                  color: isDay ? colours.accent : colours.night,
-                ),
-                const SizedBox(width: Space.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        city.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: kairos.typeScale.section.copyWith(
-                          color: colours.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        dateStr,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: kairos.typeScale.caption.copyWith(
-                          color: colours.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(RadiusTokens.card),
+          border: Border.all(
+            color: isSelected ? colours.accent : Colors.transparent,
+            width: isSelected ? 1.5 : 0.0,
           ),
-          const SizedBox(width: Space.sm),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+        ),
+        child: SurfaceCard(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Space.lg,
+            vertical: Space.md,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text(
-                '$hourStr:$minStr',
-                style: kairos.typeScale.title.copyWith(
-                  color: colours.textPrimary,
-                  fontFeatures: const <FontFeature>[
-                    FontFeature.tabularFigures(),
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      isDay ? LucideIcons.sun : LucideIcons.moon,
+                      size: 18,
+                      color: isDay ? colours.accent : colours.night,
+                    ),
+                    const SizedBox(width: Space.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  city.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: kairos.typeScale.section.copyWith(
+                                    color: colours.textPrimary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              if (isSelected) ...[
+                                const SizedBox(width: 6),
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: colours.accent,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            dateStr,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: kairos.typeScale.caption.copyWith(
+                              color: colours.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Text(
-                isHome
-                    ? 'Your time'
-                    : '$diffSign${diffHours.toStringAsFixed(1)} hrs',
-                style: kairos.typeScale.caption.copyWith(
-                  color: isHome ? colours.accent : colours.textSecondary,
-                  fontWeight: isHome ? FontWeight.w600 : FontWeight.w400,
-                ),
+              const SizedBox(width: Space.sm),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Text(
+                    '$hourStr:$minStr',
+                    style: kairos.typeScale.title.copyWith(
+                      color: colours.textPrimary,
+                      fontFeatures: const <FontFeature>[
+                        FontFeature.tabularFigures(),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    isHome
+                        ? 'Your time'
+                        : '$diffSign${diffHours.toStringAsFixed(1)}h',
+                    style: kairos.typeScale.caption.copyWith(
+                      color: colours.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

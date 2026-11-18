@@ -13,6 +13,8 @@ import '../../../core/widgets/kairos_scaffold.dart';
 import '../../../core/widgets/kairos_segmented_control.dart';
 import '../../../core/widgets/surface_card.dart';
 import '../../ecosystem/presentation/our_apps_page.dart';
+import '../../widgets/presentation/widget_doctor_page.dart';
+import '../../widgets/presentation/widget_setup_help_page.dart';
 import '../../widgets/presentation/widget_studio_page.dart';
 import '../domain/user_settings.dart';
 import 'settings_controller.dart';
@@ -344,59 +346,49 @@ class SettingsPage extends ConsumerWidget {
           // Section: Home Screen Widgets
           _SectionHeader(title: 'HOME SCREEN WIDGETS'),
           SurfaceCard(
-            padding: const EdgeInsets.all(Space.lg),
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const WidgetStudioPage(),
-                  ),
-                );
-              },
-              child: Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colours.accentMuted,
-                    ),
-                    child: Icon(
-                      LucideIcons.layoutGrid,
-                      size: 22,
-                      color: colours.accent,
-                    ),
-                  ),
-                  const SizedBox(width: Space.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Widget Studio',
-                          style: kairos.typeScale.body.copyWith(
-                            color: colours.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Tailor clock, countdown, world clock and combo widgets with 6 luxury looks.',
-                          style: kairos.typeScale.caption.copyWith(
-                            color: colours.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    LucideIcons.chevronRight,
-                    size: 18,
-                    color: colours.textTertiary,
-                  ),
-                ],
-              ),
+            padding: const EdgeInsets.symmetric(vertical: Space.xs),
+            child: Column(
+              children: [
+                _ActionTile(
+                  icon: LucideIcons.layoutGrid,
+                  title: 'Widget Studio',
+                  subtitle:
+                      'Tailor 6 widget families with luxury looks, opacity & fonts.',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const WidgetStudioPage(),
+                      ),
+                    );
+                  },
+                ),
+                _ActionTile(
+                  icon: LucideIcons.smartphone,
+                  title: 'Widget Setup & OEM Guide',
+                  subtitle:
+                      'Autostart & battery settings for Xiaomi, Vivo, Oppo & Samsung.',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const WidgetSetupHelpPage(),
+                      ),
+                    );
+                  },
+                ),
+                _ActionTile(
+                  icon: LucideIcons.stethoscope,
+                  title: 'Widget Doctor',
+                  subtitle:
+                      'Check registration, active instances & force refresh.',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const WidgetDoctorPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
 

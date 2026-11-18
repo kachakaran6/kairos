@@ -65,7 +65,8 @@
             android:background="@drawable/widget_pill_accent" />
     </LinearLayout>
 
-    <View
+    <ImageView
+        android:id="@+id/interactive_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#1AFFFFFF"

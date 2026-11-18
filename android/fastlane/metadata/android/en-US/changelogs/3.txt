@@ -1,0 +1,5 @@
+• Home Widgets: Fixed launcher inflation and previews on all devices including Xiaomi HyperOS; all 6 widgets add cleanly.
+• Widget Studio Sync: Instant style sync, WCAG auto-contrast text, dynamic opacity, and font variants.
+• 3D World Globe: Real 3D GLSL rotating globe with astronomical solar terminator and city navigation.
+• Widget Setup & Doctor: OEM battery/autostart guides and diagnostics.
+• Performance & stability enhancements.

@@ -10,4 +10,5 @@
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/widget_interactive"
     android:previewLayout="@layout/widget_interactive"
+    android:previewImage="@drawable/widget_preview_interactive"
     android:widgetCategory="home_screen" />

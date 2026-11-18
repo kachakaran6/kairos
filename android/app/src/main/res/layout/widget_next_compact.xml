@@ -8,7 +8,7 @@
     android:padding="16dp"
     android:background="@drawable/widget_background_dark">
 
-    <View
+    <ImageView
         android:id="@+id/compact_dot"
         android:layout_width="8dp"
         android:layout_height="8dp"

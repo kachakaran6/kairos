@@ -10,9 +10,9 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
     override fun buildRemoteViews(
         context: Context,
         widgetData: SharedPreferences,
-        appWidgetId: Int
+        appWidgetId: Int,
+        config: WidgetConfig
     ): RemoteViews {
-        val isDark = widgetData.getBoolean("is_dark", true)
         val style = widgetData.getString("next_style_$appWidgetId", "hero")
 
         val layoutId = when (style) {
@@ -22,11 +22,13 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
 
         val views = RemoteViews(context.packageName, layoutId)
 
-        views.setInt(
-            R.id.widget_root,
-            "setBackgroundResource",
-            if (isDark) R.drawable.widget_background_dark else R.drawable.widget_background_light
-        )
+        // Dynamic background with real opacity
+        val bgColor = ConfigRepository.getEffectiveBackgroundColor(config)
+        views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
+
+        // Dynamic typography & colors
+        val (primaryText, secondaryText) = ConfigRepository.getAutoContrastingTextColor(config)
+        val accentColor = ConfigRepository.parseAccentColor(config)
 
         val title = widgetData.getString("next_moment_title", "Nothing ahead yet") ?: "Nothing ahead yet"
         val subtitle = widgetData.getString("next_moment_subtitle", "") ?: ""
@@ -35,6 +37,11 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
         val isToday = widgetData.getBoolean("next_moment_is_today", false)
 
         if (layoutId == R.layout.widget_next_hero) {
+            views.setTextColor(R.id.moment_category, accentColor)
+            views.setTextColor(R.id.moment_days, primaryText)
+            views.setTextColor(R.id.moment_title, primaryText)
+            views.setTextColor(R.id.moment_subtitle, secondaryText)
+
             views.setTextViewText(R.id.moment_title, title)
             views.setTextViewText(R.id.moment_subtitle, subtitle)
             views.setTextViewText(R.id.moment_category, if (isToday) "TODAY!" else category)
@@ -47,6 +54,11 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
                 views.setImageViewBitmap(R.id.moment_progress_ring, bitmap)
             }
         } else {
+            views.setInt(R.id.compact_dot, "setColorFilter", accentColor)
+            views.setTextColor(R.id.compact_title, primaryText)
+            views.setTextColor(R.id.compact_time_left, secondaryText)
+            views.setTextColor(R.id.compact_days, accentColor)
+
             views.setTextViewText(R.id.compact_title, title)
             views.setTextViewText(R.id.compact_time_left, if (isToday) "today!" else "in $days days")
             views.setTextViewText(R.id.compact_days, "${days}d")

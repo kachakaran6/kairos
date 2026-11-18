@@ -25,22 +25,13 @@ A claim is live for 2 hours. Stale after 24 hours and open to takeover, per `AGE
 
 ## 2. Current focus
 
-**Make every instrument and the moments engine visible and usable in the app.** The
-token layer and three-tab shell exist; the next work is the five instruments, then the
-seven moment types, counting modes, zero moment and timeline depth. Do not start widget
-extensions until the in-app product is complete.
+**Deliver Job A (Widget inflate/picker fix), Job B (Widget Studio sync), and Job C (3D Globe).**
 
-Order from here: `P1-03`/`P1-04` world clock → `P1-05`–`P1-08` alarm → `P2-04`/`P2-05`
-moment types and counting modes → `P2-07` zero moment → `P2-02` full editor → remaining
-instrument depth.
-
-**P0-03 acceptance criteria** (claimed by `agent-karan`, 2026-11-16 17:18)
-
-1. A `KairosTheme` exposes complete dark and light `ThemeData` built only from tokens.
-2. Every token group (colour, type, spacing, radius) is reachable from `Theme.of(context)` via `ThemeExtension`.
-3. Both themes resolve every `ColorScheme` role and meet 4.5:1 contrast for body text on background.
-4. Widget tests render a probe under both themes and read every extension without throwing.
-5. Switching `themeMode` between light and dark changes canvas colour while preserving the same token identities.
+**Acceptance criteria:**
+1. All 6 home widgets preview and place without "Couldn't add widget." on HyperOS and all Android launchers (replace `<View>` with RemoteViews-safe views, add preview images, wrap providers in safe fallbacks, add keep rules).
+2. Widget Studio modifications (Looks, opacity, corner radius, fonts, colors) synchronize bidirectionally to placed widgets with 250ms debouncing and unified `WidgetConfig` repository.
+3. World Clock features a real 3D rotating globe with GLSL ray-sphere shader (and CustomPainter fallback), astronomy-accurate solar terminator, Dotted Atlas & Realistic Earth styles, inertia rotation, city focusing, and home widget snapshot export.
+4. "Widget Setup Help" screen with OEM intent triggers and debug "Widget Doctor" screen added.
 
 ---
 
@@ -167,6 +158,10 @@ Append-only. Format and rules in `AGENTS.md` §9.
 | D-012 | 2026-11-18 | Samyukt GitHub JSON registry as single source of truth for mobile catalog with strict apps[] and status filtering | Excludes all websites, drafts, and in-progress items; caches locally in SharedPreferences for seamless offline resilience | Lightweight, zero external catalog dependencies | Yes |
 | D-013 | 2026-11-18 | Android Adaptive Icons + Round + Legacy MIPMAP icon suite generated from D:\kairos\assets\kairos-icon.png | Adapts seamlessly to all OEM icon shapes (Circle on Pixel, Squircle on Samsung, Square on OnePlus) with zero black corner clipping, plus Material You monochrome support | Generated across mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi | Yes |
 | D-014 | 2026-11-18 | Production upload keystore with 2048-bit RSA valid until 2054, automated Gradle signing via key.properties | Signed official release AppBundle (.aab) and universal APK (.apk) verified via jarsigner; credentials securely backed up | JKS ignored in git | No |
+| D-015 | 2026-11-18 | Replaced prohibited `<View>` with `<ImageView>` across all RemoteViews widget layouts + fail-safe `widget_fallback.xml` | RemoteViewsInflater rejects `android.view.View` causing "Couldn't add widget." on HyperOS & Android | Lightweight XML change | No |
+| D-016 | 2026-11-18 | Generated high-res `widget_preview_*.png` drawables and added keep rules in `proguard-rules.pro` | HyperOS picker requires `android:previewImage` in provider xmls; ProGuard stripped widget receivers on release builds | +180KB drawable assets | No |
+| D-017 | 2026-11-18 | Unified `WidgetConfig` schema & Kotlin `ConfigRepository` with WCAG auto-contrast and 250ms debounced sync | Widget Studio styles failed to apply due to class name mismatch in `home_widget` and unread preferences | Centralized config reader | Yes |
+| D-018 | 2026-11-18 | 3D rotating world clock globe powered by GLSL fragment shader (`globe3d.frag`) with equirectangular day/night textures & Reduce Motion handling | Replaces flat 2D circle with 60fps ray-sphere shader, real solar terminator astronomy, inertia gestures, and CustomPainter fallback | Impeller compatible, textures under 65KB | Yes |
 
 ---
 
@@ -198,6 +193,7 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-18 00:33 | agent-karan | P4-09 | Google Play release upload keystore generated (valid until 2054) + signing automation; release .aab (54.3MB) and release .apk (55.0MB) built & verified; all gates green
 2026-11-18 01:25 | agent-karan | P2-14 | fixed home screen clock local time rendering; removed widgetFeatures from RemoteViews info xmls and fixed layout inflation; fixed moment creation & past date addition in moment_editor_page & moment_controller; removed double padding in settings_page; all gates green, 94 tests pass
 2026-11-18 01:31 | agent-karan | P4-10 | deployed build 2 (v1.0.0+2) to Google Play closed testing track via fastlane; tagged v1.0.2 and pushed to GitHub; release workflow triggered
+2026-11-18 05:50 | agent-karan | P2-12/P4-03 | Job A widget inflation & preview fix, Job B Widget Studio sync & auto-contrast, Job C real 3D GLSL rotating globe; debug & release APKs built, 94 tests pass
 ```
 
 ---

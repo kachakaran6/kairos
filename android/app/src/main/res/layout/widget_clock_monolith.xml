@@ -27,7 +27,7 @@
         android:gravity="center_vertical"
         android:layout_marginTop="4dp">
 
-        <View
+        <ImageView
             android:id="@+id/clock_dot"
             android:layout_width="6dp"
             android:layout_height="6dp"

@@ -10,16 +10,22 @@ class ThenMomentWidgetProvider : BaseKairosWidget() {
     override fun buildRemoteViews(
         context: Context,
         widgetData: SharedPreferences,
-        appWidgetId: Int
+        appWidgetId: Int,
+        config: WidgetConfig
     ): RemoteViews {
-        val isDark = widgetData.getBoolean("is_dark", true)
         val views = RemoteViews(context.packageName, R.layout.widget_then_moment)
 
-        views.setInt(
-            R.id.widget_root,
-            "setBackgroundResource",
-            if (isDark) R.drawable.widget_background_dark else R.drawable.widget_background_light
-        )
+        // Dynamic background with real opacity
+        val bgColor = ConfigRepository.getEffectiveBackgroundColor(config)
+        views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
+
+        // Dynamic typography & colors
+        val (primaryText, secondaryText) = ConfigRepository.getAutoContrastingTextColor(config)
+        val accentColor = ConfigRepository.parseAccentColor(config)
+
+        views.setTextColor(R.id.then_header, secondaryText)
+        views.setTextColor(R.id.then_days, primaryText)
+        views.setTextColor(R.id.then_title, accentColor)
 
         val title = widgetData.getString("then_moment_title", "No memories yet") ?: "No memories yet"
         val days = widgetData.getInt("then_moment_days", 0)

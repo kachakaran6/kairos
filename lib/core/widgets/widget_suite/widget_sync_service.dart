@@ -7,6 +7,7 @@ import '../../../features/alarm/presentation/alarm_controller.dart';
 import '../../../features/moments/presentation/moment_controller.dart';
 import '../../../features/settings/presentation/settings_controller.dart';
 import 'widget_artwork_renderer.dart';
+import 'widget_config.dart';
 import 'widget_data_snapshot.dart';
 
 class WidgetSyncService {
@@ -16,7 +17,52 @@ class WidgetSyncService {
 
   static const String appGroupId = 'group.com.samyukt.kairos';
 
-  Future<void> syncAllWidgets() async {
+  static const List<String> widgetProviderClasses = [
+    'com.samyukt.kairos.widgets.ClockWidgetProvider',
+    'com.samyukt.kairos.widgets.WorldClockWidgetProvider',
+    'com.samyukt.kairos.widgets.NextMomentWidgetProvider',
+    'com.samyukt.kairos.widgets.ThenMomentWidgetProvider',
+    'com.samyukt.kairos.widgets.InteractiveWidgetProvider',
+    'com.samyukt.kairos.widgets.ComboWidgetProvider',
+  ];
+
+  Future<void> syncConfig(WidgetConfig config, {int? appWidgetId}) async {
+    final jsonStr = jsonEncode(config.toJson());
+    if (appWidgetId != null) {
+      await HomeWidget.saveWidgetData<String>(
+        'kairos_widget_config_$appWidgetId',
+        jsonStr,
+      );
+    } else {
+      await HomeWidget.saveWidgetData<String>(
+        'kairos_widget_config_global',
+        jsonStr,
+      );
+    }
+
+    await HomeWidget.saveWidgetData<bool>(
+      'is_dark',
+      config.themeMode == 'dark',
+    );
+    await HomeWidget.saveWidgetData<String>('accent_hex', config.accentHex);
+    await HomeWidget.saveWidgetData<bool>('use_24h', config.use24Hour);
+    await HomeWidget.saveWidgetData<bool>('show_seconds', config.showSeconds);
+    await HomeWidget.saveWidgetData<String>('font_style', config.fontStyle);
+
+    for (final cls in widgetProviderClasses) {
+      try {
+        await HomeWidget.updateWidget(
+          qualifiedAndroidName: cls,
+          name: cls.split('.').last,
+        );
+      } catch (_) {}
+    }
+  }
+
+  Future<void> syncAllWidgets({WidgetConfig? config}) async {
+    if (config != null) {
+      await syncConfig(config);
+    }
     final nowUtc = DateTime.now().toUtc();
     final moments = _ref.read(momentListProvider).value ?? const [];
     final alarms = _ref.read(alarmListProvider).value ?? const [];
@@ -202,18 +248,12 @@ class WidgetSyncService {
     );
 
     // 8. Request Android native widget updates across all 6 widget families
-    final providers = [
-      'ClockWidgetProvider',
-      'WorldClockWidgetProvider',
-      'NextMomentWidgetProvider',
-      'ThenMomentWidgetProvider',
-      'InteractiveWidgetProvider',
-      'ComboWidgetProvider',
-    ];
-
-    for (final p in providers) {
+    for (final cls in widgetProviderClasses) {
       try {
-        await HomeWidget.updateWidget(name: p, androidName: p);
+        await HomeWidget.updateWidget(
+          qualifiedAndroidName: cls,
+          name: cls.split('.').last,
+        );
       } catch (_) {}
     }
   }

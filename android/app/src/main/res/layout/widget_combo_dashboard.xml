@@ -45,7 +45,7 @@
             android:gravity="center_vertical"
             android:layout_marginTop="12dp">
 
-            <View
+            <ImageView
                 android:layout_width="6dp"
                 android:layout_height="6dp"
                 android:background="@drawable/widget_pill_accent"
@@ -61,7 +61,8 @@
         </LinearLayout>
     </LinearLayout>
 
-    <View
+    <ImageView
+        android:id="@+id/combo_divider"
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:background="#1AFFFFFF"
