@@ -199,6 +199,8 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-18 07:35 | agent-karan | P2-14 | completed Widget Studio full customization (Time Builder, Moment Builder, 10 Looks, Import/Export) & generated complete Play Store listing assets in store_assets/ (8 composed 1080x1920 PNGs, 1024x500 feature graphic, 512x512 app icon); 104 tests pass; release APK built clean (62.4MB)
 2026-11-18 08:15 | agent-karan | P1-03 | Luxury 3D Earth Globe redesign ("Obsidian & Ember"): GLSL ray-sphere + Fibonacci lattice, solar terminator & twilight gradient, Fresnel rim, twinkling stars, 340dp card, 111 tests pass
 2026-11-18 08:21 | agent-karan | P4-10 | deployed build 4 (v1.0.0+4) to Google Play closed testing track via fastlane; release notes attached; tagged v1.0.0+4 and pushed to GitHub
+2026-11-18 16:45 | agent-karan | P2-15 | all widget options functional on placed widgets (time formatting engine, custom format, 12/24h, separators, moment selection & units, world clock cities); merged Next and Then into unified MomentsPage with segmented switcher & filters; bottom nav updated to Moments / Now / Widgets; 111 tests pass; APK built & running on device
+2026-11-18 22:26 | agent-karan | P4-11 | integrated automatic version and build number manager into Fastfile with 20-patch rollover (1.0.1..1.0.20 -> 1.1.1); committed and pushed to GitHub
 ```
 
 ---

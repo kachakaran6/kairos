@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/time/clock_provider.dart';
+import '../../../core/time/countdown.dart';
 import '../../../core/widgets/widget_suite/widget_sync_service.dart';
 import '../data/moment_repository.dart';
 import '../domain/moment.dart';
@@ -40,6 +41,7 @@ class MomentListNotifier extends AsyncNotifier<List<Moment>> {
     bool isAllDay = true,
     MomentDirection direction = MomentDirection.down,
     MomentCategory category = MomentCategory.custom,
+    CountingMode countingMode = CountingMode.days,
     String? notes,
   }) async {
     final now = ref.read(clockProvider).nowUtc();
@@ -52,6 +54,7 @@ class MomentListNotifier extends AsyncNotifier<List<Moment>> {
       isAllDay: isAllDay,
       direction: direction,
       category: category,
+      countingMode: countingMode,
       notes: _emptyToNull(notes),
       createdAtUtc: now,
     );

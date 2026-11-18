@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/design/radius_tokens.dart';
 import '../../../core/design/spacing_tokens.dart';
 import '../../../core/theme/theme_extension.dart';
+import '../../../core/time/countdown.dart';
 import '../../../core/widgets/kairos_chips.dart';
 import '../../../core/widgets/kairos_scaffold.dart';
 import '../../../core/widgets/kairos_segmented_control.dart';
@@ -33,6 +34,7 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
   late bool _allDay;
   late MomentDirection _direction;
   late MomentCategory _category;
+  late CountingMode _countingMode;
   bool _saving = false;
   String? _error;
 
@@ -59,6 +61,7 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
     _allDay = moment?.isAllDay ?? true;
     _direction = moment?.direction ?? MomentDirection.down;
     _category = moment?.category ?? MomentCategory.custom;
+    _countingMode = moment?.countingMode ?? CountingMode.days;
   }
 
   @override
@@ -151,6 +154,7 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
           isAllDay: _allDay,
           direction: _direction,
           category: _category,
+          countingMode: _countingMode,
           notes: _notes.text,
         ),
       );
@@ -163,6 +167,7 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
         isAllDay: _allDay,
         direction: _direction,
         category: _category,
+        countingMode: _countingMode,
         notes: _notes.text,
       );
     }
@@ -417,6 +422,54 @@ class _MomentEditorPageState extends ConsumerState<MomentEditorPage> {
                   },
                   selected: _direction,
                   onChanged: (val) => setState(() => _direction = val),
+                ),
+
+                const SizedBox(height: Space.lg),
+
+                // Counter Unit / Format
+                Text(
+                  'COUNTER FORMAT',
+                  style: kairos.typeScale.label.copyWith(
+                    color: colours.textTertiary,
+                  ),
+                ),
+                const SizedBox(height: Space.sm),
+                Wrap(
+                  spacing: Space.sm,
+                  runSpacing: Space.sm,
+                  children: [
+                    KairosChoiceChip(
+                      label: 'DAYS',
+                      selected: _countingMode == CountingMode.days,
+                      onSelected: (_) =>
+                          setState(() => _countingMode = CountingMode.days),
+                    ),
+                    KairosChoiceChip(
+                      label: 'CONTINUOUS (D H M S)',
+                      selected: _countingMode == CountingMode.continuous,
+                      onSelected: (_) => setState(
+                        () => _countingMode = CountingMode.continuous,
+                      ),
+                    ),
+                    KairosChoiceChip(
+                      label: 'HOURS',
+                      selected: _countingMode == CountingMode.hours,
+                      onSelected: (_) =>
+                          setState(() => _countingMode = CountingMode.hours),
+                    ),
+                    KairosChoiceChip(
+                      label: 'MINUTES',
+                      selected: _countingMode == CountingMode.minutes,
+                      onSelected: (_) =>
+                          setState(() => _countingMode = CountingMode.minutes),
+                    ),
+                    KairosChoiceChip(
+                      label: 'SECONDS',
+                      selected: _countingMode == CountingMode.seconds,
+                      onSelected: (_) =>
+                          setState(() => _countingMode = CountingMode.seconds),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: Space.lg),

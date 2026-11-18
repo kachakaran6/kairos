@@ -472,6 +472,7 @@ class MomentCard extends StatelessWidget {
     required this.onTap,
     this.isTimeline = false,
     this.isLast = false,
+    this.overrideCountingMode,
   });
 
   final Moment moment;
@@ -479,13 +480,15 @@ class MomentCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool isTimeline;
   final bool isLast;
+  final CountingMode? overrideCountingMode;
 
   @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
     final phase = phaseAt(moment, nowUtc);
-    final countdown = Countdown.format(nowUtc, moment.targetUtc);
+    final mode = overrideCountingMode ?? moment.countingMode;
+    final countdown = Countdown.format(nowUtc, moment.targetUtc, mode: mode);
 
     final (String value, String unit) = switch (phase) {
       NextPhase() => (countdown.value, countdown.unit),
@@ -493,7 +496,12 @@ class MomentCard extends StatelessWidget {
         '$dayNumber',
         'of $totalDays days',
       ),
-      ThenPhase() => (countdown.value, '${countdown.unit} ago'),
+      ThenPhase() => (
+        countdown.value,
+        mode == CountingMode.continuous
+            ? countdown.unit
+            : '${countdown.unit} ago',
+      ),
     };
 
     final card = SurfaceCard(

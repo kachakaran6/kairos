@@ -97,7 +97,7 @@ class KairosBottomNav extends StatelessWidget {
                       children: <Widget>[
                         _NavItem(
                           index: 0,
-                          label: 'Next',
+                          label: 'Moments',
                           icon: const Icon(LucideIcons.calendar),
                           currentIndex: currentIndex,
                           onTap: (idx) {
@@ -117,8 +117,8 @@ class KairosBottomNav extends StatelessWidget {
                         ),
                         _NavItem(
                           index: 2,
-                          label: 'Then',
-                          icon: const Icon(LucideIcons.history),
+                          label: 'Widgets',
+                          icon: const Icon(LucideIcons.layoutGrid),
                           currentIndex: currentIndex,
                           onTap: (idx) {
                             HapticFeedback.selectionClick();

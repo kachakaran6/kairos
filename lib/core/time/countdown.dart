@@ -6,6 +6,8 @@ enum CountingMode {
   sleeps,
   hours,
   minutes,
+  seconds,
+  continuous,
   weeks,
   months,
   years,
@@ -74,6 +76,23 @@ abstract final class Countdown {
           _group(delta.inMinutes),
           delta.inMinutes == 1 ? 'minute' : 'minutes',
         );
+      case CountingMode.seconds:
+        return CountdownText(
+          _group(delta.inSeconds),
+          delta.inSeconds == 1 ? 'second' : 'seconds',
+        );
+      case CountingMode.continuous:
+        final d = delta.inDays;
+        final h = delta.inHours % 24;
+        final m = delta.inMinutes % 60;
+        final s = delta.inSeconds % 60;
+        final valueStr = d > 0
+            ? '${_group(d)}d ${h.toString().padLeft(2, '0')}h ${m.toString().padLeft(2, '0')}m'
+            : (h > 0
+                  ? '${h.toString().padLeft(2, '0')}h ${m.toString().padLeft(2, '0')}m'
+                  : '${m.toString().padLeft(2, '0')}m');
+        final unitStr = '${s.toString().padLeft(2, '0')}s';
+        return CountdownText(valueStr, unitStr);
       case CountingMode.weeks:
         final weeks = delta.inDays ~/ 7;
         return CountdownText(_group(weeks), weeks == 1 ? 'week' : 'weeks');
@@ -99,6 +118,20 @@ abstract final class Countdown {
         }
         return CountdownText(_group(days), days == 1 ? 'day' : 'days');
     }
+  }
+
+  /// Continuous time breakdown: days, hours, minutes, seconds.
+  static ({int days, int hours, int minutes, int seconds}) continuousParts(
+    DateTime nowUtc,
+    DateTime targetUtc,
+  ) {
+    final delta = distance(nowUtc, targetUtc);
+    return (
+      days: delta.inDays,
+      hours: delta.inHours % 24,
+      minutes: delta.inMinutes % 60,
+      seconds: delta.inSeconds % 60,
+    );
   }
 
   /// Progress between [startUtc] and [endUtc], clamped to 0..1.

@@ -30,6 +30,7 @@ class MomentDetailPage extends ConsumerStatefulWidget {
 
 class _MomentDetailPageState extends ConsumerState<MomentDetailPage> {
   Timer? _ticker;
+  CountingMode? _overrideMode;
 
   @override
   void initState() {
@@ -62,9 +63,15 @@ class _MomentDetailPageState extends ConsumerState<MomentDetailPage> {
       );
     }
 
+    final currentMode = _overrideMode ?? moment.countingMode;
     final now = ref.read(clockProvider).nowUtc();
     final phase = phaseAt(moment, now);
-    final countdown = Countdown.format(now, moment.targetUtc);
+    final countdown = Countdown.format(
+      now,
+      moment.targetUtc,
+      mode: currentMode,
+    );
+    final parts = Countdown.continuousParts(now, moment.targetUtc);
 
     final totalDuration = moment.targetUtc
         .difference(moment.createdAtUtc)
@@ -105,7 +112,7 @@ class _MomentDetailPageState extends ConsumerState<MomentDetailPage> {
         children: <Widget>[
           const Spacer(),
 
-          // Progress Ring and Giant Day Count
+          // Progress Ring and Live Continuous Counter
           Center(
             child: SizedBox(
               width: 250,
@@ -117,42 +124,204 @@ class _MomentDetailPageState extends ConsumerState<MomentDetailPage> {
                   border: colours.border,
                 ),
                 child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            countdown.value,
-                            style: kairos.typeScale.display.copyWith(
-                              fontSize: 72,
-                              fontWeight: FontWeight.w200,
-                              color: colours.accent,
-                              fontFeatures: const <FontFeature>[
-                                FontFeature.tabularFigures(),
+                  child: currentMode == CountingMode.continuous
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _ContinuousUnitBox(
+                                  value: parts.days,
+                                  label: 'DAYS',
+                                  accentColor: colours.accent,
+                                  textColor: colours.textPrimary,
+                                  secondaryColor: colours.textSecondary,
+                                ),
+                                const SizedBox(width: 8),
+                                _ContinuousUnitBox(
+                                  value: parts.hours,
+                                  label: 'HOURS',
+                                  accentColor: colours.accent,
+                                  textColor: colours.textPrimary,
+                                  secondaryColor: colours.textSecondary,
+                                ),
                               ],
                             ),
-                          ),
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _ContinuousUnitBox(
+                                  value: parts.minutes,
+                                  label: 'MINS',
+                                  accentColor: colours.accent,
+                                  textColor: colours.textPrimary,
+                                  secondaryColor: colours.textSecondary,
+                                ),
+                                const SizedBox(width: 8),
+                                _ContinuousUnitBox(
+                                  value: parts.seconds,
+                                  label: 'SECS',
+                                  accentColor: colours.accent,
+                                  textColor: colours.textPrimary,
+                                  secondaryColor: colours.textSecondary,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              phase is ThenPhase ? 'since' : 'to go',
+                              style: kairos.typeScale.micro.copyWith(
+                                color: colours.textTertiary,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  countdown.value,
+                                  style: kairos.typeScale.display.copyWith(
+                                    fontSize: 72,
+                                    fontWeight: FontWeight.w200,
+                                    color: colours.accent,
+                                    fontFeatures: const <FontFeature>[
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              phase is ThenPhase
+                                  ? '${countdown.unit} since'
+                                  : '${countdown.unit} to go',
+                              style: kairos.typeScale.section.copyWith(
+                                color: colours.textSecondary,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Text(
-                        phase is ThenPhase
-                            ? '${countdown.unit} since'
-                            : '${countdown.unit} to go',
-                        style: kairos.typeScale.section.copyWith(
-                          color: colours.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),
           ),
 
-          const SizedBox(height: Space.lg),
+          const SizedBox(height: Space.md),
+
+          // Live Interactive Unit Mode Selector
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: Space.xl),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _DetailModeChip(
+                  label: 'Continuous',
+                  icon: LucideIcons.timer,
+                  isSelected: currentMode == CountingMode.continuous,
+                  accentColor: colours.accent,
+                  surfaceColor: colours.surfaceElevated,
+                  textColor: colours.textPrimary,
+                  textSecondary: colours.textSecondary,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _overrideMode = CountingMode.continuous);
+                    ref
+                        .read(momentListProvider.notifier)
+                        .replace(
+                          moment.copyWith(
+                            countingMode: CountingMode.continuous,
+                          ),
+                        );
+                  },
+                ),
+                const SizedBox(width: Space.xs),
+                _DetailModeChip(
+                  label: 'Days',
+                  isSelected: currentMode == CountingMode.days,
+                  accentColor: colours.accent,
+                  surfaceColor: colours.surfaceElevated,
+                  textColor: colours.textPrimary,
+                  textSecondary: colours.textSecondary,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _overrideMode = CountingMode.days);
+                    ref
+                        .read(momentListProvider.notifier)
+                        .replace(
+                          moment.copyWith(countingMode: CountingMode.days),
+                        );
+                  },
+                ),
+                const SizedBox(width: Space.xs),
+                _DetailModeChip(
+                  label: 'Hours',
+                  isSelected: currentMode == CountingMode.hours,
+                  accentColor: colours.accent,
+                  surfaceColor: colours.surfaceElevated,
+                  textColor: colours.textPrimary,
+                  textSecondary: colours.textSecondary,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _overrideMode = CountingMode.hours);
+                    ref
+                        .read(momentListProvider.notifier)
+                        .replace(
+                          moment.copyWith(countingMode: CountingMode.hours),
+                        );
+                  },
+                ),
+                const SizedBox(width: Space.xs),
+                _DetailModeChip(
+                  label: 'Minutes',
+                  isSelected: currentMode == CountingMode.minutes,
+                  accentColor: colours.accent,
+                  surfaceColor: colours.surfaceElevated,
+                  textColor: colours.textPrimary,
+                  textSecondary: colours.textSecondary,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _overrideMode = CountingMode.minutes);
+                    ref
+                        .read(momentListProvider.notifier)
+                        .replace(
+                          moment.copyWith(countingMode: CountingMode.minutes),
+                        );
+                  },
+                ),
+                const SizedBox(width: Space.xs),
+                _DetailModeChip(
+                  label: 'Seconds',
+                  isSelected: currentMode == CountingMode.seconds,
+                  accentColor: colours.accent,
+                  surfaceColor: colours.surfaceElevated,
+                  textColor: colours.textPrimary,
+                  textSecondary: colours.textSecondary,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _overrideMode = CountingMode.seconds);
+                    ref
+                        .read(momentListProvider.notifier)
+                        .replace(
+                          moment.copyWith(countingMode: CountingMode.seconds),
+                        );
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: Space.md),
 
           // Title in Editorial Serif
           Text(
@@ -309,4 +478,118 @@ class _DetailRingPainter extends CustomPainter {
       oldDelegate.progress != progress ||
       oldDelegate.accent != accent ||
       oldDelegate.border != border;
+}
+
+class _ContinuousUnitBox extends StatelessWidget {
+  const _ContinuousUnitBox({
+    required this.value,
+    required this.label,
+    required this.accentColor,
+    required this.textColor,
+    required this.secondaryColor,
+  });
+
+  final int value;
+  final String label;
+  final Color accentColor;
+  final Color textColor;
+  final Color secondaryColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 72,
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: accentColor.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$value',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: textColor,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              color: accentColor,
+              letterSpacing: 0.6,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailModeChip extends StatelessWidget {
+  const _DetailModeChip({
+    required this.label,
+    this.icon,
+    required this.isSelected,
+    required this.accentColor,
+    required this.surfaceColor,
+    required this.textColor,
+    required this.textSecondary,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData? icon;
+  final bool isSelected;
+  final Color accentColor;
+  final Color surfaceColor;
+  final Color textColor;
+  final Color textSecondary;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? accentColor : surfaceColor.withValues(alpha: 0.6),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? accentColor : Colors.white10,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 13,
+                color: isSelected ? Colors.white : textSecondary,
+              ),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected ? Colors.white : textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

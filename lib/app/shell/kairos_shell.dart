@@ -18,6 +18,8 @@ import '../../features/moments/domain/moment_phase.dart';
 import '../../features/moments/presentation/moment_controller.dart';
 import '../../features/moments/presentation/moment_detail_page.dart';
 import '../../features/moments/presentation/moment_list_tab.dart';
+import '../../features/moments/presentation/moments_page.dart';
+import '../../features/widgets/presentation/widget_studio_page.dart';
 import '../../features/settings/presentation/settings_controller.dart';
 import '../../features/settings/presentation/settings_page.dart';
 import '../../features/stopwatch/presentation/stopwatch_page.dart';
@@ -48,9 +50,9 @@ class _KairosShellState extends State<KairosShell> {
         child: IndexedStack(
           index: _index,
           children: const <Widget>[
-            MomentListTab(upcoming: true),
+            MomentsPage(),
             _NowPage(),
-            MomentListTab(upcoming: false),
+            WidgetStudioPage(),
           ],
         ),
       ),

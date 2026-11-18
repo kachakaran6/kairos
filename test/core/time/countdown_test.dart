@@ -73,6 +73,28 @@ void main() {
       final target = DateTime.utc(2023, 5, 12);
       expect(Countdown.format(now, target).value, '1,284');
     });
+
+    test('counts exact seconds with commas', () {
+      final now = DateTime.utc(2026, 11, 16, 12, 0, 0);
+      final target = DateTime.utc(2026, 11, 16, 12, 1, 30);
+      final text = Countdown.format(now, target, mode: CountingMode.seconds);
+      expect(text.value, '90');
+      expect(text.unit, 'seconds');
+    });
+
+    test('continuous mode formats breakdown', () {
+      final now = DateTime.utc(2026, 11, 16, 12, 0, 0);
+      final target = DateTime.utc(2026, 11, 18, 15, 30, 45);
+      final text = Countdown.format(now, target, mode: CountingMode.continuous);
+      expect(text.value, '2d 03h 30m');
+      expect(text.unit, '45s');
+
+      final parts = Countdown.continuousParts(now, target);
+      expect(parts.days, 2);
+      expect(parts.hours, 3);
+      expect(parts.minutes, 30);
+      expect(parts.seconds, 45);
+    });
   });
 
   group('progress', () {

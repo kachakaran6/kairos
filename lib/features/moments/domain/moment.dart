@@ -1,3 +1,5 @@
+import '../../../core/time/countdown.dart';
+
 /// Which way a moment counts.
 enum MomentDirection { down, up, both }
 
@@ -24,6 +26,7 @@ class Moment {
     this.isAllDay = true,
     this.direction = MomentDirection.down,
     this.category = MomentCategory.custom,
+    this.countingMode = CountingMode.days,
     this.notes,
     required this.createdAtUtc,
     this.pinned = false,
@@ -42,6 +45,7 @@ class Moment {
   final bool isAllDay;
   final MomentDirection direction;
   final MomentCategory category;
+  final CountingMode countingMode;
   final String? notes;
   final DateTime createdAtUtc;
   final bool pinned;
@@ -56,6 +60,7 @@ class Moment {
     bool? isAllDay,
     MomentDirection? direction,
     MomentCategory? category,
+    CountingMode? countingMode,
     String? notes,
     bool? pinned,
   }) {
@@ -68,6 +73,7 @@ class Moment {
       isAllDay: isAllDay ?? this.isAllDay,
       direction: direction ?? this.direction,
       category: category ?? this.category,
+      countingMode: countingMode ?? this.countingMode,
       notes: notes ?? this.notes,
       createdAtUtc: createdAtUtc,
       pinned: pinned ?? this.pinned,
@@ -83,6 +89,7 @@ class Moment {
     'isAllDay': isAllDay,
     'direction': direction.name,
     'category': category.name,
+    'countingMode': countingMode.name,
     'notes': notes,
     'createdAtUtc': createdAtUtc.toUtc().toIso8601String(),
     'pinned': pinned,
@@ -105,6 +112,10 @@ class Moment {
       category: MomentCategory.values.firstWhere(
         (value) => value.name == json['category'],
         orElse: () => MomentCategory.custom,
+      ),
+      countingMode: CountingMode.values.firstWhere(
+        (value) => value.name == json['countingMode'],
+        orElse: () => CountingMode.days,
       ),
       notes: json['notes'] as String?,
       createdAtUtc: DateTime.parse(json['createdAtUtc'] as String).toUtc(),

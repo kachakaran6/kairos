@@ -449,9 +449,11 @@ class _WidgetStudioPageState extends ConsumerState<WidgetStudioPage> {
         ),
       ],
       body: ListView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Space.md,
-          vertical: Space.md,
+        padding: const EdgeInsets.fromLTRB(
+          Space.md,
+          Space.md,
+          Space.md,
+          120, // Clear floating bottom nav bar
         ),
         children: <Widget>[
           // 1. Live Interactive Widget Preview Canvas

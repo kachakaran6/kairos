@@ -59,12 +59,14 @@ class _KairosAppContentState extends ConsumerState<_KairosAppContent> {
     if (uri == null) return;
     final path = '${uri.host}${uri.path}';
 
-    if (path.contains('next')) {
+    if (path.contains('next') ||
+        path.contains('then') ||
+        path.contains('moments')) {
       setState(() => _tabIndex = 0);
-    } else if (path.contains('then')) {
-      setState(() => _tabIndex = 2);
     } else if (path.contains('now')) {
       setState(() => _tabIndex = 1);
+    } else if (path.contains('widget')) {
+      setState(() => _tabIndex = 2);
     } else if (path.contains('world_clock')) {
       _navigatorKey.currentState?.push(
         MaterialPageRoute<void>(builder: (_) => const WorldClockPage()),

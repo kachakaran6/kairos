@@ -108,23 +108,106 @@ class WidgetSyncService {
     await HomeWidget.saveWidgetData<bool>('use_24h', settings.use24HourFormat);
     await HomeWidget.saveWidgetData<bool>('show_seconds', settings.showSeconds);
 
-    if (nextMoments.isNotEmpty) {
-      final m = nextMoments.first;
-      final diff = m.targetUtc.difference(nowUtc);
-      final days = diff.inDays;
-      final isToday = diff.inHours < 24 && m.targetUtc.day == nowUtc.day;
+    // World Clock Cities sync
+    await HomeWidget.saveWidgetData<String>('world_city_1', 'London');
+    await HomeWidget.saveWidgetData<String>('world_tz_1', 'Europe/London');
+    await HomeWidget.saveWidgetData<String>('world_city_2', 'New York');
+    await HomeWidget.saveWidgetData<String>('world_tz_2', 'America/New_York');
+    await HomeWidget.saveWidgetData<String>('world_city_3', 'Tokyo');
+    await HomeWidget.saveWidgetData<String>('world_tz_3', 'Asia/Tokyo');
 
-      await HomeWidget.saveWidgetData<String>('next_moment_title', m.title);
+    String formatMomentValue(Duration diff, String unit) {
+      switch (unit) {
+        case 'continuous':
+          final d = diff.inDays;
+          final h = diff.inHours % 24;
+          final m = diff.inMinutes % 60;
+          return d > 0 ? '${d}d ${h}h' : '${h}h ${m}m';
+        case 'seconds':
+          return '${diff.inSeconds}s';
+        case 'minutes':
+          return '${diff.inMinutes}m';
+        case 'weeks':
+          final w = diff.inDays / 7.0;
+          return '${w.toStringAsFixed(1)}w';
+        case 'hours':
+          return '${diff.inHours}h';
+        case 'percent':
+          return '72%';
+        case 'months_days':
+          final m = diff.inDays ~/ 30;
+          final d = diff.inDays % 30;
+          return m > 0 ? '${m}m ${d}d' : '${d}d';
+        case 'days':
+        default:
+          return '${diff.inDays}';
+      }
+    }
+
+    String getUnitLabel(String unit) {
+      switch (unit) {
+        case 'continuous':
+          return 'counter';
+        case 'seconds':
+          return 'seconds';
+        case 'minutes':
+          return 'mins';
+        case 'weeks':
+          return 'weeks';
+        case 'hours':
+          return 'hours';
+        case 'percent':
+          return 'complete';
+        case 'months_days':
+          return 'remaining';
+        case 'days':
+        default:
+          return 'days';
+      }
+    }
+
+    // Check if user picked a specific moment in Widget Studio
+    final chosenMoment =
+        (config?.selectedMomentId != null &&
+            config!.selectedMomentId!.isNotEmpty)
+        ? moments.where((m) => m.id == config.selectedMomentId).firstOrNull
+        : null;
+
+    final targetNextMoment = chosenMoment ?? nextMoments.firstOrNull;
+
+    if (targetNextMoment != null) {
+      final diff = targetNextMoment.targetUtc.difference(nowUtc);
+      final absDiff = diff.abs();
+      final days = absDiff.inDays;
+      final isToday =
+          absDiff.inHours < 24 && targetNextMoment.targetUtc.day == nowUtc.day;
+      final unit = config?.momentUnit ?? 'days';
+      final formattedVal = formatMomentValue(absDiff, unit);
+      final unitLabel = getUnitLabel(unit);
+
+      await HomeWidget.saveWidgetData<String>(
+        'next_moment_title',
+        targetNextMoment.title,
+      );
       await HomeWidget.saveWidgetData<String>(
         'next_moment_subtitle',
-        m.subtitle ?? '',
+        targetNextMoment.subtitle ?? '',
       );
       await HomeWidget.saveWidgetData<int>('next_moment_days', days);
       await HomeWidget.saveWidgetData<String>(
+        'next_moment_value',
+        formattedVal,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'next_moment_unit_label',
+        unitLabel,
+      );
+      await HomeWidget.saveWidgetData<String>(
         'next_moment_category',
-        m.category.name,
+        targetNextMoment.category.name,
       );
       await HomeWidget.saveWidgetData<bool>('next_moment_is_today', isToday);
+      await HomeWidget.saveWidgetData<double>('next_moment_progress', 0.72);
 
       // Render Hero progress ring artwork (e.g. 70% completed toward target)
       try {
@@ -148,14 +231,28 @@ class WidgetSyncService {
         'Nothing ahead yet',
       );
       await HomeWidget.saveWidgetData<int>('next_moment_days', 0);
+      await HomeWidget.saveWidgetData<String>('next_moment_value', '0');
+      await HomeWidget.saveWidgetData<String>('next_moment_unit_label', 'days');
       await HomeWidget.saveWidgetData<bool>('next_moment_is_today', false);
     }
 
     if (pastMoments.isNotEmpty) {
       final p = pastMoments.first;
       final diff = nowUtc.difference(p.targetUtc);
+      final unit = config?.momentUnit ?? 'days';
+      final formattedVal = formatMomentValue(diff, unit);
+      final unitLabel = getUnitLabel(unit);
+
       await HomeWidget.saveWidgetData<String>('then_moment_title', p.title);
       await HomeWidget.saveWidgetData<int>('then_moment_days', diff.inDays);
+      await HomeWidget.saveWidgetData<String>(
+        'then_moment_value',
+        formattedVal,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'then_moment_unit_label',
+        unitLabel,
+      );
     }
 
     if (nextAlarm != null) {

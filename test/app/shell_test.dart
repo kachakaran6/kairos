@@ -17,42 +17,50 @@ void main() {
     );
   }
 
-  testWidgets('shell exposes Next, Now and Then', (tester) async {
+  testWidgets('shell exposes Moments, Now and Widgets', (tester) async {
     await tester.pumpWidget(wrap(const KairosShell()));
     await tester.pumpAndSettle();
 
     expect(find.text('Now'), findsWidgets);
-    expect(find.text('Next'), findsWidgets);
-    expect(find.text('Then'), findsWidgets);
+    expect(find.text('Moments'), findsWidgets);
+    expect(find.text('Widgets'), findsWidgets);
     expect(find.text('INSTRUMENTS'), findsOneWidget);
   });
 
-  testWidgets('Next tab shows its empty state', (tester) async {
+  testWidgets('Moments tab shows Upcoming and Memories empty states', (
+    tester,
+  ) async {
     await tester.pumpWidget(wrap(const KairosShell()));
 
     await tester.tap(
       find.descendant(
         of: find.byType(KairosBottomNav),
-        matching: find.text('Next'),
+        matching: find.text('Moments'),
       ),
     );
     await tester.pumpAndSettle();
 
     expect(find.text('Nothing ahead yet'), findsOneWidget);
+
+    // Switch to Memories
+    await tester.tap(find.text('Memories'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nothing behind yet'), findsOneWidget);
   });
 
-  testWidgets('Then tab shows its empty state', (tester) async {
+  testWidgets('Widgets tab is reachable from bottom nav', (tester) async {
     await tester.pumpWidget(wrap(const KairosShell()));
 
     await tester.tap(
       find.descendant(
         of: find.byType(KairosBottomNav),
-        matching: find.text('Then'),
+        matching: find.text('Widgets'),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Nothing behind yet'), findsOneWidget);
+    expect(find.text('Widget Studio'), findsOneWidget);
   });
 
   testWidgets('world clock opteration is reachable from Now', (tester) async {

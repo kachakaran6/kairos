@@ -35,18 +35,26 @@ class WorldClockWidgetProvider : BaseKairosWidget() {
         val city3 = widgetData.getString("world_city_3", "Tokyo") ?: "Tokyo"
         val tz3 = widgetData.getString("world_tz_3", "Asia/Tokyo") ?: "Asia/Tokyo"
 
+        val timePattern = WidgetTimeFormatter.getTimeFormat(config)
+
         views.setTextViewText(R.id.city_name_1, city1)
         views.setString(R.id.city_clock_1, "setTimeZone", tz1)
+        views.setString(R.id.city_clock_1, "setFormat12Hour", timePattern)
+        views.setString(R.id.city_clock_1, "setFormat24Hour", timePattern)
         views.setTextColor(R.id.city_name_1, secondaryText)
         views.setTextColor(R.id.city_clock_1, primaryText)
 
         views.setTextViewText(R.id.city_name_2, city2)
         views.setString(R.id.city_clock_2, "setTimeZone", tz2)
+        views.setString(R.id.city_clock_2, "setFormat12Hour", timePattern)
+        views.setString(R.id.city_clock_2, "setFormat24Hour", timePattern)
         views.setTextColor(R.id.city_name_2, secondaryText)
         views.setTextColor(R.id.city_clock_2, primaryText)
 
         views.setTextViewText(R.id.city_name_3, city3)
         views.setString(R.id.city_clock_3, "setTimeZone", tz3)
+        views.setString(R.id.city_clock_3, "setFormat12Hour", timePattern)
+        views.setString(R.id.city_clock_3, "setFormat24Hour", timePattern)
         views.setTextColor(R.id.city_name_3, secondaryText)
         views.setTextColor(R.id.city_clock_3, primaryText)
 

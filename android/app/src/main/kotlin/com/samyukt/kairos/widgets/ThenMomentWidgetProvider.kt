@@ -2,6 +2,7 @@ package com.samyukt.kairos.widgets
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.TypedValue
 import android.widget.RemoteViews
 import com.samyukt.kairos.R
 
@@ -25,6 +26,7 @@ class ThenMomentWidgetProvider : BaseKairosWidget() {
 
         val rawTitle = widgetData.getString("then_moment_title", null)
         val title = if (rawTitle.isNullOrEmpty() || rawTitle == "Nothing behind yet") "Graduation Day" else rawTitle
+        val customVal = widgetData.getString("then_moment_value", null)
         val days = widgetData.getInt("then_moment_days", 520)
 
         views.setTextColor(R.id.then_header, accentColor)
@@ -32,9 +34,14 @@ class ThenMomentWidgetProvider : BaseKairosWidget() {
         views.setTextColor(R.id.then_title, primaryText)
 
         views.setTextViewText(R.id.then_title, title)
-        views.setTextViewText(R.id.then_days, "$days")
+        views.setTextViewText(R.id.then_days, customVal ?: "$days")
 
-        val pendingIntent = createDeepLinkIntent(context, "then")
+        if (config.scaleFactor != 1.0f) {
+            val scaledSize = (44f * config.scaleFactor).coerceIn(24f, 64f)
+            views.setTextViewTextSize(R.id.then_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+        }
+
+        val pendingIntent = createDeepLinkIntent(context, "moments")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
         return views

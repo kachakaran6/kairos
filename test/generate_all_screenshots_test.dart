@@ -23,6 +23,7 @@ import 'package:kairos/features/moments/domain/moment.dart';
 import 'package:kairos/features/moments/presentation/moment_controller.dart';
 import 'package:kairos/features/moments/presentation/moment_detail_page.dart';
 import 'package:kairos/features/moments/presentation/moment_editor_page.dart';
+import 'package:kairos/features/moments/presentation/moments_page.dart';
 import 'package:kairos/features/moments/presentation/zero_moment_page.dart';
 import 'package:kairos/features/settings/presentation/settings_page.dart';
 import 'package:kairos/features/stopwatch/presentation/stopwatch_page.dart';
@@ -322,7 +323,7 @@ void main() {
           tester,
           name: '04_then_empty_$modeSuffix',
           isDark: isDark,
-          child: const KairosShell(initialIndex: 2),
+          child: const MomentsPage(initialUpcoming: false),
           moments: const [],
         );
       });
@@ -332,7 +333,7 @@ void main() {
           tester,
           name: '05_then_populated_$modeSuffix',
           isDark: isDark,
-          child: const KairosShell(initialIndex: 2),
+          child: const MomentsPage(initialUpcoming: false),
           moments: samplePastMoments,
         );
       });
