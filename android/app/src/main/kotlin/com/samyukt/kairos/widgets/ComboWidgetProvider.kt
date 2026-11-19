@@ -157,7 +157,7 @@ class ComboWidgetProvider : BaseKairosWidget() {
             }
 
             if (displayCount != null) {
-                val partial = RemoteViews(context.packageName, R.layout.widget_combo)
+                val partial = RemoteViews(context.packageName, R.layout.widget_combo_dashboard)
                 partial.setTextViewText(R.id.combo_moment_days, displayCount)
                 appWidgetManager.partiallyUpdateAppWidget(appWidgetId, partial)
             }
