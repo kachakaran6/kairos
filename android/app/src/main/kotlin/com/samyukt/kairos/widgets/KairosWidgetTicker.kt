@@ -100,21 +100,21 @@ object KairosWidgetTicker {
             val thenComp = ComponentName(context, ThenMomentWidgetProvider::class.java)
             val thenIds = appWidgetManager.getAppWidgetIds(thenComp)
             if (thenIds.isNotEmpty()) {
-                ThenMomentWidgetProvider().onUpdate(context, appWidgetManager, thenIds, prefs)
+                ThenMomentWidgetProvider().tick(context, appWidgetManager, thenIds, prefs)
             }
 
             // 2. Next Moment
             val nextComp = ComponentName(context, NextMomentWidgetProvider::class.java)
             val nextIds = appWidgetManager.getAppWidgetIds(nextComp)
             if (nextIds.isNotEmpty()) {
-                NextMomentWidgetProvider().onUpdate(context, appWidgetManager, nextIds, prefs)
+                NextMomentWidgetProvider().tick(context, appWidgetManager, nextIds, prefs)
             }
 
             // 3. Combo Dashboard
             val comboComp = ComponentName(context, ComboWidgetProvider::class.java)
             val comboIds = appWidgetManager.getAppWidgetIds(comboComp)
             if (comboIds.isNotEmpty()) {
-                ComboWidgetProvider().onUpdate(context, appWidgetManager, comboIds, prefs)
+                ComboWidgetProvider().tick(context, appWidgetManager, comboIds, prefs)
             }
         } catch (_: Throwable) {
             // Silent catch to prevent any background crashes

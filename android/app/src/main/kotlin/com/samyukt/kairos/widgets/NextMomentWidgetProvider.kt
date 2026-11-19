@@ -138,11 +138,61 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
             views.setTextViewText(R.id.compact_days, countText)
         }
 
-        KairosWidgetTickerService.start(context)
+        KairosWidgetTicker.start(context)
 
         val pendingIntent = createDeepLinkIntent(context, "moments")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
         return views
+    }
+
+    /**
+     * High-efficiency 1-second tick: uses partiallyUpdateAppWidget with zero bitmap allocations
+     * to keep CPU at ~0% and prevent binder IPC transaction throttling.
+     */
+    fun tick(
+        context: Context,
+        appWidgetManager: android.appwidget.AppWidgetManager,
+        appWidgetIds: IntArray,
+        widgetData: SharedPreferences
+    ) {
+        val targetEpoch = widgetData.getLong("next_moment_target_epoch", 0L)
+        if (targetEpoch <= 0L) return
+        val isToday = widgetData.getBoolean("next_moment_is_today", false)
+        if (isToday) return
+
+        val nowMs = System.currentTimeMillis()
+        val diffMs = targetEpoch - nowMs
+        val absSec = Math.abs(diffMs) / 1000
+        val d = absSec / 86400
+        val h = (absSec % 86400) / 3600
+        val m = (absSec % 3600) / 60
+        val s = absSec % 60
+
+        for (appWidgetId in appWidgetIds) {
+            val config = ConfigRepository.getConfig(context, appWidgetId)
+            val countingMode = (widgetData.getString("next_moment_counting_mode", config.momentUnit) ?: config.momentUnit).lowercase()
+
+            val str = when (countingMode) {
+                "continuous", "live_countdown" -> {
+                    if (d > 0) "${d}d ${h}h ${m}m ${s}s" else if (h > 0) "${h}h ${m}m ${s}s" else if (m > 0) "${m}m ${s}s" else "${s}s"
+                }
+                "seconds" -> "${absSec}s"
+                else -> null
+            }
+
+            if (str != null) {
+                val style = widgetData.getString("next_style_$appWidgetId", "hero")
+                val layoutId = if (style == "compact") R.layout.widget_next_compact else R.layout.widget_next_hero
+                val partial = RemoteViews(context.packageName, layoutId)
+                if (layoutId == R.layout.widget_next_compact) {
+                    partial.setTextViewText(R.id.compact_days, str)
+                    partial.setTextViewText(R.id.compact_time_left, "in $str")
+                } else {
+                    partial.setTextViewText(R.id.moment_days, str)
+                }
+                appWidgetManager.partiallyUpdateAppWidget(appWidgetId, partial)
+            }
+        }
     }
 }

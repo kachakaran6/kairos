@@ -1,3 +1,3 @@
-• Live Seconds Ticking on Home Widgets: Implemented battery-safe background ticker service so countdown and countup seconds continuously tick when screen is active.
-• Fixed Text-Wrapping & Layout Glitches: Eliminated vertical text wrapping on home widgets with single-line auto-scaling typography.
+• Fixed Home Widget UI & Typography: Eliminated vertical text wrapping on home widgets with single-line auto-scaling typography and balanced card margins.
 • Resolved Widget Fallback Crashes: Fixed RemoteViews view compatibility across World Clock and Interactive widgets.
+• Live Seconds Counter & Custom Units: Real-time countdown/countup across Continuous (d, h, m, s), hours, minutes, and seconds.

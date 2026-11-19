@@ -118,11 +118,49 @@ class ComboWidgetProvider : BaseKairosWidget() {
             views.setViewVisibility(R.id.combo_life_rings, View.GONE)
         }
 
-        KairosWidgetTickerService.start(context)
+        KairosWidgetTicker.start(context)
 
         val pendingIntent = createDeepLinkIntent(context, "dashboard")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
         return views
+    }
+
+    /**
+     * High-efficiency 1-second tick: uses partiallyUpdateAppWidget with zero bitmap allocations.
+     */
+    fun tick(
+        context: Context,
+        appWidgetManager: android.appwidget.AppWidgetManager,
+        appWidgetIds: IntArray,
+        widgetData: SharedPreferences
+    ) {
+        val targetEpoch = widgetData.getLong("next_moment_target_epoch", 0L)
+        if (targetEpoch <= 0L) return
+
+        val nowMs = System.currentTimeMillis()
+        val diffMs = targetEpoch - nowMs
+        val absSec = Math.abs(diffMs) / 1000
+        val d = absSec / 86400
+        val h = (absSec % 86400) / 3600
+        val m = (absSec % 3600) / 60
+        val s = absSec % 60
+
+        for (appWidgetId in appWidgetIds) {
+            val config = ConfigRepository.getConfig(context, appWidgetId)
+            val countingMode = (widgetData.getString("next_moment_counting_mode", config.momentUnit) ?: config.momentUnit).lowercase()
+
+            val displayCount = when (countingMode) {
+                "continuous", "live_countdown" -> if (d > 0) "${d}d ${h}h ${m}m" else "${h}h ${m}m ${s}s"
+                "seconds" -> "${absSec}s left"
+                else -> null
+            }
+
+            if (displayCount != null) {
+                val partial = RemoteViews(context.packageName, R.layout.widget_combo)
+                partial.setTextViewText(R.id.combo_moment_days, displayCount)
+                appWidgetManager.partiallyUpdateAppWidget(appWidgetId, partial)
+            }
+        }
     }
 }

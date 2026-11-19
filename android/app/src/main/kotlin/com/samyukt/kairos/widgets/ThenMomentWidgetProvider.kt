@@ -125,11 +125,52 @@ class ThenMomentWidgetProvider : BaseKairosWidget() {
         }
 
         // Start live ticker when a widget instance is rendered
-        KairosWidgetTickerService.start(context)
+        KairosWidgetTicker.start(context)
 
         val pendingIntent = createDeepLinkIntent(context, "moments")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
         return views
+    }
+
+    /**
+     * High-efficiency 1-second tick: uses partiallyUpdateAppWidget with zero bitmap allocations
+     * to keep CPU at ~0% and prevent binder IPC transaction throttling.
+     */
+    fun tick(
+        context: Context,
+        appWidgetManager: android.appwidget.AppWidgetManager,
+        appWidgetIds: IntArray,
+        widgetData: SharedPreferences
+    ) {
+        val targetEpoch = widgetData.getLong("then_moment_target_epoch", 0L)
+        if (targetEpoch <= 0L) return
+
+        val nowMs = System.currentTimeMillis()
+        val diffMs = Math.abs(nowMs - targetEpoch)
+        val diffSec = diffMs / 1000
+        val d = diffSec / 86400
+        val h = (diffSec % 86400) / 3600
+        val m = (diffSec % 3600) / 60
+        val s = diffSec % 60
+
+        for (appWidgetId in appWidgetIds) {
+            val config = ConfigRepository.getConfig(context, appWidgetId)
+            val countingMode = (widgetData.getString("then_moment_counting_mode", config.momentUnit) ?: config.momentUnit).lowercase()
+
+            val str = when (countingMode) {
+                "continuous", "live_countdown" -> {
+                    if (d > 0) "${d}d ${h}h ${m}m ${s}s" else if (h > 0) "${h}h ${m}m ${s}s" else if (m > 0) "${m}m ${s}s" else "${s}s"
+                }
+                "seconds" -> "${diffSec}s"
+                else -> null
+            }
+
+            if (str != null) {
+                val partial = RemoteViews(context.packageName, R.layout.widget_then_moment)
+                partial.setTextViewText(R.id.then_days, str)
+                appWidgetManager.partiallyUpdateAppWidget(appWidgetId, partial)
+            }
+        }
     }
 }
