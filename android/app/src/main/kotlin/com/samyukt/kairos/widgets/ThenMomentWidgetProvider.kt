@@ -125,7 +125,7 @@ class ThenMomentWidgetProvider : BaseKairosWidget() {
         }
 
         // Start live ticker when a widget instance is rendered
-        KairosWidgetTicker.start(context)
+        KairosWidgetTickerService.start(context)
 
         val pendingIntent = createDeepLinkIntent(context, "moments")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)

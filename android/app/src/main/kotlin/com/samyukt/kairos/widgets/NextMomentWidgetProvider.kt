@@ -138,7 +138,7 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
             views.setTextViewText(R.id.compact_days, countText)
         }
 
-        KairosWidgetTicker.start(context)
+        KairosWidgetTickerService.start(context)
 
         val pendingIntent = createDeepLinkIntent(context, "moments")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)

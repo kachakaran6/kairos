@@ -118,7 +118,7 @@ class ComboWidgetProvider : BaseKairosWidget() {
             views.setViewVisibility(R.id.combo_life_rings, View.GONE)
         }
 
-        KairosWidgetTicker.start(context)
+        KairosWidgetTickerService.start(context)
 
         val pendingIntent = createDeepLinkIntent(context, "dashboard")
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
