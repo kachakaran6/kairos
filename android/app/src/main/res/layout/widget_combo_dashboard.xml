@@ -128,6 +128,17 @@
                     android:includeFontPadding="false"
                     android:layout_marginTop="1dp" />
 
+                <Chronometer
+                    android:id="@+id/combo_moment_chronometer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="#14120E"
+                    android:includeFontPadding="false"
+                    android:layout_marginTop="1dp"
+                    android:visibility="gone" />
+
                 <TextView
                     android:id="@+id/combo_moment_title"
                     android:layout_width="wrap_content"

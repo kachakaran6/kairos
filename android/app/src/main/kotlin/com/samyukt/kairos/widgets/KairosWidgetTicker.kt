@@ -36,7 +36,7 @@ object KairosWidgetTicker {
 
                 if (isScreenOn) {
                     tickWidgets(ctx)
-                    handler.postDelayed(this, 1000L)
+                    handler.postDelayed(this, 10_000L)
                 } else {
                     // Pause ticker when screen goes dark
                     isTicking = false

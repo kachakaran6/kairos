@@ -45,12 +45,34 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="520"
-                android:textSize="48sp"
+                android:textSize="44sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="#14120E"
                 android:includeFontPadding="false"
                 android:maxLines="1"
                 android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/then_separator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" • "
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#8A847C"
+                android:includeFontPadding="false"
+                android:visibility="gone" />
+
+            <Chronometer
+                android:id="@+id/then_chronometer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#14120E"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/then_unit_label"

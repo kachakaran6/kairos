@@ -72,30 +72,54 @@ class ComboWidgetProvider : BaseKairosWidget() {
         if (isToday) {
             views.setTextViewText(R.id.combo_moment_category, "TODAY!")
             views.setTextViewText(R.id.combo_moment_days, "Today!")
+            views.setViewVisibility(R.id.combo_moment_days, View.VISIBLE)
+            views.setViewVisibility(R.id.combo_moment_chronometer, View.GONE)
         } else {
             views.setTextViewText(R.id.combo_moment_category, "NEXT MOMENT")
-            val displayCount = if (targetEpoch > 0L) {
+            if (targetEpoch > 0L) {
                 val nowMs = System.currentTimeMillis()
                 val diffMs = targetEpoch - nowMs
                 val absSec = Math.abs(diffMs) / 1000
                 val d = absSec / 86400
-                val h = (absSec % 86400) / 3600
-                val m = (absSec % 3600) / 60
-                val s = absSec % 60
+                val dayRemainderMs = Math.abs(diffMs) % (86400 * 1000)
                 val totalHours = absSec / 3600
                 val totalMinutes = absSec / 60
 
                 when (countingMode.lowercase()) {
-                    "continuous", "live_countdown" -> if (d > 0) "${d}d ${h}h ${m}m" else "${h}h ${m}m ${s}s"
-                    "hours" -> "${totalHours}h left"
-                    "minutes" -> "${totalMinutes}m left"
-                    "seconds" -> "${absSec}s left"
-                    else -> "${d}d left"
+                    "continuous", "live_countdown", "seconds" -> {
+                        views.setTextColor(R.id.combo_moment_chronometer, primaryText)
+                        if (d > 0 && countingMode.lowercase() != "seconds") {
+                            views.setTextViewText(R.id.combo_moment_days, "${d}d ")
+                            views.setViewVisibility(R.id.combo_moment_days, View.VISIBLE)
+                        } else {
+                            views.setViewVisibility(R.id.combo_moment_days, View.GONE)
+                        }
+                        val base = android.os.SystemClock.elapsedRealtime() + (if (d > 0 && countingMode.lowercase() != "seconds") dayRemainderMs else Math.max(0L, diffMs))
+                        views.setChronometer(R.id.combo_moment_chronometer, base, "%s", true)
+                        views.setChronometerCountDown(R.id.combo_moment_chronometer, true)
+                        views.setViewVisibility(R.id.combo_moment_chronometer, View.VISIBLE)
+                    }
+                    "hours" -> {
+                        views.setViewVisibility(R.id.combo_moment_chronometer, View.GONE)
+                        views.setTextViewText(R.id.combo_moment_days, "${totalHours}h left")
+                        views.setViewVisibility(R.id.combo_moment_days, View.VISIBLE)
+                    }
+                    "minutes" -> {
+                        views.setViewVisibility(R.id.combo_moment_chronometer, View.GONE)
+                        views.setTextViewText(R.id.combo_moment_days, "${totalMinutes}m left")
+                        views.setViewVisibility(R.id.combo_moment_days, View.VISIBLE)
+                    }
+                    else -> {
+                        views.setViewVisibility(R.id.combo_moment_chronometer, View.GONE)
+                        views.setTextViewText(R.id.combo_moment_days, "${d}d left")
+                        views.setViewVisibility(R.id.combo_moment_days, View.VISIBLE)
+                    }
                 }
             } else {
-                customVal ?: "$momentDays days left"
+                views.setViewVisibility(R.id.combo_moment_chronometer, View.GONE)
+                views.setTextViewText(R.id.combo_moment_days, customVal ?: "$momentDays days left")
+                views.setViewVisibility(R.id.combo_moment_days, View.VISIBLE)
             }
-            views.setTextViewText(R.id.combo_moment_days, displayCount)
         }
 
         // 5. Clean, sharp Progress Ring (replaces muddy concentric circles)
@@ -142,17 +166,16 @@ class ComboWidgetProvider : BaseKairosWidget() {
         val diffMs = targetEpoch - nowMs
         val absSec = Math.abs(diffMs) / 1000
         val d = absSec / 86400
-        val h = (absSec % 86400) / 3600
-        val m = (absSec % 3600) / 60
-        val s = absSec % 60
+        val totalHours = absSec / 3600
+        val totalMinutes = absSec / 60
 
         for (appWidgetId in appWidgetIds) {
             val config = ConfigRepository.getConfig(context, appWidgetId)
             val countingMode = (widgetData.getString("next_moment_counting_mode", config.momentUnit) ?: config.momentUnit).lowercase()
 
             val displayCount = when (countingMode) {
-                "continuous", "live_countdown" -> if (d > 0) "${d}d ${h}h ${m}m" else "${h}h ${m}m ${s}s"
-                "seconds" -> "${absSec}s left"
+                "hours" -> "${totalHours}h left"
+                "minutes" -> "${totalMinutes}m left"
                 else -> null
             }
 

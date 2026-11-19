@@ -1,0 +1,3 @@
+• Ultra-Smooth Continuous Live Counter: Native hardware-timed Chronometer renders continuous seconds live directly inside the Android Launcher at 60 fps with 0% CPU & 0% battery drain.
+• Zero Widget Freezing: Independent of app process state; countdowns & memories tick continuously even when the app is closed.
+• Luxury Typography & Layout Fixes: Fixed text wrapping on compact widgets, refined "d • HH:MM:SS" time formatting, and resolved fallback crash on Combo Dashboard.

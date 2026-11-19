@@ -50,24 +50,14 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
             val diffMs = targetEpoch - nowMs
             val absSec = Math.abs(diffMs) / 1000
             val d = absSec / 86400
-            val h = (absSec % 86400) / 3600
-            val m = (absSec % 3600) / 60
-            val s = absSec % 60
             val totalHours = absSec / 3600
             val totalMinutes = absSec / 60
 
             when (countingMode.lowercase()) {
-                "continuous", "live_countdown" -> {
-                    val str = if (d > 0) "${d}d ${h}h ${m}m ${s}s" else if (h > 0) "${h}h ${m}m ${s}s" else if (m > 0) "${m}m ${s}s" else "${s}s"
-                    Pair(str, 21f)
-                }
                 "hours" -> Pair("${totalHours}h", 36f)
                 "minutes" -> Pair("${totalMinutes}m", 36f)
                 "seconds" -> Pair("${absSec}s", 34f)
-                "weeks" -> {
-                    val w = d / 7.0
-                    Pair(String.format("%.1fw", w), 40f)
-                }
+                "weeks" -> Pair(String.format("%.1fw", d / 7.0), 40f)
                 "months_days" -> {
                     val mo = d / 30
                     val remD = d % 30
@@ -84,14 +74,123 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
         if (layoutId == R.layout.widget_next_hero) {
             views.setTextColor(R.id.moment_category, accentColor)
             views.setTextColor(R.id.moment_days, primaryText)
+            views.setTextColor(R.id.moment_separator, secondaryText)
+            views.setTextColor(R.id.moment_chronometer, primaryText)
             views.setTextColor(R.id.moment_title, primaryText)
             views.setTextColor(R.id.moment_subtitle, secondaryText)
 
             views.setTextViewText(R.id.moment_title, title)
-            views.setTextViewText(R.id.moment_days, countText)
 
-            val scaledSize = (textSizeSp * config.scaleFactor).coerceIn(18f, 64f)
-            views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+            if (isToday) {
+                views.setTextViewText(R.id.moment_days, "Today!")
+                views.setViewVisibility(R.id.moment_days, View.VISIBLE)
+                views.setViewVisibility(R.id.moment_separator, View.GONE)
+                views.setViewVisibility(R.id.moment_chronometer, View.GONE)
+                val scaledSize = (42f * config.scaleFactor).coerceIn(24f, 56f)
+                views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+            } else if (targetEpoch > 0L) {
+                val nowMs = System.currentTimeMillis()
+                val diffMs = targetEpoch - nowMs
+                val absSec = Math.abs(diffMs) / 1000
+                val d = absSec / 86400
+                val dayRemainderMs = Math.abs(diffMs) % (86400 * 1000)
+                val totalHours = absSec / 3600
+                val totalMinutes = absSec / 60
+
+                when (countingMode.lowercase()) {
+                    "continuous", "live_countdown" -> {
+                        if (d > 0) {
+                            views.setTextViewText(R.id.moment_days, "${d}d")
+                            views.setViewVisibility(R.id.moment_days, View.VISIBLE)
+                            views.setViewVisibility(R.id.moment_separator, View.VISIBLE)
+
+                            val base = android.os.SystemClock.elapsedRealtime() + dayRemainderMs
+                            views.setChronometer(R.id.moment_chronometer, base, "%s", true)
+                            views.setChronometerCountDown(R.id.moment_chronometer, true)
+                            views.setViewVisibility(R.id.moment_chronometer, View.VISIBLE)
+
+                            val scaledDays = (32f * config.scaleFactor).coerceIn(18f, 40f)
+                            val scaledChrono = (24f * config.scaleFactor).coerceIn(16f, 32f)
+                            views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledDays)
+                            views.setTextViewTextSize(R.id.moment_chronometer, TypedValue.COMPLEX_UNIT_SP, scaledChrono)
+                        } else {
+                            views.setViewVisibility(R.id.moment_days, View.GONE)
+                            views.setViewVisibility(R.id.moment_separator, View.GONE)
+
+                            val base = android.os.SystemClock.elapsedRealtime() + Math.max(0L, diffMs)
+                            views.setChronometer(R.id.moment_chronometer, base, "%s", true)
+                            views.setChronometerCountDown(R.id.moment_chronometer, true)
+                            views.setViewVisibility(R.id.moment_chronometer, View.VISIBLE)
+
+                            val scaledChrono = (38f * config.scaleFactor).coerceIn(22f, 50f)
+                            views.setTextViewTextSize(R.id.moment_chronometer, TypedValue.COMPLEX_UNIT_SP, scaledChrono)
+                        }
+                    }
+                    "seconds" -> {
+                        views.setViewVisibility(R.id.moment_days, View.GONE)
+                        views.setViewVisibility(R.id.moment_separator, View.GONE)
+
+                        val base = android.os.SystemClock.elapsedRealtime() + Math.max(0L, diffMs)
+                        views.setChronometer(R.id.moment_chronometer, base, "%s", true)
+                        views.setChronometerCountDown(R.id.moment_chronometer, true)
+                        views.setViewVisibility(R.id.moment_chronometer, View.VISIBLE)
+
+                        val scaledChrono = (36f * config.scaleFactor).coerceIn(20f, 48f)
+                        views.setTextViewTextSize(R.id.moment_chronometer, TypedValue.COMPLEX_UNIT_SP, scaledChrono)
+                    }
+                    "hours" -> {
+                        views.setViewVisibility(R.id.moment_separator, View.GONE)
+                        views.setViewVisibility(R.id.moment_chronometer, View.GONE)
+                        views.setTextViewText(R.id.moment_days, "${totalHours}h")
+                        views.setViewVisibility(R.id.moment_days, View.VISIBLE)
+                        val scaledSize = (36f * config.scaleFactor).coerceIn(20f, 44f)
+                        views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+                    }
+                    "minutes" -> {
+                        views.setViewVisibility(R.id.moment_separator, View.GONE)
+                        views.setViewVisibility(R.id.moment_chronometer, View.GONE)
+                        views.setTextViewText(R.id.moment_days, "${totalMinutes}m")
+                        views.setViewVisibility(R.id.moment_days, View.VISIBLE)
+                        val scaledSize = (34f * config.scaleFactor).coerceIn(20f, 44f)
+                        views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+                    }
+                    "weeks" -> {
+                        views.setViewVisibility(R.id.moment_separator, View.GONE)
+                        views.setViewVisibility(R.id.moment_chronometer, View.GONE)
+                        val w = d / 7.0
+                        views.setTextViewText(R.id.moment_days, String.format("%.1fw", w))
+                        views.setViewVisibility(R.id.moment_days, View.VISIBLE)
+                        val scaledSize = (38f * config.scaleFactor).coerceIn(20f, 46f)
+                        views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+                    }
+                    "months_days" -> {
+                        views.setViewVisibility(R.id.moment_separator, View.GONE)
+                        views.setViewVisibility(R.id.moment_chronometer, View.GONE)
+                        val mo = d / 30
+                        val remD = d % 30
+                        val str = if (mo > 0) "${mo}m ${remD}d" else "${remD}d"
+                        views.setTextViewText(R.id.moment_days, str)
+                        views.setViewVisibility(R.id.moment_days, View.VISIBLE)
+                        val scaledSize = (32f * config.scaleFactor).coerceIn(18f, 42f)
+                        views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+                    }
+                    else -> {
+                        views.setViewVisibility(R.id.moment_separator, View.GONE)
+                        views.setViewVisibility(R.id.moment_chronometer, View.GONE)
+                        views.setTextViewText(R.id.moment_days, "$d")
+                        views.setViewVisibility(R.id.moment_days, View.VISIBLE)
+                        val scaledSize = (48f * config.scaleFactor).coerceIn(24f, 56f)
+                        views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+                    }
+                }
+            } else {
+                views.setViewVisibility(R.id.moment_separator, View.GONE)
+                views.setViewVisibility(R.id.moment_chronometer, View.GONE)
+                views.setTextViewText(R.id.moment_days, customVal ?: "${defaultDays}d")
+                views.setViewVisibility(R.id.moment_days, View.VISIBLE)
+                val scaledSize = (44f * config.scaleFactor).coerceIn(24f, 56f)
+                views.setTextViewTextSize(R.id.moment_days, TypedValue.COMPLEX_UNIT_SP, scaledSize)
+            }
 
             // Category visibility
             if (config.showMomentCategory) {
@@ -131,11 +230,47 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
             views.setTextColor(R.id.compact_title, primaryText)
             views.setTextColor(R.id.compact_time_left, secondaryText)
             views.setTextColor(R.id.compact_days, accentColor)
+            views.setTextColor(R.id.compact_chronometer, accentColor)
             views.setInt(R.id.compact_dot, "setColorFilter", accentColor)
 
             views.setTextViewText(R.id.compact_title, title)
-            views.setTextViewText(R.id.compact_time_left, if (isToday) "today" else "in $countText")
-            views.setTextViewText(R.id.compact_days, countText)
+
+            if (isToday) {
+                views.setTextViewText(R.id.compact_days, "Today!")
+                views.setViewVisibility(R.id.compact_days, View.VISIBLE)
+                views.setViewVisibility(R.id.compact_chronometer, View.GONE)
+                views.setTextViewText(R.id.compact_time_left, "today")
+            } else if (targetEpoch > 0L) {
+                val nowMs = System.currentTimeMillis()
+                val diffMs = targetEpoch - nowMs
+                val absSec = Math.abs(diffMs) / 1000
+                val d = absSec / 86400
+                val dayRemainderMs = Math.abs(diffMs) % (86400 * 1000)
+
+                if (countingMode.lowercase() in listOf("continuous", "live_countdown", "seconds")) {
+                    if (d > 0 && countingMode.lowercase() != "seconds") {
+                        views.setTextViewText(R.id.compact_days, "${d}d ")
+                        views.setViewVisibility(R.id.compact_days, View.VISIBLE)
+                    } else {
+                        views.setViewVisibility(R.id.compact_days, View.GONE)
+                    }
+                    val base = android.os.SystemClock.elapsedRealtime() + (if (d > 0 && countingMode.lowercase() != "seconds") dayRemainderMs else Math.max(0L, diffMs))
+                    views.setChronometer(R.id.compact_chronometer, base, "%s", true)
+                    views.setChronometerCountDown(R.id.compact_chronometer, true)
+                    views.setViewVisibility(R.id.compact_chronometer, View.VISIBLE)
+                    views.setTextViewText(R.id.compact_time_left, if (d > 0) "in $d days" else "countdown")
+                } else {
+                    views.setViewVisibility(R.id.compact_chronometer, View.GONE)
+                    views.setViewVisibility(R.id.compact_days, View.VISIBLE)
+                    views.setTextViewText(R.id.compact_days, countText)
+                    views.setTextViewText(R.id.compact_time_left, "in $countText")
+                }
+            } else {
+                views.setViewVisibility(R.id.compact_chronometer, View.GONE)
+                views.setViewVisibility(R.id.compact_days, View.VISIBLE)
+                views.setTextViewText(R.id.compact_days, customVal ?: "${defaultDays}d")
+                views.setTextViewText(R.id.compact_time_left, "in ${defaultDays}d")
+            }
         }
 
         KairosWidgetTicker.start(context)
@@ -165,19 +300,16 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
         val diffMs = targetEpoch - nowMs
         val absSec = Math.abs(diffMs) / 1000
         val d = absSec / 86400
-        val h = (absSec % 86400) / 3600
-        val m = (absSec % 3600) / 60
-        val s = absSec % 60
+        val totalHours = absSec / 3600
+        val totalMinutes = absSec / 60
 
         for (appWidgetId in appWidgetIds) {
             val config = ConfigRepository.getConfig(context, appWidgetId)
             val countingMode = (widgetData.getString("next_moment_counting_mode", config.momentUnit) ?: config.momentUnit).lowercase()
 
             val str = when (countingMode) {
-                "continuous", "live_countdown" -> {
-                    if (d > 0) "${d}d ${h}h ${m}m ${s}s" else if (h > 0) "${h}h ${m}m ${s}s" else if (m > 0) "${m}m ${s}s" else "${s}s"
-                }
-                "seconds" -> "${absSec}s"
+                "hours" -> "${totalHours}h"
+                "minutes" -> "${totalMinutes}m"
                 else -> null
             }
 
@@ -186,8 +318,7 @@ class NextMomentWidgetProvider : BaseKairosWidget() {
                 val layoutId = if (style == "compact") R.layout.widget_next_compact else R.layout.widget_next_hero
                 val partial = RemoteViews(context.packageName, layoutId)
                 if (layoutId == R.layout.widget_next_compact) {
-                    partial.setTextViewText(R.id.compact_days, str)
-                    partial.setTextViewText(R.id.compact_time_left, "in $str")
+                    partial.setTextViewText(R.id.compact_days, "$str ")
                 } else {
                     partial.setTextViewText(R.id.moment_days, str)
                 }
