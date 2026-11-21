@@ -55,7 +55,11 @@ class KairosScaffold extends StatelessWidget {
                       _CircularBackButton(
                         onPressed: () {
                           HapticFeedback.lightImpact();
-                          Navigator.of(context).maybePop();
+                          if (Navigator.of(context).canPop()) {
+                            Navigator.of(context).pop();
+                          } else {
+                            Navigator.of(context).maybePop();
+                          }
                         },
                       ),
                       const SizedBox(width: Space.md),
@@ -106,44 +110,45 @@ class KairosScaffold extends StatelessWidget {
   }
 }
 
-class _CircularBackButton extends StatefulWidget {
+class _CircularBackButton extends StatelessWidget {
   const _CircularBackButton({required this.onPressed});
 
   final VoidCallback onPressed;
 
   @override
-  State<_CircularBackButton> createState() => _CircularBackButtonState();
-}
-
-class _CircularBackButtonState extends State<_CircularBackButton> {
-  bool _pressed = false;
-
-  @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
 
-    return AnimatedScale(
-      scale: _pressed ? 0.94 : 1.0,
-      duration: const Duration(milliseconds: 100),
-      curve: Curves.easeOutCubic,
-      child: GestureDetector(
-        onTapDown: (_) => setState(() => _pressed = true),
-        onTapUp: (_) => setState(() => _pressed = false),
-        onTapCancel: () => setState(() => _pressed = false),
-        onTap: widget.onPressed,
-        child: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: kairos.colours.surfaceElevated.withValues(alpha: 0.6),
-            shape: BoxShape.circle,
-            border: Border.all(color: kairos.colours.border, width: 1),
-          ),
+    return Semantics(
+      button: true,
+      label: 'Back',
+      child: Tooltip(
+        message: 'Back',
+        child: SizedBox(
+          width: 48,
+          height: 48,
           child: Center(
-            child: Icon(
-              LucideIcons.chevronLeft,
-              color: kairos.colours.textPrimary,
-              size: 20,
+            child: InkResponse(
+              onTap: onPressed,
+              containedInkWell: true,
+              highlightShape: BoxShape.circle,
+              radius: 24,
+              child: Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: kairos.colours.surfaceElevated.withValues(alpha: 0.6),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: kairos.colours.border, width: 1),
+                ),
+                child: Center(
+                  child: Icon(
+                    LucideIcons.chevronLeft,
+                    color: kairos.colours.textPrimary,
+                    size: 20,
+                  ),
+                ),
+              ),
             ),
           ),
         ),

@@ -52,6 +52,7 @@ object WidgetProgressRenderer {
             hsv[1] = (hsv[1] * 0.75f).coerceIn(0f, 1f) // slightly desaturated start
             val startGradientColor = Color.HSVToColor(hsv)
 
+            val midPos = (clampedProgress * 0.95f).coerceIn(0.05f, 0.95f)
             val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 style = Paint.Style.STROKE
                 this.strokeWidth = strokeWidth
@@ -59,7 +60,7 @@ object WidgetProgressRenderer {
                 shader = SweepGradient(
                     center, center,
                     intArrayOf(startGradientColor, accentColor, startGradientColor),
-                    floatArrayOf(0.0f, clampedProgress.coerceAtLeast(0.1f), 1.0f)
+                    floatArrayOf(0.0f, midPos, 1.0f)
                 )
             }
 

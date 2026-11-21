@@ -42,10 +42,10 @@ class ClockWidgetProvider : BaseKairosWidget() {
             } else {
                 if (config.leadingZero) "hh" else "h"
             }
-            views.setString(R.id.clock_hours, "setFormat12Hour", hourFmt)
-            views.setString(R.id.clock_hours, "setFormat24Hour", hourFmt)
-            views.setString(R.id.clock_minutes, "setFormat12Hour", "mm")
-            views.setString(R.id.clock_minutes, "setFormat24Hour", "mm")
+            views.setCharSequence(R.id.clock_hours, "setFormat12Hour", hourFmt)
+            views.setCharSequence(R.id.clock_hours, "setFormat24Hour", hourFmt)
+            views.setCharSequence(R.id.clock_minutes, "setFormat12Hour", "mm")
+            views.setCharSequence(R.id.clock_minutes, "setFormat24Hour", "mm")
 
             if (config.scaleFactor != 1.0f) {
                 val scaledSize = (52f * config.scaleFactor).coerceIn(28f, 68f)

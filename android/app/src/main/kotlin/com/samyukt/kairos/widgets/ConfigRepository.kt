@@ -114,7 +114,7 @@ object ConfigRepository {
                 secondsStyle = obj.optString("secondsStyle", "hidden"),
                 customFormat = obj.optString("customFormat", ""),
                 scaleFactor = obj.optDouble("scaleFactor", 1.0).toFloat().coerceIn(0.6f, 1.6f),
-                photoPath = obj.optString("photoPath", null),
+                photoPath = if (obj.has("photoPath") && !obj.isNull("photoPath")) obj.getString("photoPath") else null,
                 momentVisual = obj.optString("momentVisual", "ring"),
                 momentUnit = obj.optString("momentUnit", "days"),
                 leadingZero = obj.optBoolean("leadingZero", true),

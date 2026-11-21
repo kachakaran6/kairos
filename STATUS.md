@@ -91,6 +91,13 @@ A claim is live for 2 hours. Stale after 24 hours and open to takeover, per `AGE
 | P2-12 | Android Glance & RemoteViews widgets: Clock, World Clock, Next, Then, Interactive, Combo | agent-karan | done | 2026-11-17 18:15 | 6 native AppWidgetProviders, TextClock live ticking, WorkManager + AlarmManager midnight rollover, deep linking, `flutter build apk --debug` succeeded |
 | P2-13 | Lock-screen surfaces: iOS accessory families, Android 14 keyguard widgets | — | todo | — | — |
 | P2-14 | Per-instance widget configuration UI & Widget Studio with live sync | agent-karan | done | 2026-11-18 07:35 | Full Widget Studio redesign (Time Builder, Moment Builder, Style Controls, 10 Looks, Import/Export); 104 tests pass; 8 Play Store marketing assets + feature graphic + app icon generated |
+| P2-15 | All widget options functional on placed widgets (formatting, units, cities) | agent-karan | done | 2026-11-18 16:45 | Unit toggle, custom format, 12/24h, 111 tests pass |
+| P2-16 | Continuous live counter & flexible unit options in Memories tab | agent-karan | done | 2026-11-18 16:56 | Live 1s ticker, 113 tests pass |
+| P2-17 | Live hours, minutes & seconds count on Android home screen widgets | agent-karan | done | 2026-11-18 17:11 | Dynamic epoch countdown/countup, adaptive font sizing |
+| P2-18 | Widget UI wrap fix & RemoteViews ActionException resolution | agent-karan | done | 2026-11-18 18:30 | Single-line dynamic font sizing, KairosWidgetTicker |
+| P2-19 | KairosWidgetTicker partiallyUpdateAppWidget zero-allocation updates | agent-karan | done | 2026-11-19 06:05 | Zero-allocation partial updates; all gates green |
+| P2-20 | Native Launcher-driven Chronometer for live countdown & memories ticking | agent-karan | done | 2026-11-19 16:30 | Chronometer base calculations, layout wrapping fixed |
+| P2-21 | Android widget stabilization, back navigation restoration & quality gates | teamwork_worker_1 | done | 2026-11-21 19:10 | dart format clean; analyze clean; 126 tests pass; check_tokens clean; check_strings clean; assembleDebug built |
 
 ### Phase 3 — Depth (weeks 18–24)
 
@@ -151,6 +158,7 @@ Append-only. Format and rules in `AGENTS.md` §9.
 | D-005 | 2026-11-16 | Ticking widget digits use native timer text, not refreshes | iOS rations widget refreshes far below one per second | Digits cannot carry custom styling mid-animation | No |
 | D-006 | 2026-11-16 | Riverpod 3 for state; moments persist through a JSON repository in `shared_preferences` until P1-01 replaces it with Drift | Unblocks the moments UI and offline persistence without codegen; Drift schema lands in Phase 1 | No relational queries or full-text until the P1-01 migration | Yes |
 | D-007 | 2026-11-17 | Glassmorphism design system built atop `KairosColourTokens` with static atmospheric radial gradients | Delivers luxury Apple-inspired glass depth and tactile feedback while avoiding full-screen blur performance penalties | Centralized tokens ensure 100% theme adaptability without hardcoded hex colors | Yes |
+| D-008 | 2026-11-21 | Use `setCharSequence` rather than `setString` for TextClock reflection in RemoteViews, clamp SweepGradient positions, wrap Flutter shell in PopScope | Android TextClock methods expect CharSequence.class; Skia crashes on non-monotonic positions; Flutter shell lacked PopScope causing accidental exits | Zero overhead; eliminates launcher inflation crashes on Xiaomi/HyperOS | Yes |
 | D-008 | 2026-11-17 | Added google_fonts and lucide_icons for typography and iconography | Provides distinctive grotesque numerals, editorial serif headers, and consistent 1.75 stroke iconography per ADA guidelines | +600KB binary, cached fonts | Yes |
 | D-009 | 2026-11-17 | Android home screen widget suite uses native RemoteViews + TextClock and offscreen Flutter artwork | Zero battery consumption / no CPU wake locks for live ticking digits; rich progress arcs & streak heatmaps rendered via home_widget offscreen | Native Kotlin layouts for 6 families | No |
 | D-010 | 2026-11-17 | Interactive Widget Studio with 6 curated Looks (Terracotta Paper, Midnight Ink, Sakura, Forest Quiet, Mono Graphite, Sunset Glass) | Empowers users to preview and tailor widgets before pinning to home screen with custom opacity and squircle radii | Small stateful configurator in Settings | Yes |
@@ -207,6 +215,8 @@ Newest at the bottom. One line per session, per `AGENTS.md` §4.
 2026-11-19 06:05 | agent-karan | P2-19/P4-10 | implemented KairosWidgetTicker with partiallyUpdateAppWidget zero-allocation partial updates; resolved vertical wrap & RemoteViews exceptions; all gates green
 2026-11-19 06:22 | agent-karan | P4-10 | deployed build 6 (v1.0.2+6) to Google Play closed testing track via fastlane; release notes attached; tagged v1.0.2+6 and pushed to GitHub
 2026-11-19 16:30 | agent-karan | P2-20/P4-10 | native Launcher-driven Chronometer for 100% continuous live countdown & memories ticking; fixed layout wrapping & fallback crashes; deployed build 7 (v1.0.3+7); all gates green
+2026-11-21 19:10 | teamwork_worker_1 | P2-21 | Android RemoteViews CharSequence/SweepGradient/bitmap fix, back navigation PopScope/48dp button fix, 13 new nav tests; 126 tests pass, all gates green
+2026-11-21 20:10 | agent-karan | P2-21 | verified on physical device 3086027538000H5; build 8 (v1.0.4+8) built & deployed via fastlane; all gates green
 ```
 
 ---

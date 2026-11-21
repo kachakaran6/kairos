@@ -180,7 +180,6 @@ object WidgetBackgroundRenderer {
         }
 
         if (photoBitmap == null) {
-            cachedBitmap?.recycle()
             cachedBitmap = bitmap
             lastCacheKey = cacheKey
         }

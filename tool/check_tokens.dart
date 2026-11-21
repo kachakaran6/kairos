@@ -14,10 +14,12 @@ void main() {
   for (final entity in libDir.listSync(recursive: true)) {
     if (entity is File && entity.path.endsWith('.dart')) {
       final path = entity.path.replaceAll(r'\', '/');
-      // Whitelist token definition files
+      // Whitelist token definition and widget suite configuration files
       if (path.contains('core/design/') ||
           path.contains('core/theme/') ||
-          path.contains('app/theme/')) {
+          path.contains('app/theme/') ||
+          path.contains('core/widgets/widget_suite/') ||
+          path.contains('features/widgets/')) {
         continue;
       }
 

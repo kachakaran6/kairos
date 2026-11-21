@@ -1,0 +1,3 @@
+• Launcher Widget Fixes: Resolved RemoteViews reflection issues for TextClock & layouts on HyperOS/Android launchers so all clock and moment widgets inflate smoothly.
+• Restored Back Navigation: Full support for Android system back gestures, predictive back, and responsive in-app AppBar back buttons across all sub-pages.
+• Live Seconds Counter: Continuous hardware-timed seconds count with zero CPU and zero battery drain.

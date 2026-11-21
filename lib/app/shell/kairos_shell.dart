@@ -43,22 +43,30 @@ class _KairosShellState extends State<KairosShell> {
   @override
   Widget build(BuildContext context) {
     final kairos = KairosTheme.of(context);
-    return Scaffold(
-      backgroundColor: kairos.colours.background,
-      extendBody: true,
-      body: AtmosphericBackground(
-        child: IndexedStack(
-          index: _index,
-          children: const <Widget>[
-            MomentsPage(),
-            _NowPage(),
-            WidgetStudioPage(),
-          ],
+    return PopScope(
+      canPop: _index == 1,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _index != 1) {
+          setState(() => _index = 1);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: kairos.colours.background,
+        extendBody: true,
+        body: AtmosphericBackground(
+          child: IndexedStack(
+            index: _index,
+            children: const <Widget>[
+              MomentsPage(),
+              _NowPage(),
+              WidgetStudioPage(),
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: KairosBottomNav(
-        currentIndex: _index,
-        onChanged: (value) => setState(() => _index = value),
+        bottomNavigationBar: KairosBottomNav(
+          currentIndex: _index,
+          onChanged: (value) => setState(() => _index = value),
+        ),
       ),
     );
   }

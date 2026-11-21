@@ -76,7 +76,6 @@
                 android:fontFamily="sans-serif-medium"
                 android:textColor="#FFFFFF"
                 android:clickable="true"
-                android:focusable="true"
                 android:background="@drawable/widget_pill_accent" />
         </LinearLayout>
 
@@ -131,7 +130,6 @@
                 android:fontFamily="sans-serif-medium"
                 android:textColor="#14120E"
                 android:clickable="true"
-                android:focusable="true"
                 android:background="@drawable/widget_chip_dark"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp" />

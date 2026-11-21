@@ -116,8 +116,8 @@ object WidgetTimeFormatter {
         baseTimeSizeSp: Float = 56f
     ) {
         val timePattern = getTimeFormat(config)
-        views.setString(timeViewId, "setFormat12Hour", timePattern)
-        views.setString(timeViewId, "setFormat24Hour", timePattern)
+        views.setCharSequence(timeViewId, "setFormat12Hour", timePattern)
+        views.setCharSequence(timeViewId, "setFormat24Hour", timePattern)
 
         // Dynamic text size scaling based on scaleFactor (0.6x - 1.6x)
         if (config.scaleFactor != 1.0f) {
@@ -131,8 +131,8 @@ object WidgetTimeFormatter {
             if (dotViewId != 0) views.setViewVisibility(dotViewId, View.VISIBLE)
 
             val datePattern = getDateFormat(config)
-            views.setString(dateViewId, "setFormat12Hour", datePattern)
-            views.setString(dateViewId, "setFormat24Hour", datePattern)
+            views.setCharSequence(dateViewId, "setFormat12Hour", datePattern)
+            views.setCharSequence(dateViewId, "setFormat24Hour", datePattern)
         } else {
             views.setViewVisibility(dateViewId, View.GONE)
             if (dotViewId != 0) views.setViewVisibility(dotViewId, View.GONE)

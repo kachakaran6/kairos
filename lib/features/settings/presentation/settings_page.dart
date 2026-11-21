@@ -31,6 +31,7 @@ class SettingsPage extends ConsumerWidget {
 
     return KairosScaffold(
       title: 'Settings',
+      showBackButton: true,
       padding: EdgeInsets.zero,
       body: ListView(
         padding: const EdgeInsets.symmetric(

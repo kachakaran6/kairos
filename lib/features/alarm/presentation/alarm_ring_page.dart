@@ -103,141 +103,144 @@ class _AlarmRingPageState extends State<AlarmRingPage>
     final kairos = KairosTheme.of(context);
     final colours = kairos.colours;
 
-    return Scaffold(
-      backgroundColor: colours.background,
-      body: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          // Breathing Radial Glow behind the time
-          AnimatedBuilder(
-            animation: _pulseController,
-            builder: (context, _) {
-              final scale = 1.0 + (_pulseController.value * 0.2);
-              final opacity = 0.12 + (_pulseController.value * 0.12);
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: colours.background,
+        body: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            // Breathing Radial Glow behind the time
+            AnimatedBuilder(
+              animation: _pulseController,
+              builder: (context, _) {
+                final scale = 1.0 + (_pulseController.value * 0.2);
+                final opacity = 0.12 + (_pulseController.value * 0.12);
 
-              return Container(
-                width: 320 * scale,
-                height: 320 * scale,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colours.accent.withValues(alpha: opacity),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: colours.accent.withValues(alpha: opacity * 0.7),
-                      blurRadius: 72 * scale,
-                      spreadRadius: 24 * scale,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Space.xl,
-                vertical: Space.xl,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  // Top Status Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        LucideIcons.alarmClock,
-                        size: 20,
-                        color: colours.accent,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'ALARM RINGING',
-                        style: kairos.typeScale.label.copyWith(
-                          color: colours.accent,
-                          letterSpacing: 1.5,
-                        ),
+                return Container(
+                  width: 320 * scale,
+                  height: 320 * scale,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colours.accent.withValues(alpha: opacity),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: colours.accent.withValues(alpha: opacity * 0.7),
+                        blurRadius: 72 * scale,
+                        spreadRadius: 24 * scale,
                       ),
                     ],
                   ),
+                );
+              },
+            ),
 
-                  // Center Numerals & Serif Label
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          widget.timeLabel,
-                          style: kairos.typeScale.display.copyWith(
-                            fontSize: 76,
-                            fontWeight: FontWeight.w200,
-                            color: colours.textPrimary,
-                            fontFeatures: const <FontFeature>[
-                              FontFeature.tabularFigures(),
-                            ],
-                          ),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Space.xl,
+                  vertical: Space.xl,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    // Top Status Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          LucideIcons.alarmClock,
+                          size: 20,
+                          color: colours.accent,
                         ),
-                      ),
-                      const SizedBox(height: Space.sm),
-                      Text(
-                        widget.label,
-                        textAlign: TextAlign.center,
-                        style: kairos.typeScale.serifTitle.copyWith(
-                          color: colours.textPrimary,
-                          fontSize: 26,
-                        ),
-                      ),
-                      if (widget.volumeRampMinutes > 0) ...<Widget>[
-                        const SizedBox(height: Space.sm),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colours.accent.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(
-                              RadiusTokens.pill,
-                            ),
-                          ),
-                          child: Text(
-                            'Volume ramping up over ${widget.volumeRampMinutes}m',
-                            style: kairos.typeScale.caption.copyWith(
-                              color: colours.accent,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'ALARM RINGING',
+                          style: kairos.typeScale.label.copyWith(
+                            color: colours.accent,
+                            letterSpacing: 1.5,
                           ),
                         ),
                       ],
-                    ],
-                  ),
+                    ),
 
-                  // Bottom Action Buttons: Snooze & Dismiss
-                  Column(
-                    children: [
-                      PillButton(
-                        onPressed: _dismiss,
-                        label: 'Dismiss Alarm',
-                        icon: const Icon(LucideIcons.check, size: 20),
-                        variant: PillButtonVariant.primary,
-                      ),
-                      const SizedBox(height: Space.sm),
-                      PillButton(
-                        onPressed: () => _finish(AlarmRingResult.snooze),
-                        label: 'Snooze 5 minutes',
-                        icon: const Icon(LucideIcons.bellOff, size: 18),
-                        variant: PillButtonVariant.secondary,
-                      ),
-                      const SizedBox(height: Space.md),
-                    ],
-                  ),
-                ],
+                    // Center Numerals & Serif Label
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            widget.timeLabel,
+                            style: kairos.typeScale.display.copyWith(
+                              fontSize: 76,
+                              fontWeight: FontWeight.w200,
+                              color: colours.textPrimary,
+                              fontFeatures: const <FontFeature>[
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: Space.sm),
+                        Text(
+                          widget.label,
+                          textAlign: TextAlign.center,
+                          style: kairos.typeScale.serifTitle.copyWith(
+                            color: colours.textPrimary,
+                            fontSize: 26,
+                          ),
+                        ),
+                        if (widget.volumeRampMinutes > 0) ...<Widget>[
+                          const SizedBox(height: Space.sm),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colours.accent.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(
+                                RadiusTokens.pill,
+                              ),
+                            ),
+                            child: Text(
+                              'Volume ramping up over ${widget.volumeRampMinutes}m',
+                              style: kairos.typeScale.caption.copyWith(
+                                color: colours.accent,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+
+                    // Bottom Action Buttons: Snooze & Dismiss
+                    Column(
+                      children: [
+                        PillButton(
+                          onPressed: _dismiss,
+                          label: 'Dismiss Alarm',
+                          icon: const Icon(LucideIcons.check, size: 20),
+                          variant: PillButtonVariant.primary,
+                        ),
+                        const SizedBox(height: Space.sm),
+                        PillButton(
+                          onPressed: () => _finish(AlarmRingResult.snooze),
+                          label: 'Snooze 5 minutes',
+                          icon: const Icon(LucideIcons.bellOff, size: 18),
+                          variant: PillButtonVariant.secondary,
+                        ),
+                        const SizedBox(height: Space.md),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

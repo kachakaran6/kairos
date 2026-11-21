@@ -29,7 +29,6 @@ class InteractiveWidgetProvider : BaseKairosWidget() {
         views.setTextColor(R.id.alarm_label, secondaryText)
         views.setTextColor(R.id.focus_header, secondaryText)
         views.setTextColor(R.id.btn_quick_focus, primaryText)
-        views.setInt(R.id.interactive_divider, "setColorFilter", Color.argb(32, Color.red(secondaryText), Color.green(secondaryText), Color.blue(secondaryText)))
 
         // Alarm status - NEVER show raw "--:--"
         val rawTime = widgetData.getString("interactive_alarm_time", null)
